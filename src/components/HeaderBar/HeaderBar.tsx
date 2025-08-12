@@ -9,6 +9,8 @@ import { Input } from '@/components/ui/input';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 import { Undo, Redo, TestTube, Save, ChevronDown } from 'lucide-react';
+import { publishFlow } from '@/api/flows';
+import { usePresence } from '@/presence/PresenceProvider';
 
 /** Handy class combiner without bringing in a dependency */
 function cn(...parts: Array<string | false | undefined>) {
@@ -134,6 +136,11 @@ export default function HeaderBar({
       setEditing(false);
     }
   }
+
+  function handlePublishToggle(next: boolean) {
+    onPublishToggle(next);
+  }
+
 
   return (
     <header className={cn(styles.header, className)} aria-labelledby={headerId}>
@@ -267,7 +274,7 @@ export default function HeaderBar({
             <Label htmlFor="publish-toggle" className="sr-only">
               Publish flow
             </Label>
-            <Switch id="publish-toggle" checked={!!isPublished} onCheckedChange={onPublishToggle} />
+            <Switch id="publish-toggle" checked={!!isPublished} onCheckedChange={handlePublishToggle} />
             <span>{isPublished ? 'Published' : 'Draft'}</span>
           </div>
         </div>
