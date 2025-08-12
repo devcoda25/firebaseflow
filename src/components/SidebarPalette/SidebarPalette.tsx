@@ -275,23 +275,23 @@ export default function SidebarPalette({
                           {item.icon}
                         </span>
                         <span className={styles.label}>{highlight(item.label)}</span>
-                        {enableFavorites && (
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            className={cn(styles.star, fav && styles.starActive)}
-                            aria-pressed={fav}
-                            aria-label={fav ? 'Unfavorite' : 'Favorite'}
-                            title={fav ? 'Unfavorite' : 'Favorite'}
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              toggleFavorite(item.key);
-                            }}
-                          >
-                            <Star className="h-4 w-4" />
-                          </Button>
-                        )}
                       </div>
+                      {enableFavorites && (
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className={cn(styles.star, fav && styles.starActive)}
+                          aria-pressed={fav}
+                          aria-label={fav ? 'Unfavorite' : 'Favorite'}
+                          title={fav ? 'Unfavorite' : 'Favorite'}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            toggleFavorite(item.key);
+                          }}
+                        >
+                          <Star className="h-4 w-4" />
+                        </Button>
+                      )}
                     </li>
                   );
                 })}
