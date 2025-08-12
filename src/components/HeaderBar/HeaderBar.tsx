@@ -267,7 +267,7 @@ export default function HeaderBar({
             <Label htmlFor="publish-toggle" className="sr-only">
               Publish flow
             </Label>
-            <Switch id="publish-toggle" checked={!!isPublished} onCheckedChange={() => onPublishToggle(!isPublished)} />
+            <Switch id="publish-toggle" checked={!!isPublished} onCheckedChange={onPublishToggle} />
             <span>{isPublished ? 'Published' : 'Draft'}</span>
           </div>
         </div>
