@@ -32,11 +32,7 @@ import { useDebouncedCallback } from '@/hooks/useDebouncedCallback';
 import { X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-
-/** Simple class combiner */
-function cn(...parts: Array<string | false | undefined>) {
-  return parts.filter(Boolean).join(' ');
-}
+import { DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
 
 const TAB_LABEL: Record<TabKey, string> = {
   general: 'General',
@@ -83,10 +79,8 @@ export default function PropertiesPanel({
   onSave,
   onClose,
   waContext = 'template',
-  channels,
-  open,
+  channels
 }: PropertiesPanelProps) {
-  const visible = !!node && (open ?? true);
   const [activeTab, setActiveTab] = useState<TabKey>('general');
 
   const schema = useMemo(() => {
@@ -104,6 +98,8 @@ export default function PropertiesPanel({
 
   useEffect(() => {
     methods.reset((node?.data as any) || {});
+    // Reset to general tab when node changes
+    setActiveTab('general');
   }, [node?.id, methods]);
 
   const debouncedSave = useDebouncedCallback((vals: any) => {
@@ -118,7 +114,7 @@ export default function PropertiesPanel({
     return () => subscription.unsubscribe();
   }, [methods.watch, debouncedSave]);
 
-  if (!visible) return null;
+  if (!node) return null;
 
   const TabContent = TAB_COMPONENTS[activeTab];
   const tabProps = {
@@ -128,36 +124,36 @@ export default function PropertiesPanel({
   };
 
   return (
-    <aside className={styles.root} role="dialog" aria-label="Node properties" aria-modal="true">
-      <div className={styles.header}>
-        <div className={styles.titleWrap}>
-          <h2 className={styles.title}>Properties</h2>
-          <p className={styles.subtitle}>{node?.data?.label ?? node?.id}</p>
-        </div>
-        <Button variant="ghost" size="icon" onClick={onClose} aria-label="Close properties">
-          <X />
-        </Button>
-      </div>
+    <DialogContent className={styles.root}>
+        <DialogHeader>
+            <DialogTitle>Properties: {node?.data?.label ?? node?.id}</DialogTitle>
+            <DialogDescription>
+                Configure the behavior of this node. Changes are saved automatically.
+            </DialogDescription>
+        </DialogHeader>
 
       <FormProvider {...methods}>
-        <Tabs value={activeTab} onValueChange={(val) => setActiveTab(val as TabKey)} className="w-full p-2 overflow-auto">
-            <TabsList className="grid w-full grid-cols-3">
-                {TAB_KEYS.map((k) => (
-                    <TabsTrigger key={k} value={k}>
-                        {TAB_LABEL[k]}
-                    </TabsTrigger>
-                ))}
-            </TabsList>
-            <TabsContent value={activeTab}>
-                <TabContent {...tabProps} />
-            </TabsContent>
-        </Tabs>
+        <div className={styles.body}>
+            <Tabs value={activeTab} onValueChange={(val) => setActiveTab(val as TabKey)} className="w-full">
+                <TabsList className="grid w-full grid-cols-3">
+                    {TAB_KEYS.map((k) => (
+                        <TabsTrigger key={k} value={k}>
+                            {TAB_LABEL[k]}
+                        </TabsTrigger>
+                    ))}
+                </TabsList>
+                <TabsContent value={activeTab} className={styles.tabContent}>
+                    <TabContent {...tabProps} />
+                </TabsContent>
+            </Tabs>
+        </div>
       </FormProvider>
 
-      <div className={styles.footer}>
+      <DialogFooter className={styles.footer}>
         <ValidationSummary errors={methods.formState.errors} />
-      </div>
-    </aside>
+        <Button variant="outline" onClick={onClose}>Close</Button>
+      </DialogFooter>
+    </DialogContent>
   );
 }
 

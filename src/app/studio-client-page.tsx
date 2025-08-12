@@ -16,6 +16,7 @@ import { useUIStore } from '@/store/ui';
 import PublishBanner from '@/components/Presence/PublishBanner';
 import { FlowEngine } from '@/engine/FlowEngine';
 import { useUndoRedo } from '@/hooks/useUndoRedo';
+import { Dialog } from '@/components/ui/dialog';
 
 function StudioPageContent() {
   const {
@@ -105,13 +106,15 @@ function StudioPageContent() {
           viewportKey="flow-editor-viewport"
         />
       </main>
-      <PropertiesPanel
-        node={selectedNode}
-        onClose={() => setSelectedNode(null)}
-        onSave={handleSaveNode}
-        waContext={meta.waMessageContext}
-        channels={meta.channels}
-      />
+      <Dialog open={!!selectedNode} onOpenChange={(isOpen) => !isOpen && setSelectedNode(null)}>
+        <PropertiesPanel
+          node={selectedNode}
+          onClose={() => setSelectedNode(null)}
+          onSave={handleSaveNode}
+          waContext={meta.waMessageContext}
+          channels={meta.channels}
+        />
+      </Dialog>
       <TestConsole isOpen={isTestConsoleOpen} onClose={toggleTestConsole} engine={engine} flowId={meta.id} />
     </div>
   );

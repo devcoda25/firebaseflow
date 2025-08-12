@@ -29,6 +29,4 @@ export type PropertiesPanelProps = {
   waContext?: MessageContext;
   /** Active channels (for conditional UI in Message tab). */
   channels?: Channel[];
-  /** Optionally force-open/close; if omitted, panel opens when node != null. */
-  open?: boolean;
 };
