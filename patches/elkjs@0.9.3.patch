@@ -1,0 +1,13 @@
+diff --git a/node_modules/elkjs/lib/main.js b/node_modules/elkjs/lib/main.js
+index 7254f5c..ab9c86d 100644
+--- a/node_modules/elkjs/lib/main.js
++++ b/node_modules/elkjs/lib/main.js
+@@ -35,7 +35,7 @@
+   // a web worker in node.js.
+   var workerThreadsExist = false;
+   try {
+-    workerThreadsExist = require.resolve("worker_threads") !== undefined;
++    // workerThreadsExist = require.resolve("worker_threads") !== undefined;
+   } catch (e) {
+   }
+   if (typeof (Worker) === "undefined") {

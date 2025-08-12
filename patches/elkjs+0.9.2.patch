@@ -1,0 +1,33 @@
+diff --git a/node_modules/elkjs/lib/main.js b/node_modules/elkjs/lib/main.js
+index 5a5a1f4..556b6b3 100644
+--- a/node_modules/elkjs/lib/main.js
++++ b/node_modules/elkjs/lib/main.js
+@@ -35,11 +35,13 @@
+     var optionsClone = {};
+     for (var k in options) {
+         optionsClone[k] = options[k];
+     }
+-    if (options.workerUrl) {
+-        if (workerThreadsExist) {
+-          var Worker = require('web-worker');
+-          optionsClone.workerFactory = function (url) {
+-            return new Worker(url);
+-          };
+-        }
++    // Disable web worker logic for Next.js compatibility
++    // See: https://github.com/GoogleChromeLabs/studio/issues/new
++    // if (options.workerUrl) {
++    //     if (workerThreadsExist) {
++    //       var Worker = require('web-worker');
++    //       optionsClone.workerFactory = function (url) {
++    //         return new Worker(url);
++    //       };
++    //     }
++    // }
++    if (options.workerUrl && typeof Worker !== 'undefined') {
++        optionsClone.workerFactory = function(url) {
++            return new Worker(url);
++        };
+     }
+     var elk = new ELK(optionsClone);
+     return elk;
