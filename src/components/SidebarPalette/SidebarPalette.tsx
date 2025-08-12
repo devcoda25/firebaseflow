@@ -50,38 +50,10 @@ export default function SidebarPalette({
   const keys = { ...KEYS, ...(persistentKeys || {}) };
 
   const [search, setSearch] = useState('');
-  const [collapsed, setCollapsed] = useState<Record<string, boolean>>(() =>
-    readJSON(keys.collapse, {} as Record<string, boolean>)
-  );
-  const [favorites, setFavorites] = useState<string[]>(() => readJSON(keys.favorites, [] as string[]));
-  const [recent, setRecent] = useState<string[]>(() => readJSON(keys.recent, [] as string[]));
-
+  
   const searchRef = useRef<HTMLInputElement | null>(null);
   useShortcutFocus(searchRef, ['f', '/']); // F or / to focus search
 
-  useEffect(() => {
-    if (typeof window !== 'undefined') {
-      writeJSON(keys.collapse, collapsed);
-    }
-  }, [collapsed, keys.collapse]);
-  useEffect(() => {
-    if (typeof window !== 'undefined') {
-      writeJSON(keys.favorites, favorites);
-    }
-  }, [favorites, keys.favorites]);
-  useEffect(() => {
-    if (typeof window !== 'undefined') {
-      writeJSON(keys.recent, recent);
-    }
-  }, [recent, keys.recent]);
-
-  useEffect(() => {
-    if (Object.keys(collapsed).length === 0 && defaultCollapsed) {
-      const next: Record<string, boolean> = {};
-      for (const sec of SECTION_DATA) next[sec.key] = true;
-      setCollapsed(next);
-    }
-  }, [defaultCollapsed, collapsed]);
 
   const normalizedQuery = search.trim().toLowerCase();
 
@@ -94,12 +66,12 @@ export default function SidebarPalette({
     })).filter((sec) => sec.items.length > 0);
   }, [filterChannels]);
 
-  const filtered = useMemo<SectionDefinition[]>(() => {
+  const filteredSections = useMemo<SectionDefinition[]>(() => {
     if (!normalizedQuery) return baseSections;
     return baseSections
       .map((sec) => {
         const items = sec.items.filter((it) => {
-          const hay = `${it.label} ${(it.keywords || []).join(' ')}`.toLowerCase();
+          const hay = `${it.label} ${(it.keywords || []).join(' ')} ${it.description || ''}`.toLowerCase();
           return hay.includes(normalizedQuery);
         });
         return { ...sec, items };
@@ -108,70 +80,12 @@ export default function SidebarPalette({
   }, [baseSections, normalizedQuery]);
 
   function toPayload(it: ItemDefinition): PaletteItemPayload {
-    return { key: it.key, label: it.label, icon: it.icon, type: it.type };
-  }
-
-  const favoriteSection: SectionDefinition | null = useMemo(() => {
-    if (!enableFavorites) return null;
-    const favItems: ItemDefinition[] = [];
-    const favoriteSet = new Set(favorites);
-    for (const sec of baseSections) {
-      for (const it of sec.items) if (favoriteSet.has(it.key)) favItems.push(it);
-    }
-    if (favItems.length === 0) return null;
-    return { key: 'favorites', title: 'Favorites', items: favItems.slice(0, 12) };
-  }, [baseSections, favorites, enableFavorites]);
-
-  const recentSection: SectionDefinition | null = useMemo(() => {
-    if (!enableRecent || recent.length === 0) return null;
-    const map = new Map<string, ItemDefinition>();
-    for (const sec of SECTION_DATA) for (const it of sec.items) map.set(it.key, it);
-    const recentItems = recent.map((k) => map.get(k)).filter(Boolean) as ItemDefinition[];
-    if (recentItems.length === 0) return null;
-    return { key: 'recent', title: 'Recently used', items: recentItems.slice(0, RECENT_LIMIT) };
-  }, [recent, enableRecent]);
-
-  const finalSections: SectionDefinition[] = useMemo(() => {
-    const head: SectionDefinition[] = [];
-    const queryFilter = (it: ItemDefinition) => `${it.label} ${(it.keywords || []).join(' ')}`.toLowerCase().includes(normalizedQuery);
-    
-    if (favoriteSection && (!normalizedQuery || favoriteSection.items.some(queryFilter))) {
-      head.push({
-        ...favoriteSection,
-        items: favoriteSection.items.filter(queryFilter),
-      });
-    }
-    if (recentSection && (!normalizedQuery || recentSection.items.some(queryFilter))) {
-      head.push({
-        ...recentSection,
-        items: recentSection.items.filter(queryFilter),
-      });
-    }
-    return head.concat(filtered);
-  }, [favoriteSection, recentSection, filtered, normalizedQuery]);
-
-  function toggleCollapse(sectionKey: string) {
-    setCollapsed((c) => ({ ...c, [sectionKey]: !c[sectionKey] }));
-  }
-
-  function isCollapsed(sectionKey: string) {
-    return !!collapsed[sectionKey];
-  }
-
-  function toggleFavorite(itemKey: string) {
-    setFavorites((prev) => {
-      const set = new Set(prev);
-      set.has(itemKey) ? set.delete(itemKey) : set.add(itemKey);
-      return Array.from(set);
-    });
+    return { key: it.key, label: it.label, icon: it.icon, type: it.type, color: it.color, description: it.description };
   }
 
   function recordRecent(itemKey: string) {
     if (!enableRecent) return;
-    setRecent((r) => {
-      const next = [itemKey, ...r.filter((k) => k !== itemKey)];
-      return next.slice(0, RECENT_LIMIT);
-    });
+    // Implementation for recently used items can be added here
   }
 
   function handleDragStart(e: React.DragEvent, item: ItemDefinition) {
@@ -182,7 +96,7 @@ export default function SidebarPalette({
 
     const ghost = document.createElement('div');
     ghost.className = styles.dragGhost;
-    ghost.innerHTML = `<span role="img" aria-hidden="true">${item.icon}</span> ${item.label}`;
+    ghost.innerHTML = `<span role="img" aria-hidden="true">${item.icon}</span> <div><p>${item.label}</p><small>${item.description || ''}</small></div>`;
     document.body.appendChild(ghost);
     e.dataTransfer.setDragImage(ghost, -10, -10);
     setTimeout(() => document.body.removeChild(ghost), 0);
@@ -196,109 +110,62 @@ export default function SidebarPalette({
     recordRecent(item.key);
     onItemClick?.(payload);
   }
-
-  function highlight(label: string) {
-    if (!normalizedQuery) return label;
-    const idx = label.toLowerCase().indexOf(normalizedQuery);
-    if (idx === -1) return label;
-    return (
-      <>
-        {label.slice(0, idx)}
-        <mark className={styles.mark}>{label.slice(idx, idx + normalizedQuery.length)}</mark>
-        {label.slice(idx + normalizedQuery.length)}
-      </>
-    );
-  }
+  
+  const mainActions = filteredSections.find(s => s.key === 'main_actions')?.items || [];
+  const operations = filteredSections.find(s => s.key === 'operations')?.items || [];
 
   return (
     <aside className={cn(styles.root, className)} aria-label="Node palette">
-      <div className={styles.searchRow}>
-        <Input
-          ref={searchRef}
-          type="text"
-          value={search}
-          placeholder="Search nodes (F or /)"
-          onChange={(e) => setSearch(e.target.value)}
-          aria-label="Search palette nodes"
-          onKeyDown={(e) => {
-            if (e.key === 'Escape' && search) {
-              e.preventDefault();
-              setSearch('');
-            }
-          }}
-        />
-        <div className={styles.actions}>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => setCollapsed(Object.fromEntries(SECTION_DATA.map((s) => [s.key, true])))}
-            title="Collapse all"
-          >
-            Collapse
-          </Button>
-          <Button variant="outline" size="sm" onClick={() => setCollapsed({})} title="Expand all">
-            Expand
-          </Button>
-        </div>
-      </div>
-      <div className={styles.sections}>
-        {finalSections.length === 0 && <div className={styles.empty}>No results for “{search}”.</div>}
-        {finalSections.map((sec) => (
-          <section key={`${sec.key}-${sec.title}`} className={styles.section}>
-            <button
-              className={styles.sectionHeader}
-              aria-expanded={!isCollapsed(sec.key)}
-              onClick={() => toggleCollapse(sec.key)}
-            >
-              <span className={styles.secTitle}>{sec.title}</span>
-              <span className={styles.count}>{sec.items.length}</span>
-            </button>
-            {!isCollapsed(sec.key) && (
-              <ul className={styles.list}>
-                {sec.items.map((item) => {
-                  const fav = favorites.includes(item.key);
-                  return (
-                    <li key={item.key} className={styles.li}>
-                      <div
-                        className={styles.item}
-                        draggable
-                        onDragStart={(e) => handleDragStart(e, item)}
-                        onDoubleClick={() => handleItemClick(item)}
-                        role="button"
-                        tabIndex={0}
-                        onKeyDown={(e) => {
-                          if (e.key === 'Enter' || e.key === ' ') handleItemClick(item);
-                        }}
-                        aria-label={`Drag ${item.label} onto canvas`}
-                      >
-                        <span className={styles.icon} aria-hidden="true">
-                          {item.icon}
-                        </span>
-                        <span className={styles.label}>{highlight(item.label)}</span>
-                      </div>
-                      {enableFavorites && (
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className={cn(styles.star, fav && styles.starActive)}
-                          aria-pressed={fav}
-                          aria-label={fav ? 'Unfavorite' : 'Favorite'}
-                          title={fav ? 'Unfavorite' : 'Favorite'}
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            toggleFavorite(item.key);
-                          }}
-                        >
-                          <Star className="h-4 w-4" />
-                        </Button>
-                      )}
-                    </li>
-                  );
-                })}
-              </ul>
-            )}
-          </section>
+      <div className={styles.mainActions}>
+        {mainActions.map(item => (
+            <div
+                key={item.key}
+                className={cn(styles.item, styles.mainActionItem)}
+                style={{'--item-color': item.color} as React.CSSProperties}
+                draggable
+                onDragStart={(e) => handleDragStart(e, item)}
+                onClick={() => handleItemClick(item)}
+                role="button"
+                tabIndex={0}
+                onKeyDown={(e) => {
+                    if (e.key === 'Enter' || e.key === ' ') handleItemClick(item);
+                }}
+                aria-label={`Drag ${item.label} onto canvas`}
+                >
+                <div className={styles.mainActionContent}>
+                    <div className={styles.mainActionHeader}>
+                        <span className={styles.label}>{item.label}</span>
+                        <span className={styles.icon}>{item.icon}</span>
+                    </div>
+                    <p className={styles.description}>{item.description}</p>
+                </div>
+            </div>
         ))}
+      </div>
+      
+      <div className={styles.operations}>
+        <h3 className={styles.secTitle}>Operations</h3>
+        <div className={styles.operationsGrid}>
+            {operations.map(item => (
+                 <div
+                    key={item.key}
+                    className={styles.operationItem}
+                    draggable
+                    onDragStart={(e) => handleDragStart(e, item)}
+                    onClick={() => handleItemClick(item)}
+                    role="button"
+                    tabIndex={0}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter' || e.key === ' ') handleItemClick(item);
+                    }}
+                    aria-label={`Drag ${item.label} onto canvas`}
+                    title={item.label}
+                  >
+                    <span className={styles.icon}>{item.icon}</span>
+                    <span className={styles.label}>{item.label}</span>
+                  </div>
+            ))}
+        </div>
       </div>
     </aside>
   );

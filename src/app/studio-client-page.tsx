@@ -2,7 +2,8 @@
 
 import { useState, useCallback, useMemo } from 'react';
 import type { Node } from 'reactflow';
-import { ReactFlowProvider } from 'reactflow';
+import { ReactFlowProvider, useReactFlow } from 'reactflow';
+import { nanoid } from 'nanoid';
 
 import HeaderBar from '@/components/HeaderBar';
 import SidebarPalette, { PaletteItemPayload } from '@/components/SidebarPalette';
@@ -16,11 +17,12 @@ import PublishBanner from '@/components/Presence/PublishBanner';
 import { FlowEngine } from '@/engine/FlowEngine';
 import { useUndoRedo } from '@/hooks/useUndoRedo';
 
-export default function StudioClientPage() {
+function StudioPageContent() {
   const {
     nodes,
     edges,
     meta,
+    addNode,
     setNodes,
     onNodesChange,
     onEdgesChange,
@@ -36,6 +38,7 @@ export default function StudioClientPage() {
   const { canUndo, canRedo, undo, redo } = useUndoRedo();
 
   const engine = useMemo(() => new FlowEngine({ channel: meta.channels[0], clock: 'real' }), [meta.channels]);
+  const { project } = useReactFlow();
 
   engine.setFlow(nodes, edges);
 
@@ -54,53 +57,71 @@ export default function StudioClientPage() {
   };
 
   const handleClickAdd = (item: PaletteItemPayload) => {
-    // This is an optional feature to add a node to the center of the canvas
-    console.info('add by click:', item);
+    const { x, y } = project({ x: window.innerWidth / 2, y: window.innerHeight / 2 });
+    const newNode: Node = {
+      id: nanoid(),
+      type: 'base',
+      position: { x: x - 200, y: y - 100 }, // Center it
+      data: { 
+        label: item.label, 
+        icon: item.icon,
+        color: item.color,
+        description: item.description,
+      },
+    };
+    addNode(newNode);
   };
 
   return (
-    <ReactFlowProvider>
-      <div className={styles.shell}>
-        <PublishBanner />
-        <HeaderBar
-          title={meta.title}
-          onSave={setTitle}
-          channels={meta.channels}
-          onChannelsChange={setChannels}
-          waContext={meta.waMessageContext}
-          onWaContextChange={setWaContext}
-          isPublished={meta.published}
-          onPublishToggle={setPublished}
-          onUndo={undo}
-          onRedo={redo}
-          canUndo={canUndo}
-          canRedo={canRedo}
-          onTest={toggleTestConsole}
+    <div className={styles.shell}>
+      <PublishBanner />
+      <HeaderBar
+        title={meta.title}
+        onSave={setTitle}
+        channels={meta.channels}
+        onChannelsChange={setChannels}
+        waContext={meta.waMessageContext}
+        onWaContextChange={setWaContext}
+        isPublished={meta.published}
+        onPublishToggle={setPublished}
+        onUndo={undo}
+        onRedo={redo}
+        canUndo={canUndo}
+        canRedo={canRedo}
+        onTest={toggleTestConsole}
+      />
+      <aside className={styles.sidebar}>
+        <SidebarPalette onDragStart={handleDragStart} onItemClick={handleClickAdd} filterChannels={meta.channels} />
+      </aside>
+      <main className={styles.main}>
+        <CanvasWithLayoutWorker
+          nodes={nodes}
+          edges={edges}
+          onNodesChange={onNodesChange}
+          onEdgesChange={onEdgesChange}
+          onConnect={onConnect}
+          setNodes={setNodes}
+          onNodeSelect={handleNodeSelect}
+          viewportKey="flow-editor-viewport"
         />
-        <aside className={styles.sidebar}>
-          <SidebarPalette onDragStart={handleDragStart} onItemClick={handleClickAdd} filterChannels={meta.channels} />
-        </aside>
-        <main className={styles.main}>
-          <CanvasWithLayoutWorker
-            nodes={nodes}
-            edges={edges}
-            onNodesChange={onNodesChange}
-            onEdgesChange={onEdgesChange}
-            onConnect={onConnect}
-            setNodes={setNodes}
-            onNodeSelect={handleNodeSelect}
-            viewportKey="flow-editor-viewport"
-          />
-        </main>
-        <PropertiesPanel
-          node={selectedNode}
-          onClose={() => setSelectedNode(null)}
-          onSave={handleSaveNode}
-          waContext={meta.waMessageContext}
-          channels={meta.channels}
-        />
-        <TestConsole isOpen={isTestConsoleOpen} onClose={toggleTestConsole} engine={engine} flowId={meta.id} />
-      </div>
-    </ReactFlowProvider>
+      </main>
+      <PropertiesPanel
+        node={selectedNode}
+        onClose={() => setSelectedNode(null)}
+        onSave={handleSaveNode}
+        waContext={meta.waMessageContext}
+        channels={meta.channels}
+      />
+      <TestConsole isOpen={isTestConsoleOpen} onClose={toggleTestConsole} engine={engine} flowId={meta.id} />
+    </div>
   );
+}
+
+
+export default function StudioClientPage() {
+    return (
+        <ReactFlowProvider>
+            <StudioPageContent />
+        </ReactFlowProvider>
+    )
 }

@@ -77,29 +77,45 @@
   border: 1px solid hsl(var(--border));
   color: hsl(var(--card-foreground));
   box-shadow: 0 6px 24px hsla(var(--foreground), 0.05);
-  min-width: 180px;
+  min-width: 250px;
 }
 
 .nodeHeader {
   display: flex;
   align-items: center;
+  justify-content: space-between;
   gap: 8px;
   padding: 8px 10px;
   border-bottom: 1px solid hsl(var(--border));
-  background: hsl(var(--muted));
+  background: var(--node-color, hsl(--primary));
+  color: white;
   border-top-left-radius: 12px;
   border-top-right-radius: 12px;
 }
+.headerLeft { display: flex; align-items: center; gap: 8px; }
 
+.nodeIconWrapper {
+    background: white;
+    border-radius: 999px;
+    width: 24px;
+    height: 24px;
+    display: grid;
+    place-items: center;
+}
 .nodeIcon { font-size: 16px; }
-.nodeTitle { font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.nodeBody { padding: 8px 10px; color: hsl(var(--muted-foreground)); font-size: 12px; }
+.nodeTitle { font-weight: 600; font-size: 14px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.nodeMore { background: transparent; border: none; color: white; opacity: 0.8; cursor: pointer; }
+.nodeMore:hover { opacity: 1; }
+
+.nodeBody { padding: 12px 14px; color: hsl(var(--muted-foreground)); font-size: 14px; }
+.nodeBody p { margin: 0; }
 
 .handle {
   width: 10px;
   height: 10px;
   background: hsl(var(--accent));
-  border: none;
+  border: 1px solid white;
+  box-shadow: 0 0 0 1px hsl(var(--border));
 }
 
 .groupBox {
