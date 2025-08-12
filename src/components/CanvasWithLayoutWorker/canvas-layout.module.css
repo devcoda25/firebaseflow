@@ -1,0 +1,118 @@
+.root { 
+  position: relative; 
+  height: 100%; 
+}
+.canvas { 
+  height: 100%; 
+}
+
+.toolbar {
+  position: absolute; 
+  top: 8px; 
+  left: 8px; 
+  z-index: 40;
+  display: flex; 
+  flex-wrap: wrap; 
+  gap: 6px;
+}
+.btn {
+  height: 32px; 
+  padding: 0 10px; 
+  border-radius: 8px; 
+  cursor: pointer;
+  border: 1px solid hsl(var(--border)); 
+  background: hsl(var(--bg-elevated)); 
+  color: hsl(var(--text));
+}
+
+.badge {
+  position: absolute; 
+  top: 8px; 
+  right: 8px; 
+  z-index: 40;
+  padding: 2px 8px; 
+  border-radius: 999px; 
+  font-size: 12px;
+  background: hsl(var(--bg-panel)); 
+  border: 1px solid hsl(var(--border)); 
+  color: hsl(var(--text-muted));
+}
+
+.spinner {
+  position: absolute; 
+  inset: 0; 
+  z-index: 30; 
+  display: grid; 
+  place-items: center;
+  background: hsla(var(--background), 0.5);
+  backdrop-filter: blur(1px);
+  font-size: 13px; 
+  color: hsl(var(--text));
+}
+
+.panel {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.panelBtn {
+  background: hsl(var(--card));
+  color: hsl(var(--card-foreground));
+  border: 1px solid hsl(var(--border));
+  padding: 4px 8px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+.panelBtn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.baseNode,
+.subflow,
+.groupBox {
+  border-radius: 12px;
+  background: hsl(var(--card));
+  border: 1px solid hsl(var(--border));
+  color: hsl(var(--card-foreground));
+  box-shadow: 0 6px 24px hsla(var(--foreground), 0.05);
+  min-width: 180px;
+}
+
+.nodeHeader {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 10px;
+  border-bottom: 1px solid hsl(var(--border));
+  background: hsl(var(--muted));
+  border-top-left-radius: 12px;
+  border-top-right-radius: 12px;
+}
+
+.nodeIcon { font-size: 16px; }
+.nodeTitle { font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.nodeBody { padding: 8px 10px; color: hsl(var(--muted-foreground)); font-size: 12px; }
+
+.handle {
+  width: 10px;
+  height: 10px;
+  background: hsl(var(--accent));
+  border: none;
+}
+
+.groupBox {
+  background: hsl(var(--muted));
+  padding: 6px;
+}
+.groupHeader {
+  font-weight: 600;
+  color: hsl(var(--muted-foreground));
+  padding: 6px 8px;
+}
+.groupBody {
+  padding: 8px;
+  color: hsl(var(--muted-foreground));
+  font-size: 12px;
+}

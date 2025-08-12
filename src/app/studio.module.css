@@ -1,0 +1,51 @@
+.shell {
+  display: grid;
+  grid-template-columns: 320px 1fr;
+  grid-template-rows: 56px 1fr;
+  height: 100vh;
+  background-color: hsl(var(--background));
+  color: hsl(var(--foreground));
+  position: relative;
+  overflow: hidden;
+}
+
+.header {
+  grid-column: 1 / -1;
+  grid-row: 1;
+  z-index: 10;
+}
+
+.sidebar {
+  grid-column: 1;
+  grid-row: 2;
+  overflow: hidden;
+  border-right: 1px solid hsl(var(--border));
+  z-index: 5;
+}
+
+.main {
+  grid-column: 2;
+  grid-row: 2;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Responsive overrides */
+@media (max-width: 1024px) {
+  .shell {
+    grid-template-columns: 76px 1fr; /* Icon-only sidebar */
+  }
+}
+
+@media (max-width: 768px) {
+  .shell {
+    grid-template-columns: 1fr;
+    grid-template-rows: 56px 1fr;
+  }
+  .sidebar {
+    display: none; /* Hide sidebar, could be a drawer instead */
+  }
+  .main {
+    grid-column: 1;
+  }
+}

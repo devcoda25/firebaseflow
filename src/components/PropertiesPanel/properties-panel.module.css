@@ -1,0 +1,127 @@
+.root {
+  position: fixed;
+  top: 56px; /* Below header */
+  right: 0;
+  width: 380px;
+  bottom: 0;
+  background: hsl(var(--bg-panel));
+  border-left: 1px solid hsl(var(--border));
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  z-index: 20;
+  box-shadow: -10px 0 24px hsla(var(--foreground), 0.1);
+  transition: transform 0.3s ease-in-out;
+  color: hsl(var(--text));
+}
+
+.root[data-open="false"] {
+  transform: translateX(100%);
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px;
+  border-bottom: 1px solid hsl(var(--border));
+}
+
+.titleWrap { display: grid; gap: 2px; }
+.title {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.subtitle {
+  margin: 0;
+  font-size: 12px;
+  color: hsl(var(--text-muted));
+}
+
+.tabBody {
+    display: grid;
+    gap: 16px;
+    padding: 16px 4px;
+}
+
+.field {
+    display: grid;
+    gap: 6px;
+}
+
+.label {
+    font-size: 12px;
+    font-weight: 500;
+    color: hsl(var(--text-muted));
+}
+
+.warn, .err {
+    font-size: 12px;
+    color: hsl(var(--danger));
+}
+
+.infoRow {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    padding: 8px;
+    background-color: hsl(var(--muted));
+    border-radius: 8px;
+    border: 1px solid hsl(var(--border));
+}
+
+.badge {
+  padding: 2px 8px; border-radius: 999px;
+  background: hsl(var(--bg-elevated)); border: 1px solid hsl(var(--border));
+  color: hsl(var(--text-muted)); font-size: 12px;
+}
+.muted { color: hsl(var(--text-muted)); font-size: 12px; }
+
+.rowHeader {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.subhead {
+    margin: 0;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.addBtn {
+    height: 28px;
+    padding: 0 10px;
+}
+
+.list {
+    display: grid;
+    gap: 8px;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.listItem {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 8px;
+    align-items: center;
+}
+
+.removeBtn {
+    width: 28px;
+    height: 28px;
+    display: grid;
+    place-items: center;
+}
+
+.footer {
+  border-top: 1px solid hsl(var(--border));
+  padding: 8px 12px;
+  background: hsl(var(--bg-elevated));
+}
+.ok { color: hsl(var(--success)); font-size: 12px; }
+.problems { list-style: none; padding: 0; margin: 0; display: grid; gap: 4px; }
+.problemItem { color: hsl(var(--destructive)); font-size: 12px; }
