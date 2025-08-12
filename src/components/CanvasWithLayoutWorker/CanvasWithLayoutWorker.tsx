@@ -94,7 +94,12 @@ function InnerCanvas({
           x: Math.round(reactFlowBounds.x / GRID_SIZE) * GRID_SIZE,
           y: Math.round(reactFlowBounds.y / GRID_SIZE) * GRID_SIZE,
         },
-        data: { label: item.label, icon: item.icon },
+        data: { 
+            label: item.label, 
+            icon: item.icon,
+            color: item.color,
+            description: item.description
+        },
       };
 
       addNode(newNode);
