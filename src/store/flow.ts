@@ -96,8 +96,7 @@ const flowSlice = (set: any, get: any) => ({
 // Create the main store, with a temporal middleware for history
 export const useFlowStore = create(
   temporal(flowSlice, {
-    onSave: () => {
-        const { pastStates, futureStates } = useFlowStore.temporal.getState();
+    onSave: (pastStates, futureStates) => {
         useHistoryStore.getState().setCanUndo(pastStates.length > 0);
         useHistoryStore.getState().setCanRedo(futureStates.length > 0);
     }
