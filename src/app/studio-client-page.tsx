@@ -42,9 +42,9 @@ function StudioPageContent() {
 
   engine.setFlow(nodes, edges);
 
-  const handleNodeDoubleClick = useCallback((node: Node | null) => {
+  const handleNodeDoubleClick = useCallback((node: Node) => {
     // Don't open properties for message nodes as they have inline controls
-    if (!node || node.data?.type === 'messaging') {
+    if (node.data?.type === 'messaging') {
       setSelectedNode(null);
       return;
     }
@@ -96,6 +96,7 @@ function StudioPageContent() {
             canUndo={canUndo}
             canRedo={canRedo}
             onTest={toggleTestConsole}
+            onSaveClick={() => console.log('Save clicked!', { meta, nodes, edges })}
         />
       </div>
       <aside className="hidden md:block col-start-1 row-start-2 overflow-y-auto border-r border-border z-10 bg-background p-4 sidebar-scroll">
