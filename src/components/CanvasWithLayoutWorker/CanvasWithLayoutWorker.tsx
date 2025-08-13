@@ -19,7 +19,6 @@ import ReactFlow, {
 import 'reactflow/dist/style.css';
 import { nanoid } from 'nanoid';
 import styles from './canvas-layout.module.css';
-import { useLayoutWorker } from '@/hooks/useLayoutWorker';
 import BaseNode from './nodes/BaseNode';
 import GroupBoxNode from './nodes/GroupBoxNode';
 import SubflowNode from './nodes/SubflowNode';
@@ -43,7 +42,7 @@ export type CanvasWithLayoutWorkerProps = {
   onEdgesChange: (changes: EdgeChange[]) => void;
   onConnect: (connection: Connection) => void;
   setNodes: (nodes: Node[]) => void;
-  onNodeDoubleClick?: (node: Node | null) => void;
+  onNodeDoubleClick?: (event: React.MouseEvent, node: Node) => void;
   viewportKey?: string;
 };
 
@@ -57,16 +56,10 @@ function InnerCanvas({
   onNodeDoubleClick,
 }: CanvasWithLayoutWorkerProps) {
   const rfRef = useRef<import('reactflow').ReactFlowInstance | null>(null);
-  const { project, fitView } = useReactFlow();
+  const { project } = useReactFlow();
   const { awareness } = usePresence();
   const { addNode } = useFlowStore();
 
-  const { runLayout, undoLastLayout, busy, lastStats } = useLayoutWorker(nodes, edges, setNodes, {
-    gridSize: GRID_SIZE,
-    respectLocked: true,
-    directionAwareHandles: true,
-    measureNodes: () => rfRef.current?.getNodes() ?? nodes,
-  });
 
   const onDragOver = useCallback((event: React.DragEvent) => {
     event.preventDefault();
@@ -117,13 +110,6 @@ function InnerCanvas({
     [awareness]
   );
 
-  const handleNodeDoubleClick = useCallback(
-    (_event: React.MouseEvent, node: Node) => {
-      onNodeDoubleClick?.(node);
-    },
-    [onNodeDoubleClick]
-  );
-
   return (
     <div className={styles.root}>
       <div className={styles.canvas} onDrop={onDrop} onDragOver={onDragOver}>
@@ -135,7 +121,7 @@ function InnerCanvas({
           onConnect={onConnect}
           onInit={(inst) => (rfRef.current = inst)}
           onSelectionChange={onSelectionChange}
-          onNodeDoubleClick={handleNodeDoubleClick}
+          onNodeDoubleClick={onNodeDoubleClick}
           nodeTypes={defaultNodeTypes}
           connectionMode={ConnectionMode.Loose}
           snapToGrid
@@ -151,7 +137,6 @@ function InnerCanvas({
           </div>
         </ReactFlow>
       </div>
-      {busy && <div className={styles.spinner}>Computing layout…</div>}
     </div>
   );
 }

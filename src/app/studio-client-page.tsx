@@ -9,7 +9,7 @@ import HeaderBar from '@/components/HeaderBar';
 import SidebarPalette, { PaletteItemPayload } from '@/components/SidebarPalette';
 import CanvasWithLayoutWorker from '@/components/CanvasWithLayoutWorker';
 import PropertiesPanel from '@/components/PropertiesPanel';
-import { useFlowStore } from '@/store/flow';
+import { useFlowStore, useFlowMetaStore } from '@/store/flow';
 import TestConsole from '@/components/TestConsole';
 import { useUIStore } from '@/store/ui';
 import PublishBanner from '@/components/Presence/PublishBanner';
@@ -18,20 +18,8 @@ import { useUndoRedo } from '@/hooks/useUndoRedo';
 import { Dialog } from '@/components/ui/dialog';
 
 function StudioPageContent() {
-  const {
-    nodes,
-    edges,
-    meta,
-    addNode,
-    setNodes,
-    onNodesChange,
-    onEdgesChange,
-    onConnect,
-    setTitle,
-    setChannels,
-    setPublished,
-    setWaContext,
-  } = useFlowStore();
+  const { nodes, edges, addNode, setNodes, onNodesChange, onEdgesChange, onConnect } = useFlowStore();
+  const { meta, setTitle, setChannels, setPublished, setWaContext } = useFlowMetaStore();
 
   const [selectedNode, setSelectedNode] = useState<Node | null>(null);
   const { isTestConsoleOpen, toggleTestConsole } = useUIStore();
@@ -42,7 +30,7 @@ function StudioPageContent() {
 
   engine.setFlow(nodes, edges);
 
-  const handleNodeDoubleClick = useCallback((node: Node) => {
+  const handleNodeDoubleClick = useCallback((_event: React.MouseEvent, node: Node) => {
     // Don't open properties for message nodes as they have inline controls
     if (node.data?.type === 'messaging') {
       setSelectedNode(null);

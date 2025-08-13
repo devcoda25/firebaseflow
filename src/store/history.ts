@@ -1,4 +1,5 @@
 import { create } from 'zustand'
+import { undo as flowUndo, redo as flowRedo } from './flow';
 
 interface HistoryState {
   canUndo: boolean
@@ -12,8 +13,12 @@ interface HistoryState {
 export const useHistoryStore = create<HistoryState>((set) => ({
   canUndo: false,
   canRedo: false,
-  undo: () => {},
-  redo: () => {},
+  undo: () => {
+    flowUndo();
+  },
+  redo: () => {
+    flowRedo();
+  },
   setCanUndo: (b) => set({ canUndo: b }),
   setCanRedo: (b) => set({ canRedo: b }),
 }))
