@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import { Handle, Position } from 'reactflow'
 import styles from '../canvas-layout.module.css'
 import NodeAvatars from '@/components/Presence/NodeAvatars';
-import { MoreHorizontal, Trash2, Copy } from 'lucide-react';
+import { MoreHorizontal, Trash2, Copy, PlayCircle } from 'lucide-react';
 import * as LucideIcons from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import ImageAttachmentModal from '@/components/PropertiesPanel/partials/ImageAttachmentModal';
@@ -14,8 +14,10 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
+  DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu"
 import { useFlowStore } from '@/store/flow';
+import { Badge } from '@/components/ui/badge';
 
 
 export type BaseNodeData = {
@@ -31,7 +33,7 @@ export type BaseNodeData = {
 export default function BaseNode({ id, data, selected }: { id: string; data: BaseNodeData; selected: boolean }) {
   const [message, setMessage] = useState(data.content || 'Got it! I just need some information from you to look up your order.');
   const [modal, setModal] = useState<'image' | 'video' | 'document' | 'audio' | null>(null);
-  const { deleteNode, duplicateNode } = useFlowStore.getState();
+  const { deleteNode, duplicateNode, setStartNode, startNodeId } = useFlowStore.getState();
   
   const customStyle = {
     '--node-color': data.color || 'hsl(var(--primary))'
@@ -41,6 +43,7 @@ export default function BaseNode({ id, data, selected }: { id: string; data: Bas
   
   const isMessageNode = data.type === 'messaging';
   const isConditionNode = data.type === 'logic';
+  const isStartNode = startNodeId === id;
 
 
   const onSaveMedia = (media: BaseNodeData['media']) => {
@@ -65,12 +68,18 @@ export default function BaseNode({ id, data, selected }: { id: string; data: Bas
                 <Icon className={styles.nodeIcon} aria-hidden="true" />
             </span>
             <span className={styles.nodeTitle} title={data.label}>{data.label}</span>
+            {isStartNode && <Badge variant="secondary" className="ml-2">Start</Badge>}
         </div>
         <DropdownMenu>
             <DropdownMenuTrigger asChild>
                 <button className={styles.nodeMore}><MoreHorizontal size={18}/></button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
+                <DropdownMenuItem onClick={() => setStartNode(id)}>
+                    <PlayCircle className="mr-2 h-4 w-4" />
+                    <span>Set as start node</span>
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
                 <DropdownMenuItem onClick={() => duplicateNode(id)}>
                     <Copy className="mr-2 h-4 w-4" />
                     <span>Copy</span>

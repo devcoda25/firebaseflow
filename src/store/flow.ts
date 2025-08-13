@@ -34,6 +34,7 @@ const flowSlice = (set: any, get: any) => ({
     { id: 'start', type: 'base', position: { x: 120, y: 140 }, data: { label: 'Get Started', icon: 'Rocket', type: 'triggers' } },
   ] as Node[],
   edges: [] as Edge[],
+  startNodeId: 'start' as string | null,
   onNodesChange: (changes: NodeChange[]) => {
     set({
       nodes: applyNodeChanges(changes, get().nodes),
@@ -46,8 +47,6 @@ const flowSlice = (set: any, get: any) => ({
   },
   onConnect: (connection: Connection) => {
     const { edges, nodes } = get();
-    const sourceNode = nodes.find((node: Node) => node.id === connection.source);
-    const isConditionNode = sourceNode?.data?.type === 'logic';
 
     // A condition node can have multiple connections from its distinct handles ('true' and 'false')
     // Other nodes can only have one connection from any given source handle.
@@ -94,6 +93,7 @@ const flowSlice = (set: any, get: any) => ({
   },
   setNodes: (nodes: Node[]) => set({ nodes }),
   setEdges: (edges: Edge[]) => set({ edges }),
+  setStartNode: (nodeId: string) => set({ startNodeId: nodeId }),
 });
 
 

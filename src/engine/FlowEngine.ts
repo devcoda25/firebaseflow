@@ -4,6 +4,7 @@ import { evalExpression, parseDelay, renderTemplate } from './evaluator';
 import { compile, Compiled, RTNode } from './FlowCompiler';
 import type { EngineEventMap, EngineOptions, FlowState, Channel, EngineStatus } from './types';
 import { sendTestRequest } from '@/api/mockServer';
+import { useFlowStore } from '@/store/flow';
 
 export class FlowEngine {
   private bus = new EventBus<EngineEventMap>();
@@ -41,7 +42,8 @@ export class FlowEngine {
   start(nodeId?: string) {
     if (!this.compiled) throw new Error('FlowEngine: setFlow() first');
     this.reset();
-    const start = nodeId || this.compiled.starts[0];
+    const startNodeIdFromStore = useFlowStore.getState().startNodeId;
+    const start = nodeId || startNodeIdFromStore || this.compiled.starts[0];
     if (!start) return;
     this.queue.push(start);
     this.setStatus('running');
