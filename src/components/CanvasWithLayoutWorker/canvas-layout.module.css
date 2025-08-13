@@ -85,6 +85,14 @@
   min-width: 320px;
 }
 
+.baseNode[aria-selected='true'],
+.subflow[aria-selected='true'],
+.groupBox[aria-selected='true'] {
+  border-color: hsl(var(--ring));
+  box-shadow: 0 0 0 2px hsl(var(--ring) / 0.3), 0 4px 16px hsla(var(--foreground), 0.07);
+}
+
+
 .nodeHeader {
   display: flex;
   align-items: center;

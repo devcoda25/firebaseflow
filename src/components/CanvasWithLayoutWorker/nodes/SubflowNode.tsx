@@ -3,9 +3,9 @@ import { Handle, Position } from 'reactflow'
 import styles from '../canvas-layout.module.css'
 import NodeAvatars from '@/components/Presence/NodeAvatars'
 
-export default function SubflowNode({ id }: { id: string }) {
+export default function SubflowNode({ id, selected }: { id: string, selected: boolean }) {
   return (
-    <div className={styles.subflow}>
+    <div className={styles.subflow} aria-selected={selected}>
       <NodeAvatars nodeId={id} />
       <div className={styles.nodeHeader}>
         <span className={styles.nodeIcon} aria-hidden>🗂️</span>
