@@ -124,6 +124,15 @@
   border-radius: 999px;
 }
 
+.handleLabel {
+    position: absolute;
+    right: 18px;
+    font-size: 11px;
+    color: hsl(var(--muted-foreground));
+    transform: translateY(-50%);
+    pointer-events: none;
+}
+
 .groupBox {
   background: hsl(var(--muted));
   padding: 6px;

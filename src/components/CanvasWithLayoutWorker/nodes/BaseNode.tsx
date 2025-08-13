@@ -40,6 +40,8 @@ export default function BaseNode({ id, data, selected }: { id: string; data: Bas
   const Icon = data.icon ? (LucideIcons as any)[data.icon] ?? LucideIcons.HelpCircle : LucideIcons.MessageSquare;
   
   const isMessageNode = data.type === 'messaging';
+  const isConditionNode = data.type === 'logic';
+
 
   const onSaveMedia = (media: BaseNodeData['media']) => {
     // In a real app you'd call a store action here
@@ -135,7 +137,17 @@ export default function BaseNode({ id, data, selected }: { id: string; data: Bas
       />
 
       <Handle type="target" position={Position.Left} className={styles.handle} />
-      <Handle type="source" position={Position.Right} className={styles.handle} />
+      
+      {isConditionNode ? (
+        <>
+            <Handle type="source" position={Position.Right} id="true" className={styles.handle} style={{ top: '33%' }} />
+            <div className={styles.handleLabel} style={{ top: '33%' }}>True</div>
+            <Handle type="source" position={Position.Right} id="false" className={styles.handle} style={{ top: '66%' }} />
+            <div className={styles.handleLabel} style={{ top: '66%' }}>False</div>
+        </>
+      ) : (
+        <Handle type="source" position={Position.Right} className={styles.handle} />
+      )}
     </div>
   )
 }
