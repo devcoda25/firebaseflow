@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import type { Node, Edge, NodeChange, EdgeChange, Connection } from 'reactflow';
 import { applyNodeChanges, applyEdgeChanges, addEdge } from 'reactflow';
+import { Rocket } from 'lucide-react';
 
 export type Channel =
   | 'whatsapp'
@@ -41,7 +42,7 @@ interface FlowState {
 }
 
 const initialNodes: Node[] = [
-  { id: 'start', type: 'base', position: { x: 120, y: 140 }, data: { label: 'Get Started', icon: '🚀' } },
+  { id: 'start', type: 'base', position: { x: 120, y: 140 }, data: { label: 'Get Started', icon: 'Rocket' } },
 ];
 
 export const useFlowStore = create<FlowState>((set, get) => ({

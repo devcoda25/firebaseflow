@@ -3,6 +3,7 @@ import { Handle, Position } from 'reactflow'
 import styles from '../canvas-layout.module.css'
 import NodeAvatars from '@/components/Presence/NodeAvatars';
 import { MoreHorizontal } from 'lucide-react';
+import * as LucideIcons from 'lucide-react';
 
 export type BaseNodeData = {
   label: string
@@ -15,6 +16,8 @@ export default function BaseNode({ id, data, selected }: { id: string; data: Bas
   const customStyle = {
     '--node-color': data.color || 'hsl(var(--primary))'
   } as React.CSSProperties;
+
+  const Icon = data.icon ? (LucideIcons as any)[data.icon] ?? LucideIcons.HelpCircle : LucideIcons.MessageSquare;
   
   return (
     <div className={styles.baseNode} style={customStyle} aria-selected={selected}>
@@ -22,7 +25,7 @@ export default function BaseNode({ id, data, selected }: { id: string; data: Bas
       <div className={styles.nodeHeader}>
         <div className={styles.headerLeft}>
             <span className={styles.nodeIconWrapper}>
-                <span className={styles.nodeIcon} aria-hidden="true">{data.icon ?? '🧩'}</span>
+                <Icon className={styles.nodeIcon} aria-hidden="true" />
             </span>
             <span className={styles.nodeTitle} title={data.label}>{data.label}</span>
         </div>

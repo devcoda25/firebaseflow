@@ -4,6 +4,7 @@
 import React, { useMemo } from 'react';
 import styles from './sidebar-palette.module.css';
 import { SECTION_DATA, SectionDefinition, ItemDefinition, PaletteItemPayload, Channel } from './sections-data';
+import * as LucideIcons from 'lucide-react';
 
 /** Tiny class combiner (no external dep). */
 function cn(...parts: Array<string | false | undefined>) {
@@ -34,7 +35,7 @@ export default function SidebarPalette({
 
 
   function toPayload(it: ItemDefinition): PaletteItemPayload {
-    return { key: it.key, label: it.label, icon: it.icon, type: it.type, color: it.color, description: it.description };
+    return { key: it.key, label: it.label, icon: it.icon as string, type: it.type, color: it.color, description: it.description };
   }
 
 
@@ -62,7 +63,9 @@ export default function SidebarPalette({
   return (
     <aside className={cn(styles.root, className)} aria-label="Node palette">
         <div className={styles.grid}>
-            {allItems.map(item => (
+            {allItems.map(item => {
+                 const Icon = typeof item.icon === 'string' ? (LucideIcons as any)[item.icon] : item.icon;
+                 return (
                  <div
                     key={item.key}
                     className={styles.item}
@@ -78,10 +81,11 @@ export default function SidebarPalette({
                     aria-label={`Drag or click to add ${item.label}`}
                     title={item.label}
                   >
-                    <span className={styles.icon}>{item.icon}</span>
+                    {Icon ? <Icon className={styles.icon} /> : <span className={styles.icon}>?</span>}
                     <span className={styles.label}>{item.label}</span>
                   </div>
-            ))}
+                 )
+            })}
         </div>
     </aside>
   );
