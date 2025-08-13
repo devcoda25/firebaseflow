@@ -48,6 +48,7 @@
   font-size: 28px;
   opacity: 0.9;
   line-height: 1;
+  color: var(--item-color);
 }
 
 .label {
