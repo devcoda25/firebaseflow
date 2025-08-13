@@ -43,8 +43,8 @@ export default function SidebarPalette({
 
     const ghost = document.createElement('div');
     ghost.className = "fixed top-0 left-0 pointer-events-none p-3 rounded-lg shadow-xl flex items-center gap-3 z-[9999]";
-    ghost.style.background = item.color || 'hsl(var(--card))';
-    ghost.style.color = 'white';
+    ghost.style.background = 'white';
+    ghost.style.color = 'black';
     ghost.style.fontWeight = '600';
     ghost.innerHTML = `<span role="img" aria-hidden="true" class="text-2xl">${item.icon}</span> <div><p class="text-base">${item.label}</p><small class="text-sm opacity-80 font-normal">${item.description || ''}</small></div>`;
     document.body.appendChild(ghost);
@@ -60,10 +60,10 @@ export default function SidebarPalette({
   }
   
   return (
-    <nav className={cn("h-full flex flex-col text-sidebar-foreground gap-6 overflow-y-auto", className)} aria-label="Node palette">
+    <nav className={cn("h-full flex flex-col gap-6 overflow-y-auto", className)} aria-label="Node palette">
         {SECTION_DATA.map(section => (
             <div key={section.key}>
-                <h3 className="text-sm font-semibold text-sidebar-foreground/70 mb-3 px-2">{section.title}</h3>
+                <h3 className="text-sm font-semibold text-muted-foreground mb-3 px-2">{section.title}</h3>
                 <div className="grid grid-cols-2 gap-3">
                     {section.items.map(item => {
                         const Icon = typeof item.icon === 'string' ? (LucideIcons as any)[item.icon] ?? LucideIcons.HelpCircle : item.icon;
@@ -75,7 +75,7 @@ export default function SidebarPalette({
                         <button
                             key={item.key}
                             type="button"
-                            className="flex flex-col items-center text-center gap-2 p-4 rounded-lg bg-card text-card-foreground border border-border cursor-grab user-select-none transition-all duration-200 ease-in-out hover:border-primary active:cursor-grabbing active:scale-[0.98]"
+                            className="flex flex-col items-center text-center gap-2 p-4 rounded-md bg-card text-card-foreground border border-border cursor-grab user-select-none transition-colors duration-200 ease-in-out hover:bg-muted active:cursor-grabbing active:scale-[0.98]"
                             style={{'--item-color': item.color} as React.CSSProperties}
                             draggable
                             onDragStart={(e) => handleDragStart(e, item)}
@@ -83,8 +83,8 @@ export default function SidebarPalette({
                             aria-label={`Add ${item.label}`}
                             title={`${item.label}${item.description ? ` - ${item.description}`:''}`}
                         >
-                            <div className="w-12 h-12 rounded-full grid place-items-center" style={{backgroundColor: `hsla(var(--item-color-hsl), 0.1)`, color: `hsl(var(--item-color-hsl))`}}>
-                                <Icon className="w-6 h-6" style={{'--item-color-hsl': item.color} as React.CSSProperties} />
+                            <div className="w-12 h-12 rounded-full grid place-items-center bg-purple-100">
+                                <Icon className="w-6 h-6 text-purple-600" />
                             </div>
                             <span className="text-sm font-medium leading-snug">{item.label}</span>
                         </button>
