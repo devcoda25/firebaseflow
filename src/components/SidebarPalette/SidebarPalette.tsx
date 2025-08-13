@@ -1,7 +1,7 @@
 
 'use client';
 
-import React, 'useMemo' from 'react';
+import React, { useMemo } from 'react';
 import { SECTION_DATA, SectionDefinition, ItemDefinition, PaletteItemPayload, Channel } from './sections-data';
 import * as LucideIcons from 'lucide-react';
 import { cn } from '@/lib/utils';
