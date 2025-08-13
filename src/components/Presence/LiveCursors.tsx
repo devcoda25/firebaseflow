@@ -1,5 +1,5 @@
 'use client'
-import React, { useMemo } from 'react'
+import React, { useCallback, useMemo } from 'react'
 import { usePresence, useAwarenessStates } from '@/presence/PresenceProvider'
 import styles from './presence.module.css'
 import { useStore } from 'reactflow'
@@ -9,7 +9,8 @@ export default function LiveCursors({ staleMs = 15000 }: { staleMs?: number }) {
   const { self } = usePresence()
   const viewport = useStore((s) => s.viewport)
 
-  const others = useAwarenessStates<AwarenessState>((s) => (s.user && s.user.id !== self.id ? s : null))
+  const mapFn = useCallback((s: AwarenessState) => (s.user && s.user.id !== self.id ? s : null), [self.id]);
+  const others = useAwarenessStates<AwarenessState>(mapFn)
 
   const fresh = useMemo(() => {
     const now = Date.now()

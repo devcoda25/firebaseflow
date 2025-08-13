@@ -1,5 +1,5 @@
 'use client'
-import React, { useMemo } from 'react'
+import React, { useCallback, useMemo } from 'react'
 import styles from './presence.module.css'
 import { useAwarenessStates, usePresence } from '@/presence/PresenceProvider'
 import type { AwarenessState } from '@/presence/types'
@@ -7,12 +7,15 @@ import { initials } from '@/presence/color'
 
 export default function NodeAvatars({ nodeId, max = 3 }: { nodeId: string; max?: number }) {
   const { self } = usePresence()
-  const users = useAwarenessStates<{ id: string; name: string; color: string }>((s: AwarenessState) => {
+  
+  const mapFn = useCallback((s: AwarenessState) => {
     if (!s.user) return null
     if (s.user.id === self.id) return null
     if (s.selection?.nodeId !== nodeId) return null
     return { id: s.user.id, name: s.user.name, color: s.user.color }
-  })
+  }, [self.id, nodeId]);
+
+  const users = useAwarenessStates<{ id: string; name: string; color: string }>(mapFn)
 
   const stack = useMemo(() => users.slice(0, max), [users, max])
   const more = Math.max(0, users.length - stack.length)

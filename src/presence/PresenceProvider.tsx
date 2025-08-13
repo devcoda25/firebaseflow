@@ -1,6 +1,6 @@
 'use client'
 
-import React, { createContext, useContext, useEffect, useMemo, useRef } from 'react'
+import React, { createContext, useContext, useEffect, useMemo, useRef, useState, useCallback } from 'react'
 import * as Y from 'yjs'
 import { WebsocketProvider } from 'y-websocket'
 import { hashHsl } from './color'
@@ -81,19 +81,21 @@ export function usePresence() {
 
 export function useAwarenessStates<T = AwarenessState>(mapFn?: (s: AwarenessState) => T | null): T[] {
   const { awareness } = usePresence()
-  const [states, setStates] = React.useState<T[]>([])
+  const [states, setStates] = useState<T[]>([])
+  
+  const stableMapFn = useCallback(mapFn || ((s: AwarenessState) => s as unknown as T), []);
 
   useEffect(() => {
     if (!awareness) return;
     const pull = () => {
       const arr = [...awareness.getStates().values()] as AwarenessState[]
-      const mapped = mapFn ? arr.map(mapFn).filter(Boolean) as T[] : (arr as unknown as T[])
+      const mapped = stableMapFn ? arr.map(stableMapFn).filter(Boolean) as T[] : (arr as unknown as T[])
       setStates(mapped)
     }
     pull()
     awareness.on('change', pull)
     return () => awareness.off('change', pull)
-  }, [awareness, mapFn])
+  }, [awareness, stableMapFn])
 
   return states
 }
