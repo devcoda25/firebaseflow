@@ -58,7 +58,7 @@ const flowSlice = (set: any, get: any) => ({
     }
 
     set({
-      edges: addEdge({ ...connection, animated: true, type: 'smoothstep' }, edges),
+      edges: addEdge({ ...connection, type: 'smoothstep' }, edges),
     });
   },
   addNode: (node: Node) => {

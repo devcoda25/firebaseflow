@@ -86,4 +86,7 @@
   .sidebar-scroll:hover::-webkit-scrollbar-thumb {
     background-color: hsla(0, 0%, 50%, 0.5);
   }
+  .react-flow__edge-path {
+    stroke-width: 2;
+  }
 }
