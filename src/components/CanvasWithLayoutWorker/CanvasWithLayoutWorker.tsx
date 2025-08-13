@@ -43,7 +43,7 @@ export type CanvasWithLayoutWorkerProps = {
   onEdgesChange: (changes: EdgeChange[]) => void;
   onConnect: (connection: Connection) => void;
   setNodes: (nodes: Node[]) => void;
-  onNodeSelect?: (node: Node | null) => void;
+  onNodeDoubleClick?: (node: Node | null) => void;
   viewportKey?: string;
 };
 
@@ -54,7 +54,7 @@ function InnerCanvas({
   onNodesChange,
   onEdgesChange,
   onConnect,
-  onNodeSelect,
+  onNodeDoubleClick,
 }: CanvasWithLayoutWorkerProps) {
   const rfRef = useRef<import('reactflow').ReactFlowInstance | null>(null);
   const { project, fitView } = useReactFlow();
@@ -110,12 +110,18 @@ function InnerCanvas({
 
   const onSelectionChange = useCallback(
     ({ nodes: selNodes }: { nodes: Node[]; edges: Edge[] }) => {
-      onNodeSelect?.(selNodes[0] ?? null);
       const st = (awareness.getLocalState() as any) || {};
       const nodeId = selNodes?.[0]?.id;
       awareness.setLocalState({ ...st, selection: { nodeId, ts: Date.now() } });
     },
-    [onNodeSelect, awareness]
+    [awareness]
+  );
+
+  const handleNodeDoubleClick = useCallback(
+    (_event: React.MouseEvent, node: Node) => {
+      onNodeDoubleClick?.(node);
+    },
+    [onNodeDoubleClick]
   );
   
   const runSelectionLayout = (mode: 'TB' | 'LR') => {
@@ -136,6 +142,7 @@ function InnerCanvas({
           onConnect={onConnect}
           onInit={(inst) => (rfRef.current = inst)}
           onSelectionChange={onSelectionChange}
+          onNodeDoubleClick={handleNodeDoubleClick}
           nodeTypes={defaultNodeTypes}
           connectionMode={ConnectionMode.Loose}
           snapToGrid
