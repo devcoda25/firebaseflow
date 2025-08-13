@@ -31,7 +31,7 @@ export interface FlowMeta {
 // Separate the state structure that needs to be tracked by history
 const flowSlice = (set: any, get: any) => ({
   nodes: [
-    { id: 'start', type: 'base', position: { x: 120, y: 140 }, data: { label: 'Get Started', icon: 'Rocket' } },
+    { id: 'start', type: 'base', position: { x: 120, y: 140 }, data: { label: 'Get Started', icon: 'Rocket', type: 'triggers' } },
   ] as Node[],
   edges: [] as Edge[],
   onNodesChange: (changes: NodeChange[]) => {
@@ -51,11 +51,8 @@ const flowSlice = (set: any, get: any) => ({
     const sourceHandleHasConnection = edges.some(
       (edge: Edge) => edge.source === connection.source && edge.sourceHandle === connection.sourceHandle
     );
-    
-    const node = get().nodes.find((n: Node) => n.id === connection.source);
-    const isConditionNode = node?.data?.type === 'logic';
 
-    if (sourceHandleHasConnection && !isConditionNode) {
+    if (sourceHandleHasConnection) {
       console.warn(`Connection from source ${connection.source} (handle: ${connection.sourceHandle}) already exists.`);
       return; // Abort connection
     }
