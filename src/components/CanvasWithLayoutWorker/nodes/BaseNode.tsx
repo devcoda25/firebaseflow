@@ -26,7 +26,7 @@ export default function BaseNode({ id, data, selected }: { id: string; data: Bas
             </span>
             <span className={styles.nodeTitle} title={data.label}>{data.label}</span>
         </div>
-        <button className={styles.nodeMore}><MoreHorizontal size={16}/></button>
+        <button className={styles.nodeMore}><MoreHorizontal size={18}/></button>
       </div>
       <div className={styles.nodeBody}>
         <p>{data.description || 'Node description goes here.'}</p>
