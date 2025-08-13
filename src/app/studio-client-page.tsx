@@ -43,6 +43,11 @@ function StudioPageContent() {
   engine.setFlow(nodes, edges);
 
   const handleNodeSelect = useCallback((node: Node | null) => {
+    // Don't open properties for message nodes as they have inline controls
+    if (node?.data?.type === 'messaging') {
+      setSelectedNode(null);
+      return;
+    }
     setSelectedNode(node);
   }, []);
 

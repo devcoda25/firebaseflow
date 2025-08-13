@@ -5,6 +5,9 @@ import NodeAvatars from '@/components/Presence/NodeAvatars';
 import { MoreHorizontal, Trash2 } from 'lucide-react';
 import * as LucideIcons from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import ImageAttachmentModal from '@/components/PropertiesPanel/partials/ImageAttachmentModal';
+import VideoAttachmentModal from '@/components/PropertiesPanel/partials/VideoAttachmentModal';
+import DocumentAttachmentModal from '@/components/PropertiesPanel/partials/DocumentAttachmentModal';
 
 export type BaseNodeData = {
   label: string
@@ -13,10 +16,12 @@ export type BaseNodeData = {
   color?: string;
   type?: string;
   content?: string;
+  media?: { type: 'image' | 'video' | 'document', url: string, name?: string };
 }
 
 export default function BaseNode({ id, data, selected }: { id: string; data: BaseNodeData; selected: boolean }) {
   const [message, setMessage] = useState(data.content || 'Got it! I just need some information from you to look up your order.');
+  const [modal, setModal] = useState<'image' | 'video' | 'document' | null>(null);
   
   const customStyle = {
     '--node-color': data.color || 'hsl(var(--primary))'
@@ -25,6 +30,19 @@ export default function BaseNode({ id, data, selected }: { id: string; data: Bas
   const Icon = data.icon ? (LucideIcons as any)[data.icon] ?? LucideIcons.HelpCircle : LucideIcons.MessageSquare;
   
   const isMessageNode = data.type === 'messaging';
+
+  const onSaveMedia = (media: BaseNodeData['media']) => {
+    // In a real app you'd call a store action here
+    console.log('Saving media for node', id, media);
+    data.media = media;
+    setModal(null);
+  }
+
+  const onDeleteMedia = () => {
+    console.log('Deleting media for node', id);
+    data.media = undefined;
+    setModal(null);
+  }
 
   return (
     <div className={styles.baseNode} style={customStyle} aria-selected={selected}>
@@ -52,16 +70,38 @@ export default function BaseNode({ id, data, selected }: { id: string; data: Bas
             </div>
             <div className={styles.messageButtons}>
               <Button variant="outline" size="sm">Message</Button>
-              <Button variant="outline" size="sm">Image</Button>
-              <Button variant="outline" size="sm">Video</Button>
-              <Button variant="outline" size="sm">Audio</Button>
-              <Button variant="outline" size="sm">Document</Button>
+              <Button variant="outline" size="sm" onClick={() => setModal('image')}>Image</Button>
+              <Button variant="outline" size="sm" onClick={() => setModal('video')}>Video</Button>
+              <Button variant="outline" size="sm" onClick={() => setModal('audio')}>Audio</Button>
+              <Button variant="outline" size="sm" onClick={() => setModal('document')}>Document</Button>
             </div>
           </div>
         ) : (
           <p>{data.description || 'Node description goes here.'}</p>
         )}
       </div>
+
+      <ImageAttachmentModal 
+        isOpen={modal === 'image'}
+        onClose={() => setModal(null)}
+        onSave={onSaveMedia}
+        onDelete={onDeleteMedia}
+        media={data.media?.type === 'image' ? data.media : undefined}
+      />
+      <VideoAttachmentModal 
+        isOpen={modal === 'video'}
+        onClose={() => setModal(null)}
+        onSave={onSaveMedia}
+        onDelete={onDeleteMedia}
+        media={data.media?.type === 'video' ? data.media : undefined}
+      />
+      <DocumentAttachmentModal
+        isOpen={modal === 'document'}
+        onClose={() => setModal(null)}
+        onSave={onSaveMedia}
+        onDelete={onDeleteMedia}
+        media={data.media?.type === 'document' ? data.media : undefined}
+      />
 
       <Handle type="target" position={Position.Left} className={styles.handle} />
       <Handle type="source" position={Position.Right} className={styles.handle} />
