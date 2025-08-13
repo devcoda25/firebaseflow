@@ -66,24 +66,20 @@ export default function SidebarPalette({
             {allItems.map(item => {
                  const Icon = typeof item.icon === 'string' ? (LucideIcons as any)[item.icon] : item.icon;
                  return (
-                 <div
+                 <button
                     key={item.key}
+                    type="button"
                     className={styles.item}
                     style={{'--item-color': item.color} as React.CSSProperties}
                     draggable
                     onDragStart={(e) => handleDragStart(e, item)}
                     onClick={() => handleItemClick(item)}
-                    role="button"
-                    tabIndex={0}
-                    onKeyDown={(e) => {
-                      if (e.key === 'Enter' || e.key === ' ') handleItemClick(item);
-                    }}
-                    aria-label={`Drag or click to add ${item.label}`}
+                    aria-label={`Add ${item.label}`}
                     title={item.label}
                   >
                     {Icon ? <Icon className={styles.icon} /> : <span className={styles.icon}>?</span>}
                     <span className={styles.label}>{item.label}</span>
-                  </div>
+                  </button>
                  )
             })}
         </div>
