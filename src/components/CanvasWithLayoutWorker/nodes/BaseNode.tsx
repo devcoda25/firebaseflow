@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button';
 import ImageAttachmentModal from '@/components/PropertiesPanel/partials/ImageAttachmentModal';
 import VideoAttachmentModal from '@/components/PropertiesPanel/partials/VideoAttachmentModal';
 import DocumentAttachmentModal from '@/components/PropertiesPanel/partials/DocumentAttachmentModal';
+import AudioAttachmentModal from '@/components/PropertiesPanel/partials/AudioAttachmentModal';
 
 export type BaseNodeData = {
   label: string
@@ -16,12 +17,12 @@ export type BaseNodeData = {
   color?: string;
   type?: string;
   content?: string;
-  media?: { type: 'image' | 'video' | 'document', url: string, name?: string };
+  media?: { type: 'image' | 'video' | 'document' | 'audio', url: string, name?: string };
 }
 
 export default function BaseNode({ id, data, selected }: { id: string; data: BaseNodeData; selected: boolean }) {
   const [message, setMessage] = useState(data.content || 'Got it! I just need some information from you to look up your order.');
-  const [modal, setModal] = useState<'image' | 'video' | 'document' | null>(null);
+  const [modal, setModal] = useState<'image' | 'video' | 'document' | 'audio' | null>(null);
   
   const customStyle = {
     '--node-color': data.color || 'hsl(var(--primary))'
@@ -94,6 +95,13 @@ export default function BaseNode({ id, data, selected }: { id: string; data: Bas
         onSave={onSaveMedia}
         onDelete={onDeleteMedia}
         media={data.media?.type === 'video' ? data.media : undefined}
+      />
+      <AudioAttachmentModal
+        isOpen={modal === 'audio'}
+        onClose={() => setModal(null)}
+        onSave={onSaveMedia}
+        onDelete={onDeleteMedia}
+        media={data.media?.type === 'audio' ? data.media : undefined}
       />
       <DocumentAttachmentModal
         isOpen={modal === 'document'}
