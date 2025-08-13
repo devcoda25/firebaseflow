@@ -45,26 +45,50 @@ export type SectionDefinition = {
 
 export const SECTION_DATA: SectionDefinition[] = [
   {
-    key: 'main_actions',
-    title: 'Main Actions',
+    key: 'triggers',
+    title: 'Triggers',
     items: [
-      { key: 'sendMessage',  label: 'Send a message',   icon: 'Send', type: 'main_actions', color: '#8b5cf6', description: 'With no response required from visitor' },
-      { key: 'askQuestion', label: 'Ask a question',  icon: 'HelpCircle', type: 'main_actions',   color: '#8b5cf6', description: 'Ask question and store user input in variable' },
-      { key: 'setCondition',    label: 'Set a condition',icon: 'GitFork', type: 'main_actions',   color: '#8b5cf6', description: 'Send message(s) based on logical condition(s)' },
+        { key: 'getStarted',  label: 'Get Started', icon: 'Rocket', type: 'triggers', color: '#3b82f6', description: 'Triggered when a user starts a conversation' },
+        { key: 'schedule', label: 'Schedule',  icon: 'Clock', type: 'triggers',   color: '#3b82f6', description: 'Triggered at a specific time or interval' },
+        { key: 'webhook',    label: 'Webhook',icon: 'Webhook', type: 'triggers',   color: '#3b82f6', description: 'Triggered by an external HTTP request' },
     ]
   },
   {
-    key: 'operations',
-    title: 'Operations',
+    key: 'messaging',
+    title: 'Messaging',
     items: [
-        { key: 'subscribe', label: 'Subscribe', icon: 'BellPlus', type: 'operations', color: '#a78bfa' },
-        { key: 'unsubscribe', label: 'Unsubscribe', icon: 'BellOff', type: 'operations', color: '#a78bfa' },
-        { key: 'updateAttribute', label: 'Update Attribute', icon: 'Pencil', type: 'operations', color: '#a78bfa' },
-        { key: 'setTags', label: 'Set tags', icon: 'Tags', type: 'operations', color: '#a78bfa' },
-        { key: 'assignTeam', label: 'Assign Team', icon: 'Users', type: 'operations', color: '#a78bfa' },
-        { key: 'assignUser', label: 'Assign User', icon: 'User', type: 'operations', color: '#a78bfa' },
-        { key: 'triggerChatbot', label: 'Trigger Chatbot', icon: 'Bot', type: 'operations', color: '#a78bfa' },
-        { key: 'updateChatStatus', label: 'Update Chat Status', icon: 'RefreshCcw', type: 'operations', color: '#a78bfa' },
+        { key: 'sendMessage', label: 'Send a Message', icon: 'Send', type: 'messaging', color: '#8b5cf6', description: 'Send a simple text message' },
+        { key: 'sendTemplate', label: 'Send Template', icon: 'Mailbox', type: 'messaging', color: '#8b5cf6', description: 'Send a pre-approved template message', channels: ['whatsapp'] },
+        { key: 'sendMedia', label: 'Send Media', icon: 'Image', type: 'messaging', color: '#8b5cf6', description: 'Send an image, video, or document' },
+        { key: 'sendCarousel', label: 'Send Carousel', icon: 'Copy', type: 'messaging', color: '#8b5cf6', description: 'Send a horizontally scrollable carousel of items' },
+    ]
+  },
+  {
+    key: 'inputs',
+    title: 'User Inputs',
+    items: [
+        { key: 'askQuestion', label: 'Ask a Question', icon: 'HelpCircle', type: 'inputs', color: '#10b981', description: 'Ask a question and wait for a user reply' },
+        { key: 'waitForInput', label: 'Wait for Input', icon: 'PauseCircle', type: 'inputs', color: '#10b981', description: 'Wait for any user input before proceeding' },
+        { key: 'quickReplies', label: 'Quick Replies', icon: 'MessageCircleReply', type: 'inputs', color: '#10b981', description: 'Present buttons for quick user responses' },
+        { key: 'listMenu', label: 'List Menu', icon: 'List', type: 'inputs', color: '#10b981', description: 'Show a selectable list of options' },
+    ]
+  },
+  {
+    key: 'logic',
+    title: 'Logic & Flow',
+    items: [
+        { key: 'condition', label: 'Condition', icon: 'GitFork', type: 'logic', color: '#f97316', description: 'Branch the flow based on conditions' },
+        { key: 'delay', label: 'Delay', icon: 'Timer', type: 'logic', color: '#f97316', description: 'Pause the flow for a specific duration' },
+        { key: 'subflow', label: 'Sub-flow', icon: 'GitBranchPlus', type: 'logic', color: '#f97316', description: 'Execute another flow and then return' },
+    ]
+  },
+  {
+    key: 'integrations',
+    title: 'Integrations',
+    items: [
+        { key: 'apiCallout', label: 'API Callout', icon: 'CloudUpload', type: 'integrations', color: '#6366f1', description: 'Make an HTTP request to an external service' },
+        { key: 'handoff', label: 'Handoff to Agent', icon: 'UserCheck', type: 'integrations', color: '#6366f1', description: 'Transfer the conversation to a human agent' },
+        { key: 'analytics', label: 'Log Event', icon: 'BarChart3', type: 'integrations', color: '#6366f1', description: 'Log a custom event to your analytics platform' },
     ]
   }
 ]

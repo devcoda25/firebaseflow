@@ -74,7 +74,7 @@ function StudioPageContent() {
   };
 
   return (
-    <div className="grid h-screen grid-cols-[320px_1fr] grid-rows-[56px_1fr] bg-background text-foreground relative overflow-hidden lg:grid-cols-[280px_1fr] md:grid-cols-[76px_1fr] sm:grid-cols-1 sm:grid-rows-[56px_1fr]">
+    <div className="grid h-screen grid-cols-[280px_1fr] grid-rows-[56px_1fr] bg-background text-foreground relative overflow-hidden md:grid-cols-[280px_1fr] sm:grid-cols-1 sm:grid-rows-[56px_1fr]">
       <PublishBanner />
       <div className="col-span-full row-start-1 z-10">
         <HeaderBar
@@ -93,7 +93,7 @@ function StudioPageContent() {
             onTest={toggleTestConsole}
         />
       </div>
-      <aside className="col-start-1 row-start-2 overflow-hidden border-r border-border z-10 sm:hidden">
+      <aside className="col-start-1 row-start-2 overflow-y-auto border-r border-border z-10 bg-sidebar-background p-4 sm:hidden">
         <SidebarPalette onDragStart={handleDragStart} onItemClick={handleClickAdd} filterChannels={meta.channels} />
       </aside>
       <main className="col-start-2 row-start-2 relative overflow-hidden sm:col-start-1">

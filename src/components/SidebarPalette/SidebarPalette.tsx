@@ -60,28 +60,37 @@ export default function SidebarPalette({
   }
   
   return (
-    <aside className={cn("h-full flex flex-col bg-sidebar text-sidebar-foreground p-4 gap-6 overflow-y-auto", className)} aria-label="Node palette">
-        <div className="grid grid-cols-2 gap-3">
-            {allItems.map(item => {
-                 const Icon = typeof item.icon === 'string' ? (LucideIcons as any)[item.icon] : item.icon;
-                 return (
-                 <button
-                    key={item.key}
-                    type="button"
-                    className="flex flex-col items-center text-center gap-2 p-4 rounded-lg bg-sidebar-accent text-sidebar-foreground cursor-grab user-select-none transition-all duration-200 ease-in-out border border-sidebar-border hover:bg-primary/10 hover:border-primary hover:text-primary-foreground hover:-translate-y-0.5 active:cursor-grabbing active:scale-[0.98] active:translate-y-0 active:bg-primary/20"
-                    style={{'--item-color': item.color} as React.CSSProperties}
-                    draggable
-                    onDragStart={(e) => handleDragStart(e, item)}
-                    onClick={() => handleItemClick(item)}
-                    aria-label={`Add ${item.label}`}
-                    title={item.label}
-                  >
-                    {Icon ? <Icon className="text-3xl opacity-90 leading-none" style={{color: 'var(--item-color)'}} /> : <span className="text-3xl opacity-90 leading-none">?</span>}
-                    <span className="text-xs font-medium leading-snug">{item.label}</span>
-                  </button>
-                 )
-            })}
-        </div>
-    </aside>
+    <nav className={cn("h-full flex flex-col text-sidebar-foreground gap-6 overflow-y-auto", className)} aria-label="Node palette">
+        {SECTION_DATA.map(section => (
+            <div key={section.key}>
+                <h3 className="text-sm font-semibold text-sidebar-foreground/70 mb-3 px-2">{section.title}</h3>
+                <div className="grid grid-cols-2 gap-3">
+                    {section.items.map(item => {
+                        const Icon = typeof item.icon === 'string' ? (LucideIcons as any)[item.icon] ?? LucideIcons.HelpCircle : item.icon;
+                        const isVisible = !filterChannels || filterChannels.length === 0 || !item.channels || item.channels.some(c => filterChannels.includes(c));
+                        
+                        if (!isVisible) return null;
+
+                        return (
+                        <button
+                            key={item.key}
+                            type="button"
+                            className="flex flex-col items-center text-center gap-2 p-3 rounded-lg bg-sidebar-accent text-sidebar-foreground cursor-grab user-select-none transition-all duration-200 ease-in-out border border-sidebar-border hover:bg-sidebar-accent/80 hover:border-primary hover:text-primary-foreground hover:-translate-y-0.5 active:cursor-grabbing active:scale-[0.98] active:translate-y-0 active:bg-primary/20"
+                            style={{'--item-color': item.color} as React.CSSProperties}
+                            draggable
+                            onDragStart={(e) => handleDragStart(e, item)}
+                            onClick={() => handleItemClick(item)}
+                            aria-label={`Add ${item.label}`}
+                            title={`${item.label}${item.description ? ` - ${item.description}`:''}`}
+                        >
+                            {Icon ? <Icon className="text-3xl opacity-90 leading-none" style={{color: 'var(--item-color)'}} /> : <span className="text-3xl opacity-90 leading-none">?</span>}
+                            <span className="text-xs font-medium leading-snug">{item.label}</span>
+                        </button>
+                        )
+                    })}
+                </div>
+            </div>
+        ))}
+    </nav>
   );
 }
