@@ -75,7 +75,7 @@ export default function SidebarPalette({
                         <button
                             key={item.key}
                             type="button"
-                            className="flex flex-col items-center text-center gap-2 p-4 rounded-md bg-card text-card-foreground border border-border cursor-grab user-select-none transition-colors duration-200 ease-in-out hover:bg-muted active:cursor-grabbing active:scale-[0.98]"
+                            className="flex items-center text-left gap-3 p-3 rounded-lg bg-card text-card-foreground border border-transparent cursor-grab user-select-none transition-colors duration-200 ease-in-out hover:bg-gray-100 active:cursor-grabbing active:scale-[0.98]"
                             style={{'--item-color': item.color} as React.CSSProperties}
                             draggable
                             onDragStart={(e) => handleDragStart(e, item)}
@@ -83,8 +83,8 @@ export default function SidebarPalette({
                             aria-label={`Add ${item.label}`}
                             title={`${item.label}${item.description ? ` - ${item.description}`:''}`}
                         >
-                            <div className="w-12 h-12 rounded-full grid place-items-center bg-purple-100">
-                                <Icon className="w-6 h-6 text-purple-600" />
+                            <div className="w-10 h-10 rounded-full grid place-items-center bg-purple-100 flex-shrink-0">
+                                <Icon className="w-5 h-5 text-purple-600" />
                             </div>
                             <span className="text-sm font-medium leading-snug">{item.label}</span>
                         </button>
