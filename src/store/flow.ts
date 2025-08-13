@@ -5,6 +5,7 @@ import { applyNodeChanges, applyEdgeChanges, addEdge } from 'reactflow';
 import { nanoid } from 'nanoid';
 import { temporal } from 'zundo';
 import { useHistoryStore } from './history';
+import { MarkerType } from 'reactflow';
 
 export type Channel =
   | 'whatsapp'
@@ -49,19 +50,18 @@ const flowSlice = (set: any, get: any) => ({
     // A condition node can have multiple connections from its distinct handles ('true' and 'false')
     // Other nodes can only have one connection from any given source handle.
     const sourceNode = get().nodes.find((n: Node) => n.id === connection.source);
-    const isConditionNode = sourceNode?.data?.type === 'logic';
 
     const sourceHandleHasConnection = edges.some(
       (edge: Edge) => edge.source === connection.source && edge.sourceHandle === connection.sourceHandle
     );
 
-    if (sourceHandleHasConnection && !isConditionNode) {
+    if (sourceHandleHasConnection) {
       console.warn(`Connection from source ${connection.source} (handle: ${connection.sourceHandle}) already exists.`);
       return; // Abort connection
     }
 
     set({
-      edges: addEdge({ ...connection, type: 'bezier' }, get().edges),
+      edges: addEdge({ ...connection, type: 'bezier', markerEnd: { type: MarkerType.ArrowClosed } }, get().edges),
     });
   },
   addNode: (node: Node) => {
