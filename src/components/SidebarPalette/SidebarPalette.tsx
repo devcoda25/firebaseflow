@@ -83,7 +83,7 @@ export default function SidebarPalette({
                             aria-label={`Add ${item.label}`}
                             title={`${item.label}${item.description ? ` - ${item.description}`:''}`}
                         >
-                            {Icon ? <Icon className="text-3xl opacity-90 leading-none" style={{color: 'var(--item-color)'}} /> : <span className="text-3xl opacity-90 leading-none">?</span>}
+                            <Icon className="text-3xl opacity-90 leading-none" style={{color: 'var(--item-color)'}} />
                             <span className="text-xs font-medium leading-snug">{item.label}</span>
                         </button>
                         )
