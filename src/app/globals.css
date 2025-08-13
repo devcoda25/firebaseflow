@@ -4,7 +4,7 @@
 
 @layer base {
   :root {
-    --background: 215 33% 95%;
+    --background: 0 0% 100%;
     --foreground: 220 15% 20%;
 
     --card: 0 0% 100%;
@@ -16,10 +16,10 @@
     --primary: 221 83% 53%;
     --primary-foreground: 0 0% 100%;
 
-    --secondary: 215 20% 90%;
+    --secondary: 215 20% 95%;
     --secondary-foreground: 220 15% 20%;
 
-    --muted: 215 20% 90%;
+    --muted: 215 20% 95%;
     --muted-foreground: 220 15% 45%;
 
     --accent: 215 28% 97%;
@@ -28,30 +28,30 @@
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 215 20% 85%;
-    --input: 215 20% 85%;
+    --border: 215 20% 90%;
+    --input: 215 20% 90%;
     --ring: 221 83% 53%;
 
     --radius: 0.5rem;
 
     /* Custom variables for the new theme */
     --bg-elevated: hsl(0 0% 100%);
-    --bg-panel: hsl(215 30% 97%);
+    --bg-panel: hsl(215 30% 98%);
     --text: hsl(220 15% 20%);
     --text-muted: hsl(220 15% 45%);
-    --border-muted: hsl(215 20% 85%);
+    --border-muted: hsl(215 20% 90%);
     --danger: hsl(0 84% 60%);
     --success: hsl(145 63% 49%);
     --focus: hsl(221 83% 60%);
 
     /* Sidebar specific colors for better theming */
-    --sidebar-background: hsl(220 25% 12%);
-    --sidebar-foreground: hsl(220 20% 85%);
+    --sidebar-background: hsl(0 0% 100%);
+    --sidebar-foreground: hsl(220 15% 20%);
     --sidebar-primary: hsl(221 100% 65%);
     --sidebar-primary-foreground: hsl(0 0% 100%);
-    --sidebar-accent: hsl(220 25% 18%);
-    --sidebar-accent-foreground: hsl(0 0% 100%);
-    --sidebar-border: hsl(220 25% 22%);
+    --sidebar-accent: hsl(215 20% 95%);
+    --sidebar-accent-foreground: hsl(220 15% 20%);
+    --sidebar-border: hsl(215 20% 90%);
     --sidebar-ring: hsl(221 100% 75%);
   }
 }
