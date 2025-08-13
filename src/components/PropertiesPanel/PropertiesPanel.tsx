@@ -5,7 +5,7 @@ import { FormProvider, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import styles from './properties-panel.module.css';
 
-import { TAB_KEYS, type PropertiesPanelProps, type TabKey } from './types';
+import { type PropertiesPanelProps, type TabKey, TABS_FOR_NODE_TYPE } from './types';
 import {
   generalSchema,
   messageSchema,
@@ -54,7 +54,7 @@ const TAB_SCHEMA_MAP: Record<TabKey, any> = {
     logic: logicSchema,
     schedule: scheduleSchema,
     campaign: campaignSchema,
-    ai: aiSchema,
+ai: aiSchema,
     handoff: handoffSchema,
     analytics: analyticsSchema,
     subflow: subflowSchema,
@@ -81,6 +81,9 @@ export default function PropertiesPanel({
   waContext = 'template',
   channels
 }: PropertiesPanelProps) {
+  const nodeType = node?.data?.type || 'main_actions';
+  const availableTabs = TABS_FOR_NODE_TYPE[nodeType] || ['general'];
+  
   const [activeTab, setActiveTab] = useState<TabKey>('general');
 
   const schema = useMemo(() => {
@@ -98,8 +101,12 @@ export default function PropertiesPanel({
 
   useEffect(() => {
     methods.reset((node?.data as any) || {});
-    // Reset to general tab when node changes
-    setActiveTab('general');
+    // Reset to general tab when node changes, if it's available
+    if (availableTabs.includes('general')) {
+        setActiveTab('general');
+    } else if (availableTabs.length > 0) {
+        setActiveTab(availableTabs[0]);
+    }
   }, [node?.id, methods]);
 
   const debouncedSave = useDebouncedCallback((vals: any) => {
@@ -113,6 +120,13 @@ export default function PropertiesPanel({
     });
     return () => subscription.unsubscribe();
   }, [methods.watch, debouncedSave]);
+  
+  useEffect(() => {
+    if (!availableTabs.includes(activeTab)) {
+        setActiveTab(availableTabs[0] || 'general');
+    }
+  }, [availableTabs, activeTab]);
+
 
   if (!node) return null;
 
@@ -136,7 +150,7 @@ export default function PropertiesPanel({
         <div className={styles.body}>
             <Tabs value={activeTab} onValueChange={(val) => setActiveTab(val as TabKey)} className="w-full">
                 <TabsList className="grid w-full grid-cols-3">
-                    {TAB_KEYS.map((k) => (
+                    {availableTabs.map((k) => (
                         <TabsTrigger key={k} value={k}>
                             {TAB_LABEL[k]}
                         </TabsTrigger>

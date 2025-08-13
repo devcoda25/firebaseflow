@@ -68,6 +68,7 @@ function StudioPageContent() {
         icon: item.icon,
         color: item.color,
         description: item.description,
+        type: item.type,
       },
     };
     addNode(newNode);

@@ -98,7 +98,8 @@ function InnerCanvas({
             label: item.label, 
             icon: item.icon,
             color: item.color,
-            description: item.description
+            description: item.description,
+            type: item.type,
         },
       };
 

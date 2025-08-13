@@ -1,5 +1,6 @@
 import type { Node } from 'reactflow';
 import type { Channel } from '@/components/HeaderBar';
+import type { NodeCategory } from '../SidebarPalette';
 
 export type TabKey =
   | 'general'
@@ -16,6 +17,23 @@ export type TabKey =
 export const TAB_KEYS: TabKey[] = [
   'general','message','api','logic', 'ai', 'schedule','campaign','handoff','analytics','subflow'
 ];
+
+export const TABS_FOR_NODE_TYPE: Record<NodeCategory, TabKey[]> = {
+    main_actions: ['general', 'message', 'logic', 'ai'],
+    operations: ['general', 'api', 'analytics'],
+    triggers: ['general', 'schedule'],
+    messaging: ['general', 'message', 'ai'],
+    inputs: ['general', 'message', 'logic'],
+    logic: ['general', 'logic'],
+    timing: ['general', 'schedule'],
+    integrations: ['general', 'api'],
+    outreach: ['general', 'campaign', 'message'],
+    handoff: ['general', 'handoff'],
+    analytics: ['general', 'analytics'],
+    automation: ['general', 'api', 'logic'],
+    updates: ['general', 'api'],
+    end: ['general'],
+};
 
 export type MessageContext = 'template' | 'in-session';
 
