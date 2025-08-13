@@ -75,7 +75,7 @@ export default function SidebarPalette({
                         <button
                             key={item.key}
                             type="button"
-                            className="flex flex-col items-center text-center gap-2 p-3 rounded-lg bg-sidebar-accent text-sidebar-foreground cursor-grab user-select-none transition-all duration-200 ease-in-out shadow-lg hover:bg-sidebar-accent/80 active:cursor-grabbing active:scale-[0.98] active:shadow-md"
+                            className="flex flex-col items-center text-center gap-2 p-3 rounded-lg bg-sidebar-accent text-sidebar-foreground cursor-grab user-select-none transition-all duration-200 ease-in-out hover:shadow-md active:cursor-grabbing active:scale-[0.98]"
                             style={{'--item-color': item.color} as React.CSSProperties}
                             draggable
                             onDragStart={(e) => handleDragStart(e, item)}
