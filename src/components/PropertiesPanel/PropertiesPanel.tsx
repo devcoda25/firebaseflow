@@ -4,6 +4,7 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import styles from './properties-panel.module.css';
+import { z } from 'zod';
 
 import { type PropertiesPanelProps, type TabKey, TABS_FOR_NODE_TYPE } from './types';
 import {
@@ -54,7 +55,7 @@ const TAB_SCHEMA_MAP: Record<TabKey, any> = {
     logic: logicSchema,
     schedule: scheduleSchema,
     campaign: campaignSchema,
-ai: aiSchema,
+    ai: aiSchema,
     handoff: handoffSchema,
     analytics: analyticsSchema,
     subflow: subflowSchema,
@@ -81,12 +82,13 @@ export default function PropertiesPanel({
   waContext = 'template',
   channels
 }: PropertiesPanelProps) {
-  const nodeType = node?.data?.type || 'main_actions';
-  const availableTabs = TABS_FOR_NODE_TYPE[nodeType] || ['general'];
+  const nodeType = node?.data?.type || 'end';
+  const availableTabs = TABS_FOR_NODE_TYPE[nodeType] || [];
   
-  const [activeTab, setActiveTab] = useState<TabKey>('general');
+  const [activeTab, setActiveTab] = useState<TabKey | undefined>(availableTabs[0]);
 
   const schema = useMemo(() => {
+    if (!activeTab) return z.object({});
     if (activeTab === 'message') {
         return messageSchema(waContext);
     }
@@ -101,12 +103,7 @@ export default function PropertiesPanel({
 
   useEffect(() => {
     methods.reset((node?.data as any) || {});
-    // Reset to general tab when node changes, if it's available
-    if (availableTabs.includes('general')) {
-        setActiveTab('general');
-    } else if (availableTabs.length > 0) {
-        setActiveTab(availableTabs[0]);
-    }
+    setActiveTab(availableTabs[0]);
   }, [node?.id, methods]);
 
   const debouncedSave = useDebouncedCallback((vals: any) => {
@@ -122,15 +119,31 @@ export default function PropertiesPanel({
   }, [methods.watch, debouncedSave]);
   
   useEffect(() => {
-    if (!availableTabs.includes(activeTab)) {
-        setActiveTab(availableTabs[0] || 'general');
+    if (!availableTabs.includes(activeTab as TabKey)) {
+        setActiveTab(availableTabs[0]);
     }
   }, [availableTabs, activeTab]);
 
 
   if (!node) return null;
 
-  const TabContent = TAB_COMPONENTS[activeTab];
+  if (availableTabs.length === 0) {
+    return (
+       <DialogContent className={styles.root}>
+        <DialogHeader>
+            <DialogTitle>Properties: {node?.data?.label ?? node?.id}</DialogTitle>
+            <DialogDescription>
+                This node has no configurable properties.
+            </DialogDescription>
+        </DialogHeader>
+         <DialogFooter>
+            <Button variant="outline" onClick={onClose}>Close</Button>
+        </DialogFooter>
+      </DialogContent>
+    )
+  }
+
+  const TabContent = activeTab ? TAB_COMPONENTS[activeTab] : null;
   const tabProps = {
     waContext,
     channels,
@@ -148,18 +161,24 @@ export default function PropertiesPanel({
 
       <FormProvider {...methods}>
         <div className={styles.body}>
-            <Tabs value={activeTab} onValueChange={(val) => setActiveTab(val as TabKey)} className="w-full">
-                <TabsList className="grid w-full grid-cols-3">
+          {availableTabs.length > 1 ? (
+             <Tabs value={activeTab} onValueChange={(val) => setActiveTab(val as TabKey)} className="w-full">
+                <TabsList className={`grid w-full grid-cols-${availableTabs.length}`}>
                     {availableTabs.map((k) => (
                         <TabsTrigger key={k} value={k}>
                             {TAB_LABEL[k]}
                         </TabsTrigger>
                     ))}
                 </TabsList>
-                <TabsContent value={activeTab} className={styles.tabContent}>
-                    <TabContent {...tabProps} />
-                </TabsContent>
+                {TabContent && (
+                  <TabsContent value={activeTab!} className={styles.tabContent}>
+                      <TabContent {...tabProps} />
+                  </TabsContent>
+                )}
             </Tabs>
+          ) : (
+             TabContent && <div className={styles.tabContent}><TabContent {...tabProps} /></div>
+          )}
         </div>
       </FormProvider>
 
