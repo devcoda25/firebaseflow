@@ -144,7 +144,7 @@ function InnerCanvas({
           proOptions={{ hideAttribution: true }}
         >
           <Background gap={GRID_SIZE} />
-          <Controls position="bottom-right" />
+          <Controls className={styles.controls} />
           <MiniMap pannable zoomable />
           <Panel position="top-left" className={styles.panel}>
             <button className={styles.panelBtn} disabled={busy} onClick={() => runLayout('TB')}>

@@ -138,3 +138,13 @@
   color: hsl(var(--muted-foreground));
   font-size: 12px;
 }
+
+.controls {
+    @apply flex bg-card border border-border rounded-lg shadow-lg;
+}
+.controls button {
+    @apply w-10 h-10 p-0 border-r border-border last:border-r-0 hover:bg-accent;
+}
+.controls button svg {
+    @apply w-5 h-5;
+}
