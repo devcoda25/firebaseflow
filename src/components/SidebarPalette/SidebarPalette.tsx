@@ -2,7 +2,7 @@
 'use client';
 
 import React, { useMemo } from 'react';
-import { SECTION_DATA, SectionDefinition, ItemDefinition, PaletteItemPayload, Channel } from './sections-data';
+import { SECTION_DATA, ItemDefinition, PaletteItemPayload, Channel } from './sections-data';
 import * as LucideIcons from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -75,7 +75,7 @@ export default function SidebarPalette({
                         <button
                             key={item.key}
                             type="button"
-                            className="flex flex-col items-center text-center gap-2 p-3 rounded-lg bg-sidebar-accent text-sidebar-foreground cursor-grab user-select-none transition-all duration-200 ease-in-out hover:shadow-md active:cursor-grabbing active:scale-[0.98]"
+                            className="flex flex-col items-center text-center gap-2 p-4 rounded-lg bg-card text-card-foreground border border-border cursor-grab user-select-none transition-all duration-200 ease-in-out hover:border-primary active:cursor-grabbing active:scale-[0.98]"
                             style={{'--item-color': item.color} as React.CSSProperties}
                             draggable
                             onDragStart={(e) => handleDragStart(e, item)}
@@ -83,8 +83,10 @@ export default function SidebarPalette({
                             aria-label={`Add ${item.label}`}
                             title={`${item.label}${item.description ? ` - ${item.description}`:''}`}
                         >
-                            <Icon className="text-3xl opacity-90 leading-none" style={{color: 'var(--item-color)'}} />
-                            <span className="text-xs font-medium leading-snug">{item.label}</span>
+                            <div className="w-12 h-12 rounded-full grid place-items-center" style={{backgroundColor: `hsla(var(--item-color-hsl), 0.1)`, color: `hsl(var(--item-color-hsl))`}}>
+                                <Icon className="w-6 h-6" style={{'--item-color-hsl': item.color} as React.CSSProperties} />
+                            </div>
+                            <span className="text-sm font-medium leading-snug">{item.label}</span>
                         </button>
                         )
                     })}
