@@ -123,13 +123,6 @@ function InnerCanvas({
     },
     [onNodeDoubleClick]
   );
-  
-  const runSelectionLayout = (mode: 'TB' | 'LR') => {
-    const selectedIds = (rfRef.current?.getNodes?.() ?? nodes).filter(n => n.selected).map(n => n.id)
-    if (selectedIds.length > 0) {
-      runLayout(mode, { scope: 'selection', selectionIds: selectedIds });
-    }
-  }
 
   return (
     <div className={styles.root}>
@@ -153,26 +146,6 @@ function InnerCanvas({
           <Background gap={GRID_SIZE} />
           <Controls className={styles.controls} />
           <MiniMap pannable zoomable />
-          <Panel position="top-left" className={styles.panel}>
-            <button className={styles.panelBtn} disabled={busy} onClick={() => runLayout('TB')}>
-              Layout V
-            </button>
-            <button className={styles.panelBtn} disabled={busy} onClick={() => runLayout('LR')}>
-              Layout H
-            </button>
-            <button className={styles.panelBtn} disabled={busy} onClick={() => runLayout('RADIAL')}>
-              Radial
-            </button>
-            <button className={styles.panelBtn} disabled={busy} onClick={() => runSelectionLayout('TB')}>
-              Layout Selection V
-            </button>
-            <button className={styles.panelBtn} disabled={busy} onClick={() => runSelectionLayout('LR')}>
-              Layout Selection H
-            </button>
-            <button className={styles.panelBtn} onClick={() => undoLastLayout()}>
-              Undo Layout
-            </button>
-          </Panel>
           <div style={{ position: 'absolute', inset: 0, pointerEvents: 'none', zIndex: 10 }}>
             <LiveCursors />
           </div>
