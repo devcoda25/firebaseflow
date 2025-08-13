@@ -30,11 +30,9 @@ export interface FlowMeta {
 
 // Separate the state structure that needs to be tracked by history
 const flowSlice = (set: any, get: any) => ({
-  nodes: [
-    { id: 'start', type: 'base', position: { x: 120, y: 140 }, data: { label: 'Get Started', icon: 'Rocket', type: 'triggers' } },
-  ] as Node[],
+  nodes: [] as Node[],
   edges: [] as Edge[],
-  startNodeId: 'start' as string | null,
+  startNodeId: null as string | null,
   onNodesChange: (changes: NodeChange[]) => {
     set({
       nodes: applyNodeChanges(changes, get().nodes),
@@ -46,7 +44,7 @@ const flowSlice = (set: any, get: any) => ({
     });
   },
   onConnect: (connection: Connection) => {
-    const { edges, nodes } = get();
+    const { edges } = get();
 
     // A condition node can have multiple connections from its distinct handles ('true' and 'false')
     // Other nodes can only have one connection from any given source handle.
@@ -93,14 +91,15 @@ const flowSlice = (set: any, get: any) => ({
   },
   setNodes: (nodes: Node[]) => set({ nodes }),
   setEdges: (edges: Edge[]) => set({ edges }),
-  setStartNode: (nodeId: string) => set({ startNodeId: nodeId }),
+  setStartNode: (nodeId: string | null) => set({ startNodeId: nodeId }),
 });
 
 
 // Create the main store, with a temporal middleware for history
 export const useFlowStore = create(
   temporal(flowSlice, {
-    onSave: (pastStates, futureStates) => {
+    onSave: (_, state) => {
+        const { pastStates, futureStates } = state.temporal;
         useHistoryStore.getState().setCanUndo(pastStates.length > 0);
         useHistoryStore.getState().setCanRedo(futureStates.length > 0);
     }

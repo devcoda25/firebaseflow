@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import { Handle, Position } from 'reactflow'
 import styles from '../canvas-layout.module.css'
 import NodeAvatars from '@/components/Presence/NodeAvatars';
-import { MoreHorizontal, Trash2, Copy, PlayCircle } from 'lucide-react';
+import { MoreHorizontal, Trash2, Copy, PlayCircle, XCircle } from 'lucide-react';
 import * as LucideIcons from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import ImageAttachmentModal from '@/components/PropertiesPanel/partials/ImageAttachmentModal';
@@ -75,10 +75,17 @@ export default function BaseNode({ id, data, selected }: { id: string; data: Bas
                 <button className={styles.nodeMore}><MoreHorizontal size={18}/></button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
-                <DropdownMenuItem onClick={() => setStartNode(id)}>
-                    <PlayCircle className="mr-2 h-4 w-4" />
-                    <span>Set as start node</span>
-                </DropdownMenuItem>
+                {isStartNode ? (
+                    <DropdownMenuItem onClick={() => setStartNode(null)}>
+                        <XCircle className="mr-2 h-4 w-4" />
+                        <span>Reset start node</span>
+                    </DropdownMenuItem>
+                ) : (
+                    <DropdownMenuItem onClick={() => setStartNode(id)}>
+                        <PlayCircle className="mr-2 h-4 w-4" />
+                        <span>Set as start node</span>
+                    </DropdownMenuItem>
+                )}
                 <DropdownMenuSeparator />
                 <DropdownMenuItem onClick={() => duplicateNode(id)}>
                     <Copy className="mr-2 h-4 w-4" />
