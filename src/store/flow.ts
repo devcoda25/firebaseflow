@@ -45,9 +45,12 @@ const flowSlice = (set: any, get: any) => ({
     });
   },
   onConnect: (connection: Connection) => {
-    const { edges } = get();
+    const { edges, nodes } = get();
+    const sourceNode = nodes.find((node: Node) => node.id === connection.source);
+    const isConditionNode = sourceNode?.data?.type === 'logic';
 
-    // Prevent connecting if a source handle already has an outgoing connection.
+    // A condition node can have multiple connections from its distinct handles ('true' and 'false')
+    // Other nodes can only have one connection from any given source handle.
     const sourceHandleHasConnection = edges.some(
       (edge: Edge) => edge.source === connection.source && edge.sourceHandle === connection.sourceHandle
     );
