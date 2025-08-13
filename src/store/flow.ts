@@ -1,3 +1,4 @@
+
 import { create } from 'zustand';
 import type { Node, Edge, NodeChange, EdgeChange, Connection } from 'reactflow';
 import { applyNodeChanges, applyEdgeChanges, addEdge } from 'reactflow';
@@ -95,9 +96,10 @@ const flowSlice = (set: any, get: any) => ({
 // Create the main store, with a temporal middleware for history
 export const useFlowStore = create(
   temporal(flowSlice, {
-    onSave: (handle) => {
-        useHistoryStore.getState().setCanUndo(handle.canUndo());
-        useHistoryStore.getState().setCanRedo(handle.canRedo());
+    onSave: (_, state) => {
+        const { pastStates, futureStates } = state.temporal;
+        useHistoryStore.getState().setCanUndo(pastStates.length > 0);
+        useHistoryStore.getState().setCanRedo(futureStates.length > 0);
     }
   })
 );
