@@ -72,8 +72,19 @@ export const useFlowStore = create<FlowState>((set, get) => ({
     });
   },
   onConnect: (connection) => {
+    const { edges } = get();
+    // Prevent connecting if a source handle already has an outgoing connection.
+    const sourceHandleHasConnection = edges.some(
+      (edge) => edge.source === connection.source && edge.sourceHandle === connection.sourceHandle
+    );
+
+    if (sourceHandleHasConnection) {
+      console.warn(`Connection from source ${connection.source} (handle: ${connection.sourceHandle}) already exists.`);
+      return; // Abort connection
+    }
+
     set({
-      edges: addEdge({ ...connection, animated: true, type: 'smoothstep' }, get().edges),
+      edges: addEdge({ ...connection, animated: true, type: 'smoothstep' }, edges),
     });
   },
   addNode: (node) => {
