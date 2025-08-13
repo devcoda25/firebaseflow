@@ -9,12 +9,12 @@ import HeaderBar from '@/components/HeaderBar';
 import SidebarPalette, { PaletteItemPayload } from '@/components/SidebarPalette';
 import CanvasWithLayoutWorker from '@/components/CanvasWithLayoutWorker';
 import PropertiesPanel from '@/components/PropertiesPanel';
-import { useFlowStore, useFlowMetaStore } from '@/store/flow';
+import { useFlowStore, useFlowMetaStore, undo, redo } from '@/store/flow';
 import TestConsole from '@/components/TestConsole';
 import { useUIStore } from '@/store/ui';
 import PublishBanner from '@/components/Presence/PublishBanner';
 import { FlowEngine } from '@/engine/FlowEngine';
-import { useUndoRedo } from '@/hooks/useUndoRedo';
+import { useHistoryStore } from '@/store/history';
 import { Dialog } from '@/components/ui/dialog';
 
 function StudioPageContent() {
@@ -23,7 +23,7 @@ function StudioPageContent() {
 
   const [selectedNode, setSelectedNode] = useState<Node | null>(null);
   const { isTestConsoleOpen, toggleTestConsole } = useUIStore();
-  const { canUndo, canRedo, undo, redo } = useUndoRedo();
+  const { canUndo, canRedo } = useHistoryStore();
 
   const engine = useMemo(() => new FlowEngine({ channel: meta.channels[0], clock: 'real' }), [meta.channels]);
   const { project } = useReactFlow();
@@ -90,7 +90,7 @@ function StudioPageContent() {
       <aside className="hidden md:block col-start-1 row-start-2 overflow-y-auto border-r border-border z-10 bg-background p-4 sidebar-scroll">
         <SidebarPalette onDragStart={handleDragStart} onItemClick={handleClickAdd} filterChannels={meta.channels} />
       </aside>
-      <main className="md:col-start-2 row-start-2 col-start-1 relative overflow-hidden">
+      <main className="md:col-start-2 row-start-2 col-start-1 relative overflow-hidden bg-background">
         <CanvasWithLayoutWorker
           nodes={nodes}
           edges={edges}
