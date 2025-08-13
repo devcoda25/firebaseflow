@@ -48,7 +48,6 @@ export const SECTION_DATA: SectionDefinition[] = [
     key: 'triggers',
     title: 'Triggers',
     items: [
-        { key: 'getStarted',  label: 'Get Started', icon: 'Rocket', type: 'triggers', color: 'hsl(262 83% 58%)', description: 'Triggered when a user starts a conversation' },
         { key: 'schedule', label: 'Schedule',  icon: 'Clock', type: 'triggers',   color: 'hsl(262 83% 58%)', description: 'Triggered at a specific time or interval' },
         { key: 'webhook',    label: 'Webhook',icon: 'Webhook', type: 'triggers',   color: 'hsl(262 83% 58%)', description: 'Triggered by an external HTTP request' },
     ]
