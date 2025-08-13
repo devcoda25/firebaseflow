@@ -87,8 +87,8 @@ function StudioPageContent() {
             onSaveClick={() => console.log('Save clicked!', { meta, nodes, edges })}
         />
       </div>
-      <aside className="hidden md:block col-start-1 row-start-2 overflow-y-auto border-r border-border z-10 bg-background sidebar-scroll">
-        <div className="p-4">
+      <aside className="hidden md:block col-start-1 row-start-2 overflow-y-auto border-r border-border z-10 bg-background">
+        <div className="p-4 sidebar-scroll">
             <SidebarPalette onDragStart={handleDragStart} onItemClick={handleClickAdd} filterChannels={meta.channels} />
         </div>
       </aside>
