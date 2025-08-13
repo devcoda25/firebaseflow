@@ -51,8 +51,11 @@ const flowSlice = (set: any, get: any) => ({
     const sourceHandleHasConnection = edges.some(
       (edge: Edge) => edge.source === connection.source && edge.sourceHandle === connection.sourceHandle
     );
+    
+    const node = get().nodes.find((n: Node) => n.id === connection.source);
+    const isConditionNode = node?.data?.type === 'logic';
 
-    if (sourceHandleHasConnection) {
+    if (sourceHandleHasConnection && !isConditionNode) {
       console.warn(`Connection from source ${connection.source} (handle: ${connection.sourceHandle}) already exists.`);
       return; // Abort connection
     }
