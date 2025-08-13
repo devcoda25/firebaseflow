@@ -61,7 +61,7 @@ const flowSlice = (set: any, get: any) => ({
     }
 
     set({
-      edges: addEdge({ ...connection, type: 'bezier' }, edges),
+      edges: addEdge({ ...connection, type: 'bezier' }, get().edges),
     });
   },
   addNode: (node: Node) => {
@@ -102,9 +102,12 @@ const flowSlice = (set: any, get: any) => ({
 export const useFlowStore = create(
   temporal(flowSlice, {
     onSave: (_, state) => {
-        const { pastStates, futureStates } = state.temporal;
-        useHistoryStore.getState().setCanUndo(pastStates.length > 0);
-        useHistoryStore.getState().setCanRedo(futureStates.length > 0);
+        const { temporal } = state as any;
+        if (temporal) {
+            const { pastStates, futureStates } = temporal;
+            useHistoryStore.getState().setCanUndo(pastStates.length > 0);
+            useHistoryStore.getState().setCanRedo(futureStates.length > 0);
+        }
     }
   })
 );
