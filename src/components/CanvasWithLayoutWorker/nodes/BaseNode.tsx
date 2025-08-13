@@ -33,7 +33,7 @@ export type BaseNodeData = {
 export default function BaseNode({ id, data, selected }: { id: string; data: BaseNodeData; selected: boolean }) {
   const [message, setMessage] = useState(data.content || 'Got it! I just need some information from you to look up your order.');
   const [modal, setModal] = useState<'image' | 'video' | 'document' | 'audio' | null>(null);
-  const { deleteNode, duplicateNode, setStartNode, startNodeId } = useFlowStore.getState();
+  const { deleteNode, duplicateNode, setStartNode, startNodeId } = useFlowStore();
   
   const customStyle = {
     '--node-color': data.color || 'hsl(var(--primary))'
