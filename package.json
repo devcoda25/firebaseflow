@@ -39,6 +39,7 @@
     "@radix-ui/react-toast": "^1.2.1",
     "@uiw/react-codemirror": "^4.22.1",
     "class-variance-authority": "^0.7.0",
+    "dagre": "^0.8.5",
     "react-hook-form": "^7.54.2",
     "reactflow": "^11.11.4",
     "recharts": "^2.15.1",
@@ -48,8 +49,7 @@
     "workbox-window": "^7.1.0",
     "y-websocket": "^2.0.3",
     "yjs": "^13.6.18",
-    "zod": "^3.24.2",
-    "zustand": "^4.5.4"
+    "zod": "^3.24.2"
   },
   "devDependencies": {
     "@types/dagre": "^0.7.52",
