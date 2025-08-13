@@ -6,55 +6,37 @@ import { oneDark } from '@codemirror/theme-one-dark'
 import styles from '../properties-panel.module.css'
 import { sendTestRequest } from '@/api/mockServer'
 import KeyValueEditor from '@/components/KeyValueEditor/KeyValueEditor'
-import CredentialSelector from '@/components/CredentialSelector/CredentialSelector'
 import { Button } from '@/components/ui/button'
 import { Label } from '@/components/ui/label'
 import { Input } from '@/components/ui/input'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { useCredentialVault } from '@/cred/useCredentials'
 import { Loader2 } from 'lucide-react'
+import { Switch } from '@/components/ui/switch'
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible'
 
 type Method = 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE'
 
 export default function APITab() {
   const { register, watch, setValue } = useFormContext()
-  const { resolve } = useCredentialVault();
 
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [resp, setResp] = useState<any>(null)
-  const [respTab, setRespTab] = useState<'body'|'headers'|'raw'>('body')
+  const [showHeaders, setShowHeaders] = useState(false);
+  const [showBody, setShowBody] = useState(false);
+  const [showTest, setShowTest] = useState(false);
+
 
   const url = watch('url')
   const method = watch('method', 'POST')
-  const query = watch('query', [])
   const headers = watch('headers', [])
   const body = watch('body', '')
-  const auth = watch('auth', {type: 'none'})
 
   const jsonError = useMemo(() => {
     if (!body || body.trim() === '') return null
     try { JSON.parse(body) } catch (e: any) { return e?.message || 'Invalid JSON' }
     return null
   }, [body])
-
-  async function handleCredentialChange(id?: string) {
-    setValue('auth.credentialId', id)
-    if(!id) {
-        setValue('auth', {type: 'none'})
-        return
-    }
-    const secret = await resolve(id)
-    // You would fetch the full credential summary here to get its type
-    // For now, we'll assume the type from the secret shape
-    if (secret.token) {
-        setValue('auth', {type: 'bearer', token: secret.token, credentialId: id})
-    } else if (secret.username) {
-        setValue('auth', {type: 'basic', ...secret, credentialId: id})
-    } else if (secret.key) {
-        setValue('auth', {type: 'apiKey', ...secret, credentialId: id})
-    }
-  }
 
   async function runTest() {
     setBusy(true); setError(null); setResp(null)
@@ -63,7 +45,7 @@ export default function APITab() {
 
       const result = await sendTestRequest({ url, method, headers, body })
       setResp(result)
-    } catch (e: any) {
+    } catch (e: any) => {
       setError(e?.message || 'Test failed')
     } finally {
       setBusy(false)
@@ -72,59 +54,97 @@ export default function APITab() {
 
   return (
     <div className={styles.tabBody}>
-        <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-2">
-                <Label>Method</Label>
+        <div className="space-y-1">
+            <Label>URL & Method</Label>
+            <div className="flex gap-2">
                 <Select value={method} onValueChange={(v) => setValue('method', v)}>
-                    <SelectTrigger><SelectValue/></SelectTrigger>
+                    <SelectTrigger className="w-[100px]"><SelectValue/></SelectTrigger>
                     <SelectContent>
                         {(['GET','POST','PUT','PATCH','DELETE'] as Method[]).map(m => <SelectItem key={m} value={m}>{m}</SelectItem>)}
                     </SelectContent>
                 </Select>
-            </div>
-             <div className="space-y-2">
-                <Label>Credential</Label>
-                <CredentialSelector value={auth.credentialId} onChange={handleCredentialChange} />
+                <Input id="url" {...register('url')} placeholder="https://" />
+                <Button variant="secondary">Variables</Button>
             </div>
         </div>
-        <div className="space-y-2">
-            <Label htmlFor='url'>URL</Label>
-            <Input id="url" {...register('url')} />
-        </div>
-        <KeyValueEditor label="Query Params" items={query} onChange={(v) => setValue('query', v)} />
-        <KeyValueEditor label="Headers" items={headers} onChange={(v) => setValue('headers', v)} />
 
-        <div className="space-y-2">
-            <div className="flex justify-between items-center">
-                <Label>Body (JSON)</Label>
-                {jsonError ? <span className={styles.warn}>Invalid JSON</span> : <span className={styles.ok}>Valid</span>}
-            </div>
-            <CodeMirror
-                value={body}
-                onChange={(v) => setValue('body', v)}
-                extensions={[cmJson()]}
-                height="150px"
-                theme={oneDark}
-            />
-        </div>
-
-        {error && <div className={styles.warn}>⚠ {error}</div>}
-        <Button disabled={busy || !url || !!jsonError} onClick={runTest}>
-            {busy && <Loader2 className="mr-2 h-4 w-4 animate-spin"/>}
-            Send Test Request
-        </Button>
-
-        {resp && (
-            <div className="border rounded-lg p-4 mt-4 space-y-2">
-                <div className="flex justify-between items-center">
-                    <div className="flex gap-2">
-                        <span className={resp.statusCode >= 200 && resp.statusCode < 300 ? "text-green-500" : "text-red-500"}>HTTP {resp.statusCode}</span>
-                        <span>{resp.latencyMs} ms</span>
-                    </div>
+        <hr />
+        
+        <Collapsible open={showHeaders} onOpenChange={setShowHeaders}>
+            <div className="flex items-center justify-between">
+                <div>
+                    <h4 className="font-semibold">Customize Headers</h4>
+                    <p className="text-xs text-muted-foreground">Add headers to your request (example: Content-Type: application/json)</p>
                 </div>
-                 <pre className="bg-muted p-2 rounded-md overflow-auto text-xs">{JSON.stringify(resp.body, null, 2)}</pre>
+                <CollapsibleTrigger asChild>
+                    <Switch checked={showHeaders} onCheckedChange={setShowHeaders} />
+                </CollapsibleTrigger>
             </div>
-        )}
+             <p className="text-xs text-orange-500 mt-1">(User-Agent is not sent as a header by default. make sure you include it if necessary.)</p>
+            <CollapsibleContent className="mt-4">
+                 <KeyValueEditor items={headers} onChange={(v) => setValue('headers', v)} />
+            </CollapsibleContent>
+        </Collapsible>
+
+        <hr />
+
+        <Collapsible open={showBody} onOpenChange={setShowBody}>
+            <div className="flex items-center justify-between">
+                <h4 className="font-semibold">Customize Body</h4>
+                <CollapsibleTrigger asChild>
+                     <Switch checked={showBody} onCheckedChange={setShowBody} />
+                </CollapsibleTrigger>
+            </div>
+            <CollapsibleContent className="mt-4">
+                <div className="space-y-2">
+                    <div className="flex justify-between items-center">
+                        <Label>Body (JSON)</Label>
+                        {jsonError ? <span className={styles.warn}>Invalid JSON</span> : <span className={styles.ok}>Valid</span>}
+                    </div>
+                    <CodeMirror
+                        value={body}
+                        onChange={(v) => setValue('body', v)}
+                        extensions={[cmJson()]}
+                        height="150px"
+                        theme={oneDark}
+                    />
+                </div>
+            </CollapsibleContent>
+        </Collapsible>
+
+        <hr />
+
+        <Collapsible open={showTest} onOpenChange={setShowTest}>
+            <div className="flex items-center justify-between">
+                 <div>
+                    <h4 className="font-semibold">Test Your Request</h4>
+                    <p className="text-xs text-muted-foreground">Manually set values for test variables</p>
+                </div>
+                <CollapsibleTrigger asChild>
+                    <Switch checked={showTest} onCheckedChange={setShowTest} />
+                </CollapsibleTrigger>
+            </div>
+            <p className="text-xs text-orange-500 mt-1">(If your request contains variables, you can manually set their values for testing purposes.)</p>
+            <CollapsibleContent className="mt-4">
+                {error && <div className={styles.warn}>⚠ {error}</div>}
+                <Button disabled={busy || !url || (showBody && !!jsonError)} onClick={runTest} className="bg-green-600 hover:bg-green-700 text-white">
+                    {busy && <Loader2 className="mr-2 h-4 w-4 animate-spin"/>}
+                    Test the request
+                </Button>
+                {resp && (
+                    <div className="border rounded-lg p-4 mt-4 space-y-2">
+                        <div className="flex justify-between items-center">
+                            <div className="flex gap-2">
+                                <span className={resp.statusCode >= 200 && resp.statusCode < 300 ? "text-green-500" : "text-red-500"}>HTTP {resp.statusCode}</span>
+                                <span>{resp.latencyMs} ms</span>
+                            </div>
+                        </div>
+                         <pre className="bg-muted p-2 rounded-md overflow-auto text-xs">{JSON.stringify(resp.body, null, 2)}</pre>
+                    </div>
+                )}
+            </CollapsibleContent>
+        </Collapsible>
+
     </div>
   )
 }
