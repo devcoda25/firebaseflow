@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import type { Node, Edge, NodeChange, EdgeChange, Connection } from 'reactflow';
 import { applyNodeChanges, applyEdgeChanges, addEdge } from 'reactflow';
-import { Rocket } from 'lucide-react';
+import { nanoid } from 'nanoid';
 
 export type Channel =
   | 'whatsapp'
@@ -39,6 +39,8 @@ interface FlowState {
   onEdgesChange: (changes: EdgeChange[]) => void;
   onConnect: (connection: Connection) => void;
   addNode: (node: Node) => void;
+  deleteNode: (nodeId: string) => void;
+  duplicateNode: (nodeId: string) => void;
 }
 
 const initialNodes: Node[] = [
@@ -91,5 +93,28 @@ export const useFlowStore = create<FlowState>((set, get) => ({
     set({
       nodes: get().nodes.concat(node),
     });
+  },
+  deleteNode: (nodeId) => {
+    set((state) => ({
+      nodes: state.nodes.filter((n) => n.id !== nodeId),
+      edges: state.edges.filter((e) => e.source !== nodeId && e.target !== nodeId),
+    }));
+  },
+  duplicateNode: (nodeId) => {
+    const { nodes } = get();
+    const nodeToDuplicate = nodes.find((n) => n.id === nodeId);
+    if (!nodeToDuplicate) return;
+
+    const newNode = {
+      ...nodeToDuplicate,
+      id: nanoid(),
+      position: {
+        x: nodeToDuplicate.position.x + 30,
+        y: nodeToDuplicate.position.y + 30,
+      },
+      selected: false,
+    };
+
+    set({ nodes: [...nodes, newNode] });
   },
 }));

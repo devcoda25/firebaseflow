@@ -2,13 +2,21 @@ import React, { useState } from 'react'
 import { Handle, Position } from 'reactflow'
 import styles from '../canvas-layout.module.css'
 import NodeAvatars from '@/components/Presence/NodeAvatars';
-import { MoreHorizontal, Trash2 } from 'lucide-react';
+import { MoreHorizontal, Trash2, Copy } from 'lucide-react';
 import * as LucideIcons from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import ImageAttachmentModal from '@/components/PropertiesPanel/partials/ImageAttachmentModal';
 import VideoAttachmentModal from '@/components/PropertiesPanel/partials/VideoAttachmentModal';
 import DocumentAttachmentModal from '@/components/PropertiesPanel/partials/DocumentAttachmentModal';
 import AudioAttachmentModal from '@/components/PropertiesPanel/partials/AudioAttachmentModal';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
+import { useFlowStore } from '@/store/flow';
+
 
 export type BaseNodeData = {
   label: string
@@ -23,6 +31,7 @@ export type BaseNodeData = {
 export default function BaseNode({ id, data, selected }: { id: string; data: BaseNodeData; selected: boolean }) {
   const [message, setMessage] = useState(data.content || 'Got it! I just need some information from you to look up your order.');
   const [modal, setModal] = useState<'image' | 'video' | 'document' | 'audio' | null>(null);
+  const { deleteNode, duplicateNode } = useFlowStore.getState();
   
   const customStyle = {
     '--node-color': data.color || 'hsl(var(--primary))'
@@ -55,7 +64,21 @@ export default function BaseNode({ id, data, selected }: { id: string; data: Bas
             </span>
             <span className={styles.nodeTitle} title={data.label}>{data.label}</span>
         </div>
-        <button className={styles.nodeMore}><MoreHorizontal size={18}/></button>
+        <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+                <button className={styles.nodeMore}><MoreHorizontal size={18}/></button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+                <DropdownMenuItem onClick={() => duplicateNode(id)}>
+                    <Copy className="mr-2 h-4 w-4" />
+                    <span>Copy</span>
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => deleteNode(id)} className="text-red-600">
+                    <Trash2 className="mr-2 h-4 w-4" />
+                    <span>Delete</span>
+                </DropdownMenuItem>
+            </DropdownMenuContent>
+        </DropdownMenu>
       </div>
       <div className={styles.nodeBody}>
         {isMessageNode ? (
