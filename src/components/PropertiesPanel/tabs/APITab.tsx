@@ -64,7 +64,7 @@ export default function APITab() {
                     </SelectContent>
                 </Select>
                 <Input id="url" {...register('url')} placeholder="https://..." />
-                <Button variant="secondary">Variables</Button>
+                <Button className="bg-green-600 hover:bg-green-700 text-white">Variables</Button>
             </div>
         </div>
 
@@ -76,9 +76,12 @@ export default function APITab() {
                     <h4 className="font-semibold">Customize Headers</h4>
                     <p className="text-xs text-muted-foreground">Add headers to your request (example: Content-Type: application/json)</p>
                 </div>
-                <CollapsibleTrigger asChild>
-                    <Switch checked={showHeaders} onCheckedChange={setShowHeaders} />
-                </CollapsibleTrigger>
+                <div className="flex items-center gap-2">
+                    <span className="text-xs text-muted-foreground">Optional</span>
+                    <CollapsibleTrigger asChild>
+                        <Switch id="show-headers" checked={showHeaders} onCheckedChange={setShowHeaders} />
+                    </CollapsibleTrigger>
+                </div>
             </div>
              <p className="text-xs text-orange-500 mt-1">(User-Agent is not sent as a header by default. make sure you include it if necessary.)</p>
             <CollapsibleContent className="mt-4">
@@ -91,9 +94,12 @@ export default function APITab() {
         <Collapsible open={showBody} onOpenChange={setShowBody}>
             <div className="flex items-center justify-between">
                 <h4 className="font-semibold">Customize Body</h4>
-                <CollapsibleTrigger asChild>
-                     <Switch checked={showBody} onCheckedChange={setShowBody} />
-                </CollapsibleTrigger>
+                <div className="flex items-center gap-2">
+                    <span className="text-xs text-muted-foreground">Optional</span>
+                    <CollapsibleTrigger asChild>
+                         <Switch id="show-body" checked={showBody} onCheckedChange={setShowBody} />
+                    </CollapsibleTrigger>
+                </div>
             </div>
             <CollapsibleContent className="mt-4">
                 <div className="space-y-2">
@@ -120,9 +126,12 @@ export default function APITab() {
                     <h4 className="font-semibold">Test Your Request</h4>
                     <p className="text-xs text-muted-foreground">Manually set values for test variables</p>
                 </div>
-                <CollapsibleTrigger asChild>
-                    <Switch checked={showTest} onCheckedChange={setShowTest} />
-                </CollapsibleTrigger>
+                <div className="flex items-center gap-2">
+                    <span className="text-xs text-muted-foreground">Optional</span>
+                    <CollapsibleTrigger asChild>
+                        <Switch id="show-test" checked={showTest} onCheckedChange={setShowTest} />
+                    </CollapsibleTrigger>
+                </div>
             </div>
             <p className="text-xs text-orange-500 mt-1">(If your request contains variables, you can manually set their values for testing purposes.)</p>
             <CollapsibleContent className="mt-4">
