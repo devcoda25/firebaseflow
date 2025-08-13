@@ -48,47 +48,46 @@ export const SECTION_DATA: SectionDefinition[] = [
     key: 'triggers',
     title: 'Triggers',
     items: [
-        { key: 'getStarted',  label: 'Get Started', icon: 'Rocket', type: 'triggers', color: '262 83% 58%', description: 'Triggered when a user starts a conversation' },
-        { key: 'schedule', label: 'Schedule',  icon: 'Clock', type: 'triggers',   color: '262 83% 58%', description: 'Triggered at a specific time or interval' },
-        { key: 'webhook',    label: 'Webhook',icon: 'Webhook', type: 'triggers',   color: '262 83% 58%', description: 'Triggered by an external HTTP request' },
+        { key: 'getStarted',  label: 'Get Started', icon: 'Rocket', type: 'triggers', color: 'hsl(262 83% 58%)', description: 'Triggered when a user starts a conversation' },
+        { key: 'schedule', label: 'Schedule',  icon: 'Clock', type: 'triggers',   color: 'hsl(262 83% 58%)', description: 'Triggered at a specific time or interval' },
+        { key: 'webhook',    label: 'Webhook',icon: 'Webhook', type: 'triggers',   color: 'hsl(262 83% 58%)', description: 'Triggered by an external HTTP request' },
     ]
   },
   {
     key: 'messaging',
     title: 'Messaging',
     items: [
-        { key: 'sendMessage', label: 'Send a Message', icon: 'Send', type: 'messaging', color: '262 83% 58%', description: 'Send a simple text message' },
-        { key: 'sendTemplate', label: 'Send Template', icon: 'Mailbox', type: 'messaging', color: '262 83% 58%', description: 'Send a pre-approved template message', channels: ['whatsapp'] },
-        { key: 'sendMedia', label: 'Send Media', icon: 'Image', type: 'messaging', color: '262 83% 58%', description: 'Send an image, video, or document' },
-        { key: 'sendCarousel', label: 'Send Carousel', icon: 'Copy', type: 'messaging', color: '262 83% 58%', description: 'Send a horizontally scrollable carousel of items' },
+        { key: 'message', label: 'Message', icon: 'Send', type: 'messaging', color: 'hsl(262 83% 58%)', description: 'Send text, media, or interactive messages' },
+        { key: 'sendTemplate', label: 'Send Template', icon: 'Mailbox', type: 'messaging', color: 'hsl(262 83% 58%)', description: 'Send a pre-approved template message', channels: ['whatsapp'] },
+        { key: 'sendCarousel', label: 'Send Carousel', icon: 'Copy', type: 'messaging', color: 'hsl(262 83% 58%)', description: 'Send a horizontally scrollable carousel of items' },
     ]
   },
   {
     key: 'inputs',
     title: 'User Inputs',
     items: [
-        { key: 'askQuestion', label: 'Ask a Question', icon: 'HelpCircle', type: 'inputs', color: '262 83% 58%', description: 'Ask a question and wait for a user reply' },
-        { key: 'waitForInput', label: 'Wait for Input', icon: 'PauseCircle', type: 'inputs', color: '262 83% 58%', description: 'Wait for any user input before proceeding' },
-        { key: 'quickReplies', label: 'Quick Replies', icon: 'MessageCircleReply', type: 'inputs', color: '262 83% 58%', description: 'Present buttons for quick user responses' },
-        { key: 'listMenu', label: 'List Menu', icon: 'List', type: 'inputs', color: '262 83% 58%', description: 'Show a selectable list of options' },
+        { key: 'askQuestion', label: 'Ask a Question', icon: 'HelpCircle', type: 'inputs', color: 'hsl(262 83% 58%)', description: 'Ask a question and wait for a user reply' },
+        { key: 'waitForInput', label: 'Wait for Input', icon: 'PauseCircle', type: 'inputs', color: 'hsl(262 83% 58%)', description: 'Wait for any user input before proceeding' },
+        { key: 'quickReplies', label: 'Quick Replies', icon: 'MessageCircleReply', type: 'inputs', color: 'hsl(262 83% 58%)', description: 'Present buttons for quick user responses' },
+        { key: 'listMenu', label: 'List Menu', icon: 'List', type: 'inputs', color: 'hsl(262 83% 58%)', description: 'Show a selectable list of options' },
     ]
   },
   {
     key: 'logic',
     title: 'Logic & Flow',
     items: [
-        { key: 'condition', label: 'Condition', icon: 'GitFork', type: 'logic', color: '262 83% 58%', description: 'Branch the flow based on conditions' },
-        { key: 'delay', label: 'Delay', icon: 'Timer', type: 'logic', color: '262 83% 58%', description: 'Pause the flow for a specific duration' },
-        { key: 'subflow', label: 'Sub-flow', icon: 'GitBranchPlus', type: 'logic', color: '262 83% 58%', description: 'Execute another flow and then return' },
+        { key: 'condition', label: 'Condition', icon: 'GitFork', type: 'logic', color: 'hsl(262 83% 58%)', description: 'Branch the flow based on conditions' },
+        { key: 'delay', label: 'Delay', icon: 'Timer', type: 'logic', color: 'hsl(262 83% 58%)', description: 'Pause the flow for a specific duration' },
+        { key: 'subflow', label: 'Sub-flow', icon: 'GitBranchPlus', type: 'logic', color: 'hsl(262 83% 58%)', description: 'Execute another flow and then return' },
     ]
   },
   {
     key: 'integrations',
     title: 'Integrations',
     items: [
-        { key: 'apiCallout', label: 'API Callout', icon: 'CloudUpload', type: 'integrations', color: '262 83% 58%', description: 'Make an HTTP request to an external service' },
-        { key: 'handoff', label: 'Handoff to Agent', icon: 'UserCheck', type: 'integrations', color: '262 83% 58%', description: 'Transfer the conversation to a human agent' },
-        { key: 'analytics', label: 'Log Event', icon: 'BarChart3', type: 'integrations', color: '262 83% 58%', description: 'Log a custom event to your analytics platform' },
+        { key: 'apiCallout', label: 'API Callout', icon: 'CloudUpload', type: 'integrations', color: 'hsl(262 83% 58%)', description: 'Make an HTTP request to an external service' },
+        { key: 'handoff', label: 'Handoff to Agent', icon: 'UserCheck', type: 'integrations', color: 'hsl(262 83% 58%)', description: 'Transfer the conversation to a human agent' },
+        { key: 'analytics', label: 'Log Event', icon: 'BarChart3', type: 'integrations', color: 'hsl(262 83% 58%)', description: 'Log a custom event to your analytics platform' },
     ]
   }
 ]
