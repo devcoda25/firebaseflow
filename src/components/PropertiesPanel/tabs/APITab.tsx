@@ -45,7 +45,7 @@ export default function APITab() {
 
       const result = await sendTestRequest({ url, method, headers, body })
       setResp(result)
-    } catch (e: any) => {
+    } catch (e: any) {
       setError(e?.message || 'Test failed')
     } finally {
       setBusy(false)
@@ -63,12 +63,12 @@ export default function APITab() {
                         {(['GET','POST','PUT','PATCH','DELETE'] as Method[]).map(m => <SelectItem key={m} value={m}>{m}</SelectItem>)}
                     </SelectContent>
                 </Select>
-                <Input id="url" {...register('url')} placeholder="https://" />
+                <Input id="url" {...register('url')} placeholder="https://..." />
                 <Button variant="secondary">Variables</Button>
             </div>
         </div>
 
-        <hr />
+        <hr className={styles.hr} />
         
         <Collapsible open={showHeaders} onOpenChange={setShowHeaders}>
             <div className="flex items-center justify-between">
@@ -86,7 +86,7 @@ export default function APITab() {
             </CollapsibleContent>
         </Collapsible>
 
-        <hr />
+        <hr className={styles.hr} />
 
         <Collapsible open={showBody} onOpenChange={setShowBody}>
             <div className="flex items-center justify-between">
@@ -112,7 +112,7 @@ export default function APITab() {
             </CollapsibleContent>
         </Collapsible>
 
-        <hr />
+        <hr className={styles.hr} />
 
         <Collapsible open={showTest} onOpenChange={setShowTest}>
             <div className="flex items-center justify-between">
