@@ -82,7 +82,7 @@
   border: 1px solid hsl(var(--border));
   color: hsl(var(--card-foreground));
   box-shadow: 0 4px 16px hsla(var(--foreground), 0.07);
-  min-width: 250px;
+  min-width: 320px;
 }
 
 .nodeHeader {
@@ -147,4 +147,67 @@
 }
 .controls button svg {
     @apply w-5 h-5;
+}
+
+.messageNodeBody {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.messageContent {
+  position: relative;
+  background: hsl(var(--muted));
+  border-radius: 8px;
+  padding: 12px;
+}
+
+.messageTextarea {
+  width: 100%;
+  background: transparent;
+  border: none;
+  resize: none;
+  font-size: 14px;
+  color: hsl(var(--foreground));
+}
+.messageTextarea:focus {
+  outline: none;
+}
+
+.deleteButton {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  background: hsl(var(--background));
+  border: 1px solid hsl(var(--border));
+  color: hsl(var(--muted-foreground));
+  border-radius: 999px;
+  width: 28px;
+  height: 28px;
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+}
+.deleteButton:hover {
+  background: hsl(var(--destructive) / 0.1);
+  color: hsl(var(--destructive));
+}
+
+.messageButtons {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+}
+.messageButtons > button:nth-child(n+4) {
+    grid-column: span 1;
+}
+
+.messageButtons > button {
+    background-color: hsl(145 63% 49% / 0.1);
+    color: hsl(145 63% 42%);
+    border-color: hsl(145 63% 49% / 0.2);
+    font-weight: 500;
+}
+.messageButtons > button:hover {
+    background-color: hsl(145 63% 49% / 0.2);
 }

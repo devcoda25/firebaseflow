@@ -57,9 +57,9 @@ export const SECTION_DATA: SectionDefinition[] = [
     key: 'messaging',
     title: 'Messaging',
     items: [
-        { key: 'message', label: 'Message', icon: 'Send', type: 'messaging', color: 'hsl(262 83% 58%)', description: 'Send text, media, or interactive messages' },
-        { key: 'sendTemplate', label: 'Send Template', icon: 'Mailbox', type: 'messaging', color: 'hsl(262 83% 58%)', description: 'Send a pre-approved template message', channels: ['whatsapp'] },
-        { key: 'sendCarousel', label: 'Send Carousel', icon: 'Copy', type: 'messaging', color: 'hsl(262 83% 58%)', description: 'Send a horizontally scrollable carousel of items' },
+        { key: 'message', label: 'Message', icon: 'Send', type: 'messaging', color: 'hsl(16 84% 62%)', description: 'Send text, media, or interactive messages' },
+        { key: 'sendTemplate', label: 'Send Template', icon: 'Mailbox', type: 'messaging', color: 'hsl(16 84% 62%)', description: 'Send a pre-approved template message', channels: ['whatsapp'] },
+        { key: 'sendCarousel', label: 'Send Carousel', icon: 'Copy', type: 'messaging', color: 'hsl(16 84% 62%)', description: 'Send a horizontally scrollable carousel of items' },
     ]
   },
   {
