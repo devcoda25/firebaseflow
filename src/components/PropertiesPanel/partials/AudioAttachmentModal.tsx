@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -23,6 +23,7 @@ export default function AudioAttachmentModal({
   media
 }: AudioAttachmentModalProps) {
   const [url, setUrl] = useState('');
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     if (media) {
@@ -30,11 +31,26 @@ export default function AudioAttachmentModal({
     } else {
       setUrl('');
     }
-  }, [media]);
+  }, [media, isOpen]);
 
   const handleSave = () => {
     if (!url) return;
     onSave({ type: 'audio', url });
+  };
+
+  const handleUploadClick = () => {
+    fileInputRef.current?.click();
+  };
+
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        setUrl(e.target?.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
   };
 
   return (
@@ -56,7 +72,14 @@ export default function AudioAttachmentModal({
             <Input id="audio-url" value={url} onChange={e => setUrl(e.target.value)} placeholder="https://example.com/audio.mp3" />
           </div>
           <div className="text-center text-sm text-muted-foreground">or</div>
-          <Button variant="outline" type="button">Upload from device</Button>
+          <input
+            type="file"
+            ref={fileInputRef}
+            onChange={handleFileChange}
+            className="hidden"
+            accept="audio/*"
+          />
+          <Button variant="outline" type="button" onClick={handleUploadClick}>Upload from device</Button>
         </div>
         <DialogFooter className="justify-between">
           <div>

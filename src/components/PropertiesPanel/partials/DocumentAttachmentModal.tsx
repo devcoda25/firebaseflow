@@ -1,9 +1,8 @@
-import React, { useState, useEffect } from 'react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
+import React, { useState, useEffect, useRef } from 'react';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { File, FileText, FileSpreadsheet, FileJson, FileQuestion } from 'lucide-react';
 
 type Media = { type: 'document', url: string, name?: string };
@@ -39,6 +38,7 @@ export default function DocumentAttachmentModal({
 }: DocumentAttachmentModalProps) {
   const [url, setUrl] = useState('');
   const [name, setName] = useState('');
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     if (media) {
@@ -48,11 +48,27 @@ export default function DocumentAttachmentModal({
       setUrl('');
       setName('');
     }
-  }, [media]);
+  }, [media, isOpen]);
 
   const handleSave = () => {
     if (!url) return;
     onSave({ type: 'document', url, name });
+  };
+  
+  const handleUploadClick = () => {
+    fileInputRef.current?.click();
+  };
+
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        setUrl(e.target?.result as string);
+        setName(file.name);
+      };
+      reader.readAsDataURL(file);
+    }
   };
 
   return (
@@ -60,6 +76,7 @@ export default function DocumentAttachmentModal({
       <DialogContent>
         <DialogHeader>
           <DialogTitle>Attach Document</DialogTitle>
+          <DialogDescription>Add a document to your message. Provide a URL or upload a file.</DialogDescription>
         </DialogHeader>
         <div className="grid gap-4 py-4">
           <div className="flex items-center justify-center h-40 bg-muted rounded-md">
@@ -73,6 +90,15 @@ export default function DocumentAttachmentModal({
             <Label htmlFor="doc-name">File Name (optional)</Label>
             <Input id="doc-name" value={name} onChange={(e) => setName(e.target.value)} placeholder="Annual Report.pdf" />
           </div>
+          <div className="text-center text-sm text-muted-foreground">or</div>
+          <input
+            type="file"
+            ref={fileInputRef}
+            onChange={handleFileChange}
+            className="hidden"
+            accept=".pdf,.doc,.docx,.txt,.csv,.xlsx,.json"
+          />
+          <Button variant="outline" type="button" onClick={handleUploadClick}>Upload from device</Button>
         </div>
         <DialogFooter className="justify-between">
           <div>
