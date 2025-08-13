@@ -8,7 +8,6 @@ import { nanoid } from 'nanoid';
 import HeaderBar from '@/components/HeaderBar';
 import SidebarPalette, { PaletteItemPayload } from '@/components/SidebarPalette';
 import CanvasWithLayoutWorker from '@/components/CanvasWithLayoutWorker';
-import styles from './studio.module.css';
 import PropertiesPanel from '@/components/PropertiesPanel';
 import { useFlowStore } from '@/store/flow';
 import TestConsole from '@/components/TestConsole';
@@ -75,27 +74,29 @@ function StudioPageContent() {
   };
 
   return (
-    <div className={styles.shell}>
+    <div className="grid h-screen grid-cols-[320px_1fr] grid-rows-[56px_1fr] bg-background text-foreground relative overflow-hidden lg:grid-cols-[280px_1fr] md:grid-cols-[76px_1fr] sm:grid-cols-1 sm:grid-rows-[56px_1fr]">
       <PublishBanner />
-      <HeaderBar
-        title={meta.title}
-        onSave={setTitle}
-        channels={meta.channels}
-        onChannelsChange={setChannels}
-        waContext={meta.waMessageContext}
-        onWaContextChange={setWaContext}
-        isPublished={meta.published}
-        onPublishToggle={setPublished}
-        onUndo={undo}
-        onRedo={redo}
-        canUndo={canUndo}
-        canRedo={canRedo}
-        onTest={toggleTestConsole}
-      />
-      <aside className={styles.sidebar}>
+      <div className="col-span-full row-start-1 z-10">
+        <HeaderBar
+            title={meta.title}
+            onSave={setTitle}
+            channels={meta.channels}
+            onChannelsChange={setChannels}
+            waContext={meta.waMessageContext}
+            onWaContextChange={setWaContext}
+            isPublished={meta.published}
+            onPublishToggle={setPublished}
+            onUndo={undo}
+            onRedo={redo}
+            canUndo={canUndo}
+            canRedo={canRedo}
+            onTest={toggleTestConsole}
+        />
+      </div>
+      <aside className="col-start-1 row-start-2 overflow-hidden border-r border-border z-10 sm:hidden">
         <SidebarPalette onDragStart={handleDragStart} onItemClick={handleClickAdd} filterChannels={meta.channels} />
       </aside>
-      <main className={styles.main}>
+      <main className="col-start-2 row-start-2 relative overflow-hidden sm:col-start-1">
         <CanvasWithLayoutWorker
           nodes={nodes}
           edges={edges}

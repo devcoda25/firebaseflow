@@ -2,14 +2,10 @@
 'use client';
 
 import React, { useMemo } from 'react';
-import styles from './sidebar-palette.module.css';
 import { SECTION_DATA, SectionDefinition, ItemDefinition, PaletteItemPayload, Channel } from './sections-data';
 import * as LucideIcons from 'lucide-react';
+import { cn } from '@/lib/utils';
 
-/** Tiny class combiner (no external dep). */
-function cn(...parts: Array<string | false | undefined>) {
-  return parts.filter(Boolean).join(' ');
-}
 
 export type SidebarPaletteProps = {
   onDragStart: (e: React.DragEvent, item: PaletteItemPayload) => void;
@@ -46,8 +42,11 @@ export default function SidebarPalette({
     e.dataTransfer.setData('text/plain', item.label);
 
     const ghost = document.createElement('div');
-    ghost.className = styles.dragGhost;
-    ghost.innerHTML = `<span role="img" aria-hidden="true">${item.icon}</span> <div><p>${item.label}</p><small>${item.description || ''}</small></div>`;
+    ghost.className = "fixed top-0 left-0 pointer-events-none p-3 rounded-lg shadow-xl flex items-center gap-3 z-[9999]";
+    ghost.style.background = item.color || 'hsl(var(--card))';
+    ghost.style.color = 'white';
+    ghost.style.fontWeight = '600';
+    ghost.innerHTML = `<span role="img" aria-hidden="true" class="text-2xl">${item.icon}</span> <div><p class="text-base">${item.label}</p><small class="text-sm opacity-80 font-normal">${item.description || ''}</small></div>`;
     document.body.appendChild(ghost);
     e.dataTransfer.setDragImage(ghost, -10, -10);
     setTimeout(() => document.body.removeChild(ghost), 0);
@@ -61,15 +60,15 @@ export default function SidebarPalette({
   }
   
   return (
-    <aside className={cn(styles.root, className)} aria-label="Node palette">
-        <div className={styles.grid}>
+    <aside className={cn("h-full flex flex-col bg-sidebar text-sidebar-foreground p-4 gap-6 overflow-y-auto", className)} aria-label="Node palette">
+        <div className="grid grid-cols-2 gap-3">
             {allItems.map(item => {
                  const Icon = typeof item.icon === 'string' ? (LucideIcons as any)[item.icon] : item.icon;
                  return (
                  <button
                     key={item.key}
                     type="button"
-                    className={styles.item}
+                    className="flex flex-col items-center text-center gap-2 p-4 rounded-lg bg-sidebar-accent text-sidebar-foreground cursor-grab user-select-none transition-all duration-200 ease-in-out border border-sidebar-border hover:bg-primary/10 hover:border-primary hover:text-primary-foreground hover:-translate-y-0.5 active:cursor-grabbing active:scale-[0.98] active:translate-y-0 active:bg-primary/20"
                     style={{'--item-color': item.color} as React.CSSProperties}
                     draggable
                     onDragStart={(e) => handleDragStart(e, item)}
@@ -77,8 +76,8 @@ export default function SidebarPalette({
                     aria-label={`Add ${item.label}`}
                     title={item.label}
                   >
-                    {Icon ? <Icon className={styles.icon} /> : <span className={styles.icon}>?</span>}
-                    <span className={styles.label}>{item.label}</span>
+                    {Icon ? <Icon className="text-3xl opacity-90 leading-none" style={{color: 'var(--item-color)'}} /> : <span className="text-3xl opacity-90 leading-none">?</span>}
+                    <span className="text-xs font-medium leading-snug">{item.label}</span>
                   </button>
                  )
             })}
