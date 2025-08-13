@@ -93,7 +93,7 @@ function StudioPageContent() {
             onTest={toggleTestConsole}
         />
       </div>
-      <aside className="hidden md:block col-start-1 row-start-2 overflow-y-auto border-r border-border z-10 bg-background p-4">
+      <aside className="hidden md:block col-start-1 row-start-2 overflow-y-auto border-r border-border z-10 bg-background p-4 sidebar-scroll">
         <SidebarPalette onDragStart={handleDragStart} onItemClick={handleClickAdd} filterChannels={meta.channels} />
       </aside>
       <main className="md:col-start-2 row-start-2 col-start-1 relative overflow-hidden">
