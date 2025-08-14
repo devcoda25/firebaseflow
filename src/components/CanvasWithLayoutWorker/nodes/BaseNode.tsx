@@ -194,10 +194,10 @@ export default function BaseNode({ id, data, selected }: { id: string; data: Bas
             })}
              {branchCount === 0 && (
                 <>
-                    <Handle type="source" position={Position.Right} id="true" className={styles.handle} style={{ top: '33%' }} />
-                    <div className={styles.handleLabel} style={{ top: '33%' }}>True</div>
-                    <Handle type="source" position={Position.Right} id="false" className={styles.handle} style={{ top: '66%' }} />
-                    <div className={styles.handleLabel} style={{ top: '66%' }}>False</div>
+                    <Handle type="source" position={Position.Right} id="true" className={styles.handle} style={{ top: '33.3%' }} />
+                    <div className={styles.handleLabel} style={{ top: '33.3%' }}>True</div>
+                    <Handle type="source" position={Position.Right} id="false" className={styles.handle} style={{ top: '66.6%' }} />
+                    <div className={styles.handleLabel} style={{ top: '66.6%' }}>False</div>
                 </>
              )}
         </>
