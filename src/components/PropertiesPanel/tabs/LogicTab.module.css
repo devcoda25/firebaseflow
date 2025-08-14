@@ -1,0 +1,58 @@
+.conditionGroup {
+    background-color: hsl(var(--muted));
+    border-radius: var(--radius);
+    padding: 16px;
+    border: 1px solid hsl(var(--border));
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.conditionRow {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+}
+
+.ifClause {
+    font-weight: 600;
+    font-size: 14px;
+    color: hsl(var(--foreground));
+    padding-top: 8px;
+    flex-shrink: 0;
+}
+
+.inputWithIcon {
+    position: relative;
+    width: 100%;
+}
+
+.inputIcon {
+    position: absolute;
+    left: 8px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: hsl(var(--muted-foreground));
+    width: 16px;
+    height: 16px;
+}
+
+.variablesButton {
+    background-color: #22c55e; /* green-500 */
+    color: white;
+    border-color: #16a34a; /* green-600 */
+    flex-shrink: 0;
+}
+.variablesButton:hover {
+    background-color: #16a34a; /* green-600 */
+}
+
+.addButton {
+    align-self: flex-start;
+    border-style: dashed;
+    border-color: #22c55e; /* green-500 */
+    color: #22c55e; /* green-500 */
+}
+.addButton:hover {
+    background-color: #22c55e1a;
+}
