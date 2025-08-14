@@ -30,6 +30,7 @@ export type BaseNodeData = {
   content?: string;
   media?: { type: 'image' | 'video' | 'document' | 'audio', url: string, name?: string };
   branches?: { id: string; label: string; conditions: any[] }[];
+  groups?: { type: 'and' | 'or', conditions: { variable: string, operator: string, value: string }[] }[];
 }
 
 export default function BaseNode({ id, data, selected }: { id: string; data: BaseNodeData; selected: boolean }) {
@@ -62,12 +63,12 @@ export default function BaseNode({ id, data, selected }: { id: string; data: Bas
     setModal(null);
   }
 
-  const branchCount = data.branches?.length || 0;
-
-  const getConditionString = (conditions: any[] | undefined): string => {
-    if (!conditions || conditions.length === 0) return '';
-    return conditions.map(c => `${c.variable || ''} ${c.operator || ''} ${c.value || ''}`).join(' AND ');
+  const getConditionString = (condition: { variable?: string, operator?: string, value?: string }): string => {
+    if (!condition) return '';
+    return `${condition.variable || ''} ${condition.operator || ''} ${condition.value || ''}`;
   }
+
+  const hasConditions = data.groups && data.groups.some(g => g.conditions && g.conditions.length > 0);
 
   return (
     <div className={styles.baseNode} style={customStyle} aria-selected={selected}>
@@ -131,12 +132,20 @@ export default function BaseNode({ id, data, selected }: { id: string; data: Bas
             </div>
           ) : isConditionNode ? (
             <div className={styles.conditionBody}>
-              {branchCount > 0 ? (
-                data.branches?.map(branch => (
-                  <div key={branch.id} className={styles.branchRow}>
-                    <Badge variant="secondary" className="truncate" title={branch.label}>{branch.label}</Badge>
-                    <code className={styles.branchCondition} title={getConditionString(branch.conditions)}>{getConditionString(branch.conditions)}</code>
-                  </div>
+              {hasConditions ? (
+                data.groups?.map((group, groupIndex) => (
+                  <React.Fragment key={groupIndex}>
+                    {groupIndex > 0 && <div className={styles.orDivider}>OR</div>}
+                    <div className={styles.conditionGroup}>
+                      {group.conditions.map((cond, condIndex) => (
+                        <div key={condIndex} className={styles.branchRow}>
+                          <code className={styles.branchCondition} title={getConditionString(cond)}>
+                            {getConditionString(cond)}
+                          </code>
+                        </div>
+                      ))}
+                    </div>
+                  </React.Fragment>
                 ))
               ) : (
                  <p>{data.description || 'Define branches in the properties panel.'}</p>
