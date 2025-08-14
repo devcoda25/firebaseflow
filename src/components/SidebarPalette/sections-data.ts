@@ -4,20 +4,13 @@
 import type { LucideIcon } from 'lucide-react';
 
 export type NodeCategory =
-  | 'main_actions'
-  | 'operations'
   | 'triggers'
   | 'messaging'
   | 'inputs'
   | 'logic'
-  | 'timing'
   | 'integrations'
-  | 'outreach'
   | 'handoff'
-  | 'analytics'
-  | 'automation'
-  | 'updates'
-  | 'end'
+  | 'end';
 
 export type Channel =
   | 'whatsapp' | 'sms' | 'email' | 'push' | 'voice' | 'instagram'
@@ -78,6 +71,14 @@ export const SECTION_DATA: SectionDefinition[] = [
       items: [
           { key: 'apiCallout', label: 'Webhook', icon: 'Webhook', type: 'integrations', color: 'hsl(346.8 77.2% 49.8%)', description: 'Make an HTTP request to an external service' },
           { key: 'googleSheets', label: 'Google Sheets', icon: 'Table', type: 'integrations', color: 'hsl(142.1 76.2% 36.3%)', description: 'Append a row to a Google Sheet' },
+      ]
+    },
+    {
+      key: 'handoff',
+      title: 'Handoff',
+      items: [
+          { key: 'assignTeam', label: 'Assign to Team', icon: 'Users', type: 'handoff', color: 'hsl(215.1 100% 60.2%)', description: 'Assign the conversation to a team' },
+          { key: 'assignUser', label: 'Assign to User', icon: 'User', type: 'handoff', color: 'hsl(215.1 100% 60.2%)', description: 'Assign the conversation to a specific user' },
       ]
     }
   ]

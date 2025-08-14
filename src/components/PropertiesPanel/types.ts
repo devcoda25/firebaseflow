@@ -19,19 +19,12 @@ export const TAB_KEYS: TabKey[] = [
 ];
 
 export const TABS_FOR_NODE_TYPE: Record<NodeCategory, TabKey[]> = {
-    main_actions: ['message'],
-    operations: ['api'],
     triggers: [],
     messaging: ['message'],
     inputs: ['message'],
     logic: ['logic'],
-    timing: ['schedule'],
     integrations: ['api'],
-    outreach: ['campaign'],
     handoff: ['handoff'],
-    analytics: ['analytics'],
-    automation: ['api'],
-    updates: ['api'],
     end: [],
 };
 

@@ -30,15 +30,15 @@ export default function HandoffTab() {
         <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="space-y-2">
             <Label>Queue ID</Label>
-            <Input placeholder="sales-queue" {...register('handoff.queueId')} />
+            <Input placeholder="sales-queue" {...register('queueId')} />
           </div>
           <div className="space-y-2">
             <Label>Team ID</Label>
-            <Input placeholder="team-apac" {...register('handoff.teamId')} />
+            <Input placeholder="team-apac" {...register('teamId')} />
           </div>
           <div className="space-y-2">
             <Label>Priority</Label>
-            <Select defaultValue="normal" onValueChange={(v) => setValue('handoff.priority', v)}>
+            <Select defaultValue="normal" onValueChange={(v) => setValue('priority', v)}>
               <SelectTrigger><SelectValue /></SelectTrigger>
               <SelectContent>
                 <SelectItem value="low">Low</SelectItem>
@@ -50,7 +50,7 @@ export default function HandoffTab() {
           </div>
           <div className="space-y-2">
             <Label>Assignment</Label>
-            <Select defaultValue="round_robin" onValueChange={(v) => setValue('handoff.assignment', v)}>
+            <Select defaultValue="round_robin" onValueChange={(v) => setValue('assignment', v)}>
                 <SelectTrigger><SelectValue /></SelectTrigger>
                 <SelectContent>
                     <SelectItem value="round_robin">Round Robin</SelectItem>
@@ -60,11 +60,11 @@ export default function HandoffTab() {
           </div>
           <div className="space-y-2">
             <Label>Timeout</Label>
-            <Input placeholder="e.g. 5m" {...register('handoff.timeout')} />
+            <Input placeholder="e.g. 5m" {...register('timeout')} />
           </div>
           <div className="space-y-2">
             <Label>Fallback</Label>
-            <Select defaultValue="return_to_bot" onValueChange={(v) => setValue('handoff.fallback', v)}>
+            <Select defaultValue="return_to_bot" onValueChange={(v) => setValue('fallback', v)}>
                 <SelectTrigger><SelectValue /></SelectTrigger>
                 <SelectContent>
                     <SelectItem value="return_to_bot">Return to Bot</SelectItem>
@@ -95,7 +95,7 @@ export default function HandoffTab() {
           </div>
           <div>
             <Label>Note</Label>
-            <Textarea className="mt-2" rows={3} placeholder="Context for the agent…" {...register('handoff.note')} />
+            <Textarea className="mt-2" rows={3} placeholder="Context for the agent…" {...register('note')} />
           </div>
         </CardContent>
       </Card>
