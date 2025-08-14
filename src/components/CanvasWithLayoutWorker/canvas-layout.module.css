@@ -228,3 +228,29 @@
 .messageButtons > button:hover {
     background-color: hsl(145 63% 49% / 0.2);
 }
+
+.conditionBody {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.branchRow {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  align-items: center;
+  gap: 8px;
+  background-color: hsl(var(--muted));
+  padding: 6px 8px;
+  border-radius: 6px;
+}
+
+.branchCondition {
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 12px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  direction: rtl;
+  text-align: left;
+}

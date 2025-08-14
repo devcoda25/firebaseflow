@@ -7,6 +7,8 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Trash2 } from 'lucide-react';
 import { nanoid } from 'nanoid';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import { FormMessage } from '@/components/ui/form';
 
 export default function LogicTab() {
   const { control, formState: { errors } } = useFormContext();
@@ -40,36 +42,43 @@ export default function LogicTab() {
           <p className={styles.muted}>No branches defined. The node will act as a simple True/False split based on the main expression.</p>
         )}
 
-        <ul className={`${styles.list} mt-4`}>
-            {fields.map((field, index) => (
-              <li key={field.id} className="p-4 border rounded-lg space-y-4">
-                <div className="flex justify-between items-start">
-                  <div className="flex-grow space-y-2">
-                     <Label>Branch Label</Label>
-                     <Input 
-                       {...control.register(`branches.${index}.label`)}
-                       placeholder="e.g. US Customer"
-                     />
-                  </div>
-                  <Button type="button" variant="ghost" size="icon" className={`${styles.removeBtn} ml-2`} onClick={() => remove(index)}>
-                      <Trash2 className="h-4 w-4" />
-                  </Button>
-                </div>
+        <ScrollArea className="h-full max-h-[400px] pr-4 mt-4">
+            <ul className={`${styles.list} `}>
+                {fields.map((field, index) => (
+                <li key={field.id} className="p-4 border rounded-lg space-y-4">
+                    <div className="flex justify-between items-start">
+                    <div className="flex-grow space-y-2">
+                        <Label>Branch Label</Label>
+                        <Input 
+                        {...control.register(`branches.${index}.label`)}
+                        placeholder="e.g. US Customer"
+                        />
+                        <FormMessage>{(errors?.branches as any)?.[index]?.label?.message}</FormMessage>
 
-                <div className="space-y-2">
-                    <Label>Condition</Label>
-                    <ExpressionBuilder
-                        value={(field as any).condition}
-                        onChange={(val) => update(index, { ...field, condition: val })}
-                        variables={variables}
-                        height={120}
-                        initialTestContext={{ user: { age: 25 }, last_message: 'Hello' }}
-                    />
-                </div>
-              </li>
-            ))}
-        </ul>
-        {errors.branches && <span className={styles.err}>{String((errors.branches as any).message || (errors.branches as any).root?.message)}</span>}
+                    </div>
+                    <Button type="button" variant="ghost" size="icon" className={`${styles.removeBtn} ml-2`} onClick={() => remove(index)}>
+                        <Trash2 className="h-4 w-4" />
+                    </Button>
+                    </div>
+
+                    <div className="space-y-2">
+                        <Label>Condition</Label>
+                        <ExpressionBuilder
+                            value={(field as any).condition}
+                            onChange={(val) => update(index, { ...field, condition: val })}
+                            variables={variables}
+                            height={120}
+                            initialTestContext={{ user: { age: 25 }, last_message: 'Hello' }}
+                        />
+                        <FormMessage>{(errors?.branches as any)?.[index]?.condition?.message}</FormMessage>
+
+                    </div>
+                </li>
+                ))}
+            </ul>
+        </ScrollArea>
+        {errors.branches && typeof errors.branches.message === 'string' && <p className={styles.err}>{errors.branches.message}</p>}
+
       </div>
     </div>
   );

@@ -18,6 +18,7 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { useFlowStore } from '@/store/flow';
 import { Badge } from '@/components/ui/badge';
+import { ScrollArea } from '@/components/ui/scroll-area';
 
 
 export type BaseNodeData = {
@@ -101,30 +102,45 @@ export default function BaseNode({ id, data, selected }: { id: string; data: Bas
             </DropdownMenuContent>
         </DropdownMenu>
       </div>
-      <div className={styles.nodeBody}>
-        {isMessageNode ? (
-          <div className={styles.messageNodeBody}>
-            <div className={styles.messageContent}>
-              <textarea 
-                className={styles.messageTextarea} 
-                value={message} 
-                onChange={(e) => setMessage(e.target.value)}
-                rows={3}
-              />
-              <button className={styles.deleteButton}><Trash2 size={16} /></button>
+      <ScrollArea className="max-h-60">
+        <div className={styles.nodeBody}>
+          {isMessageNode ? (
+            <div className={styles.messageNodeBody}>
+              <div className={styles.messageContent}>
+                <textarea 
+                  className={styles.messageTextarea} 
+                  value={message} 
+                  onChange={(e) => setMessage(e.target.value)}
+                  rows={3}
+                />
+                <button className={styles.deleteButton}><Trash2 size={16} /></button>
+              </div>
+              <div className={styles.messageButtons}>
+                <Button variant="outline" size="sm">Message</Button>
+                <Button variant="outline" size="sm" onClick={() => setModal('image')}>Image</Button>
+                <Button variant="outline" size="sm" onClick={() => setModal('video')}>Video</Button>
+                <Button variant="outline" size="sm" onClick={() => setModal('audio')}>Audio</Button>
+                <Button variant="outline" size="sm" onClick={() => setModal('document')}>Document</Button>
+              </div>
             </div>
-            <div className={styles.messageButtons}>
-              <Button variant="outline" size="sm">Message</Button>
-              <Button variant="outline" size="sm" onClick={() => setModal('image')}>Image</Button>
-              <Button variant="outline" size="sm" onClick={() => setModal('video')}>Video</Button>
-              <Button variant="outline" size="sm" onClick={() => setModal('audio')}>Audio</Button>
-              <Button variant="outline" size="sm" onClick={() => setModal('document')}>Document</Button>
+          ) : isConditionNode ? (
+            <div className={styles.conditionBody}>
+              {branchCount > 0 ? (
+                data.branches?.map(branch => (
+                  <div key={branch.id} className={styles.branchRow}>
+                    <Badge variant="secondary" className="truncate" title={branch.label}>{branch.label}</Badge>
+                    <code className={styles.branchCondition} title={branch.condition}>{branch.condition}</code>
+                  </div>
+                ))
+              ) : (
+                 <p>{data.description || 'Define branches in the properties panel.'}</p>
+              )}
             </div>
-          </div>
-        ) : (
-          <p>{data.description || 'Node description goes here.'}</p>
-        )}
-      </div>
+          ) : (
+            <p>{data.description || 'Node description goes here.'}</p>
+          )}
+        </div>
+      </ScrollArea>
 
       <ImageAttachmentModal 
         isOpen={modal === 'image'}
