@@ -1,11 +1,11 @@
 .conditionGroup {
     background-color: hsl(var(--muted));
     border-radius: var(--radius);
-    padding: 16px;
+    padding: 12px;
     border: 1px solid hsl(var(--border));
     display: flex;
     flex-direction: column;
-    gap: 16px;
+    gap: 12px;
 }
 
 .conditionRow {
@@ -16,43 +16,16 @@
 
 .ifClause {
     font-weight: 600;
-    font-size: 14px;
-    color: hsl(var(--foreground));
+    font-size: 13px;
+    color: hsl(var(--muted-foreground));
     padding-top: 8px;
     flex-shrink: 0;
-}
-
-.inputWithIcon {
-    position: relative;
-    width: 100%;
-}
-
-.inputIcon {
-    position: absolute;
-    left: 8px;
-    top: 50%;
-    transform: translateY(-50%);
-    color: hsl(var(--muted-foreground));
-    width: 16px;
-    height: 16px;
-}
-
-.variablesButton {
-    background-color: #22c55e; /* green-500 */
-    color: white;
-    border-color: #16a34a; /* green-600 */
-    flex-shrink: 0;
-}
-.variablesButton:hover {
-    background-color: #16a34a; /* green-600 */
+    width: 30px;
+    text-align: right;
 }
 
 .addButton {
     align-self: flex-start;
     border-style: dashed;
-    border-color: #22c55e; /* green-500 */
-    color: #22c55e; /* green-500 */
-}
-.addButton:hover {
-    background-color: #22c55e1a;
+    margin-left: 42px; /* align with inputs */
 }

@@ -29,7 +29,7 @@ export type BaseNodeData = {
   type?: string;
   content?: string;
   media?: { type: 'image' | 'video' | 'document' | 'audio', url: string, name?: string };
-  branches?: { id: string; label: string; condition: string }[];
+  branches?: { id: string; label: string; conditions: any[] }[];
 }
 
 export default function BaseNode({ id, data, selected }: { id: string; data: BaseNodeData; selected: boolean }) {
@@ -62,6 +62,11 @@ export default function BaseNode({ id, data, selected }: { id: string; data: Bas
   }
 
   const branchCount = data.branches?.length || 0;
+
+  const getConditionString = (conditions: any[] | undefined): string => {
+    if (!conditions || conditions.length === 0) return '';
+    return conditions.map(c => `${c.variable || ''} ${c.operator || ''} ${c.value || ''}`).join(' AND ');
+  }
 
   return (
     <div className={styles.baseNode} style={customStyle} aria-selected={selected}>
@@ -129,7 +134,7 @@ export default function BaseNode({ id, data, selected }: { id: string; data: Bas
                 data.branches?.map(branch => (
                   <div key={branch.id} className={styles.branchRow}>
                     <Badge variant="secondary" className="truncate" title={branch.label}>{branch.label}</Badge>
-                    <code className={styles.branchCondition} title={branch.condition}>{branch.condition}</code>
+                    <code className={styles.branchCondition} title={getConditionString(branch.conditions)}>{getConditionString(branch.conditions)}</code>
                   </div>
                 ))
               ) : (
@@ -201,6 +206,10 @@ export default function BaseNode({ id, data, selected }: { id: string; data: Bas
                     <div className={styles.handleLabel} style={{ top: '66.6%' }}>False</div>
                 </>
             )}
+            <Handle type="source" position={Position.Right} id="default" className={styles.handle} style={{ top: `${(branchCount + 1) / (branchCount + 2) * 100}%` }} />
+            <div className={styles.handleLabel} style={{ top: `${(branchCount + 1) / (branchCount + 2) * 100}%` }}>
+                Else
+            </div>
         </>
       ) : (
         <Handle type="source" position={Position.Right} className={styles.handle} />

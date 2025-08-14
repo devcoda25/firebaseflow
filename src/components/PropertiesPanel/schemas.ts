@@ -42,7 +42,11 @@ export const logicSchema = z.object({
     branches: z.array(z.object({
         id: z.string().min(1, "Branch must have an ID"),
         label: z.string().min(1, "Branch label is required"),
-        condition: z.string().min(1, "Branch condition is required"),
+        conditions: z.array(z.object({
+            variable: z.string().min(1, 'Variable is required.'),
+            operator: z.string().min(1, 'Operator is required.'),
+            value: z.string().min(1, 'Value is required.'),
+        })).min(1, 'At least one condition is required for a branch.')
     })).min(1, "At least one branch is required for a condition node.").optional(),
 });
 
