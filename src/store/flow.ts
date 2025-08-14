@@ -48,7 +48,7 @@ const flowSlice = (set: any, get: any) => ({
 
     // Allow multiple connections from the same source handle for condition nodes
     const sourceNode = get().nodes.find((n: Node) => n.id === connection.source);
-    if (sourceNode?.data.type !== 'logic') {
+    if (sourceNode?.data.type !== 'logic' && sourceNode?.data.label !== 'Buttons' && sourceNode?.data.label !== 'List') {
         const sourceHandleHasConnection = edges.some(
           (edge: Edge) => edge.source === connection.source && edge.sourceHandle === connection.sourceHandle
         );
@@ -86,6 +86,12 @@ const flowSlice = (set: any, get: any) => ({
       position: {
         x: nodeToDuplicate.position.x + 30,
         y: nodeToDuplicate.position.y + 30,
+      },
+      data: {
+        ...nodeToDuplicate.data,
+        branches: (nodeToDuplicate.data.label === 'Buttons' || nodeToDuplicate.data.label === 'List') 
+            ? [{id: 'answer1', label: 'Answer 1'}, {id: 'default', label: 'Default'}] 
+            : nodeToDuplicate.data.branches
       },
       selected: false,
     };

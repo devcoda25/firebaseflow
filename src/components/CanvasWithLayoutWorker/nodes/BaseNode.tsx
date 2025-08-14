@@ -47,6 +47,7 @@ export default function BaseNode({ id, data, selected }: { id: string; data: Bas
   const isMessageNode = data.type === 'messaging';
   const isInputNode = data.type === 'inputs';
   const isConditionNode = data.type === 'logic';
+  const isButtonsNode = data.label === 'Buttons' || data.label === 'List';
   const isStartNode = startNodeId === id;
 
 
@@ -76,6 +77,13 @@ export default function BaseNode({ id, data, selected }: { id: string; data: Bas
   }
 
   const hasConditions = data.groups && data.groups.some(g => g.conditions && g.conditions.length > 0);
+
+  const defaultBranches = [
+    { id: 'answer1', label: 'Answer 1' },
+    { id: 'default', label: 'Default' },
+  ];
+  
+  const nodeBranches = data.branches && data.branches.length > 0 ? data.branches : defaultBranches;
 
   return (
     <div className={styles.baseNode} style={customStyle} aria-selected={selected}>
@@ -118,7 +126,7 @@ export default function BaseNode({ id, data, selected }: { id: string; data: Bas
       </div>
       <ScrollArea className="max-h-60">
         <div className={styles.nodeBody}>
-          {isMessageNode || isInputNode ? (
+          {isMessageNode || (isInputNode && !isButtonsNode) ? (
             <div className={styles.messageNodeBody}>
               <div className={styles.messageContent}>
                 {data.content && <button className={styles.deleteButton} onClick={onDeleteMessageContent} title="Delete message content"><Trash2 size={14} /></button>}
@@ -160,6 +168,23 @@ export default function BaseNode({ id, data, selected }: { id: string; data: Bas
                  <p>{data.description || 'Define branches in the properties panel.'}</p>
               )}
             </div>
+          ) : isButtonsNode ? (
+            <div className={styles.buttonsNodeBody}>
+              <p className={styles.buttonsQuestion}>{data.content || 'Ask a question here'}</p>
+              <div className={styles.buttonsList}>
+                {nodeBranches.map((branch) => (
+                    <div key={branch.id} className={styles.buttonItem}>
+                        <span>{branch.label}</span>
+                         <Handle
+                            type="source"
+                            position={Position.Right}
+                            id={branch.id}
+                            className={styles.buttonHandle}
+                         />
+                    </div>
+                ))}
+              </div>
+            </div>
           ) : (
             <p>{data.description || 'Node description goes here.'}</p>
           )}
@@ -177,28 +202,28 @@ export default function BaseNode({ id, data, selected }: { id: string; data: Bas
         onClose={() => setModal(null)}
         onSave={onSaveMedia}
         onDelete={onDeleteMedia}
-        media={data.media}
+        media={data.media?.type === 'image' ? data.media : undefined}
       />
       <VideoAttachmentModal 
         isOpen={modal === 'video'}
         onClose={() => setModal(null)}
         onSave={onSaveMedia}
         onDelete={onDeleteMedia}
-        media={data.media}
+        media={data.media?.type === 'video' ? data.media : undefined}
       />
       <AudioAttachmentModal
         isOpen={modal === 'audio'}
         onClose={() => setModal(null)}
         onSave={onSaveMedia}
         onDelete={onDeleteMedia}
-        media={data.media}
+        media={data.media?.type === 'audio' ? data.media : undefined}
       />
       <DocumentAttachmentModal
         isOpen={modal === 'document'}
         onClose={() => setModal(null)}
         onSave={onSaveMedia}
         onDelete={onDeleteMedia}
-        media={data.media}
+        media={data.media?.type === 'document' ? data.media : undefined}
       />
 
       <Handle type="target" position={Position.Left} className={styles.handle} />
@@ -229,11 +254,14 @@ export default function BaseNode({ id, data, selected }: { id: string; data: Bas
             </>
           )}
         </>
-      ) : isInputNode ? (
+      ) : isInputNode && !isButtonsNode ? (
         <>
             <Handle type="source" position={Position.Right} id="reply" className={styles.handle} style={{ top: '50%' }} />
              <div className={styles.handleLabel} style={{ top: '50%' }}>Reply</div>
         </>
+      ) : isButtonsNode ? (
+        // Handles are now inside the button list
+        null
       ) : (
         <Handle type="source" position={Position.Right} className={styles.handle} />
       )}

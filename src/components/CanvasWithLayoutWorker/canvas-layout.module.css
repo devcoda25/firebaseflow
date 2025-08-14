@@ -280,3 +280,46 @@
   overflow: hidden;
   text-overflow: ellipsis;
 }
+
+.buttonsNodeBody {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.buttonsQuestion {
+    font-size: 14px;
+    color: hsl(var(--foreground));
+    margin-bottom: 4px;
+}
+
+.buttonsList {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.buttonItem {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background-color: hsl(var(--background));
+    border: 1px solid hsl(var(--border));
+    border-radius: 4px;
+    padding: 8px 12px;
+    font-size: 14px;
+}
+
+.buttonHandle {
+  width: 12px !important;
+  height: 12px !important;
+  background: hsl(145 63% 49%) !important;
+  border: 2px solid white !important;
+  box-shadow: 0 0 0 1px hsl(var(--border));
+  border-radius: 999px;
+  position: relative !important;
+  transform: none !important;
+  right: -8px !important;
+  top: auto !important;
+  
+}
