@@ -92,6 +92,13 @@ const flowSlice = (set: any, get: any) => ({
 
     set({ nodes: [...nodes, newNode] });
   },
+  updateNodeData: (nodeId: string, data: Record<string, any>) => {
+    set({
+      nodes: get().nodes.map((n: Node) =>
+        n.id === nodeId ? { ...n, data: { ...n.data, ...data } } : n
+      ),
+    });
+  },
   setNodes: (nodes: Node[]) => set({ nodes }),
   setEdges: (edges: Edge[]) => set({ edges }),
   setStartNode: (nodeId: string | null) => set({ startNodeId: nodeId }),

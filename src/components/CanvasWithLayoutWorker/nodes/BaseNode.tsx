@@ -9,6 +9,7 @@ import ImageAttachmentModal from '@/components/PropertiesPanel/partials/ImageAtt
 import VideoAttachmentModal from '@/components/PropertiesPanel/partials/VideoAttachmentModal';
 import DocumentAttachmentModal from '@/components/PropertiesPanel/partials/DocumentAttachmentModal';
 import AudioAttachmentModal from '@/components/PropertiesPanel/partials/AudioAttachmentModal';
+import MessageContentModal from '@/components/PropertiesPanel/partials/MessageContentModal';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -34,9 +35,8 @@ export type BaseNodeData = {
 }
 
 export default function BaseNode({ id, data, selected }: { id: string; data: BaseNodeData; selected: boolean }) {
-  const [message, setMessage] = useState(data.content || 'Got it! I just need some information from you to look up your order.');
-  const [modal, setModal] = useState<'image' | 'video' | 'document' | 'audio' | null>(null);
-  const { deleteNode, duplicateNode, setStartNode, startNodeId } = useFlowStore();
+  const { deleteNode, duplicateNode, setStartNode, startNodeId, updateNodeData } = useFlowStore();
+  const [modal, setModal] = useState<'message' | 'image' | 'video' | 'document' | 'audio' | null>(null);
   
   const customStyle = {
     '--node-color': data.color || 'hsl(var(--primary))'
@@ -51,17 +51,19 @@ export default function BaseNode({ id, data, selected }: { id: string; data: Bas
 
 
   const onSaveMedia = (media: BaseNodeData['media']) => {
-    // In a real app you'd call a store action here
-    console.log('Saving media for node', id, media);
-    data.media = media;
+    updateNodeData(id, { media });
     setModal(null);
   }
 
   const onDeleteMedia = () => {
-    console.log('Deleting media for node', id);
-    data.media = undefined;
+    updateNodeData(id, { media: undefined });
     setModal(null);
   }
+  
+  const onSaveMessageContent = (content: string) => {
+    updateNodeData(id, { content });
+    setModal(null);
+  };
 
   const getConditionString = (condition: { variable?: string, operator?: string, value?: string }): string => {
     if (!condition) return '';
@@ -114,16 +116,17 @@ export default function BaseNode({ id, data, selected }: { id: string; data: Bas
           {isMessageNode || isInputNode ? (
             <div className={styles.messageNodeBody}>
               <div className={styles.messageContent}>
-                <textarea 
-                  className={styles.messageTextarea} 
-                  value={message} 
-                  onChange={(e) => setMessage(e.target.value)}
-                  rows={3}
-                />
-                <button className={styles.deleteButton}><Trash2 size={16} /></button>
+                <p className="whitespace-pre-wrap break-words text-sm">
+                  {data.content || 'Got it! I just need some information from you to look up your order.'}
+                </p>
+                {data.media && (
+                   <div className="mt-2 text-xs text-muted-foreground font-semibold">
+                       Attachment: {data.media.type.toUpperCase()}
+                   </div>
+                )}
               </div>
               <div className={styles.messageButtons}>
-                <Button variant="outline" size="sm">Message</Button>
+                <Button variant="outline" size="sm" onClick={() => setModal('message')}>Message</Button>
                 <Button variant="outline" size="sm" onClick={() => setModal('image')}>Image</Button>
                 <Button variant="outline" size="sm" onClick={() => setModal('video')}>Video</Button>
                 <Button variant="outline" size="sm" onClick={() => setModal('audio')}>Audio</Button>
@@ -157,6 +160,12 @@ export default function BaseNode({ id, data, selected }: { id: string; data: Bas
         </div>
       </ScrollArea>
 
+      <MessageContentModal
+        isOpen={modal === 'message'}
+        onClose={() => setModal(null)}
+        onSave={onSaveMessageContent}
+        content={data.content}
+      />
       <ImageAttachmentModal 
         isOpen={modal === 'image'}
         onClose={() => setModal(null)}
@@ -189,11 +198,30 @@ export default function BaseNode({ id, data, selected }: { id: string; data: Bas
       <Handle type="target" position={Position.Left} className={styles.handle} />
       
       {isConditionNode ? (
-        <>
-           <Handle type="source" position={Position.Right} id="true" className={styles.handle} style={{ top: '33.3%' }} />
-           <div className={styles.handleLabel} style={{ top: '33.3%' }}>True</div>
-           <Handle type="source" position={Position.Right} id="false" className={styles.handle} style={{ top: '66.6%' }} />
-           <div className={styles.handleLabel} style={{ top: '66.6%' }}>False</div>
+         <>
+          {data.branches && data.branches.length > 0 ? (
+            data.branches.map((branch, index) => (
+              <React.Fragment key={branch.id}>
+                <Handle
+                  type="source"
+                  position={Position.Right}
+                  id={branch.id}
+                  className={styles.handle}
+                  style={{ top: `${(index + 1) * (100 / (data.branches.length + 1))}%` }}
+                />
+                <div className={styles.handleLabel} style={{ top: `${(index + 1) * (100 / (data.branches.length + 1))}%` }}>
+                  {branch.label}
+                </div>
+              </React.Fragment>
+            ))
+          ) : (
+            <>
+              <Handle type="source" position={Position.Right} id="true" className={styles.handle} style={{ top: '33.3%' }} />
+              <div className={styles.handleLabel} style={{ top: '33.3%' }}>True</div>
+              <Handle type="source" position={Position.Right} id="false" className={styles.handle} style={{ top: '66.6%' }} />
+              <div className={styles.handleLabel} style={{ top: '66.6%' }}>False</div>
+            </>
+          )}
         </>
       ) : isInputNode ? (
         <>
