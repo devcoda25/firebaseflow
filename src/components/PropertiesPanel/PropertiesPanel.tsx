@@ -90,18 +90,16 @@ export default function PropertiesPanel({
   const nodeType = node?.data?.type || 'end';
   
   const getTabsForNode = () => {
-    const baseTabs: TabKey[] = ['general', 'schedule'];
+    const baseTabs: TabKey[] = TABS_FOR_NODE_TYPE[nodeType] || [];
     const specificTabs: TabKey[] = [];
-  
+
     if (node?.data?.label?.toLowerCase().includes('google sheets')) {
       specificTabs.push('googleSheets');
     } else if (node?.data?.type === 'integrations') {
       specificTabs.push('api');
-    } else {
-        specificTabs.push(...(TABS_FOR_NODE_TYPE[nodeType] || []));
     }
   
-    return [...new Set([...baseTabs, ...specificTabs])];
+    return ['general', ...specificTabs, ...baseTabs, 'schedule'];
   }
 
   const availableTabs = getTabsForNode();
