@@ -28,6 +28,7 @@ export type BaseNodeData = {
   type?: string;
   content?: string;
   media?: { type: 'image' | 'video' | 'document' | 'audio', url: string, name?: string };
+  branches?: { id: string; label: string; condition: string }[];
 }
 
 export default function BaseNode({ id, data, selected }: { id: string; data: BaseNodeData; selected: boolean }) {
@@ -58,6 +59,8 @@ export default function BaseNode({ id, data, selected }: { id: string; data: Bas
     data.media = undefined;
     setModal(null);
   }
+
+  const branchCount = data.branches?.length || 0;
 
   return (
     <div className={styles.baseNode} style={customStyle} aria-selected={selected}>
@@ -156,10 +159,31 @@ export default function BaseNode({ id, data, selected }: { id: string; data: Bas
       
       {isConditionNode ? (
         <>
-            <Handle type="source" position={Position.Right} id="true" className={styles.handle} style={{ top: '33%' }} />
-            <div className={styles.handleLabel} style={{ top: '33%' }}>True</div>
-            <Handle type="source" position={Position.Right} id="false" className={styles.handle} style={{ top: '66%' }} />
-            <div className={styles.handleLabel} style={{ top: '66%' }}>False</div>
+            {data.branches?.map((branch, i) => {
+              const pos = (i + 1) / (branchCount + 1);
+              return (
+                <React.Fragment key={branch.id}>
+                    <Handle 
+                        type="source" 
+                        position={Position.Right} 
+                        id={branch.id}
+                        className={styles.handle} 
+                        style={{ top: `${pos * 100}%` }}
+                    />
+                    <div className={styles.handleLabel} style={{ top: `${pos * 100}%` }}>
+                        {branch.label}
+                    </div>
+                </React.Fragment>
+              )
+            })}
+             {branchCount === 0 && (
+                <>
+                    <Handle type="source" position={Position.Right} id="true" className={styles.handle} style={{ top: '33%' }} />
+                    <div className={styles.handleLabel} style={{ top: '33%' }}>True</div>
+                    <Handle type="source" position={Position.Right} id="false" className={styles.handle} style={{ top: '66%' }} />
+                    <div className={styles.handleLabel} style={{ top: '66%' }}>False</div>
+                </>
+             )}
         </>
       ) : (
         <Handle type="source" position={Position.Right} className={styles.handle} />

@@ -39,12 +39,11 @@ export const apiSchema = z.object({
 
 // ---- Logic
 export const logicSchema = z.object({
-    expression: z.string().min(1, 'Expression required').max(2000),
     branches: z.array(z.object({
-        id: z.string(),
-        label: z.string().min(1, "Branch label required"),
-        condition: z.string().min(1, "Condition required"),
-    })).optional(),
+        id: z.string().min(1, "Branch must have an ID"),
+        label: z.string().min(1, "Branch label is required"),
+        condition: z.string().min(1, "Branch condition is required"),
+    })).min(1, "At least one branch is required for a condition node.").optional(),
 });
 
 // ---- Schedule

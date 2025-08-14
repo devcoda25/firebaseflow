@@ -1,4 +1,3 @@
-
 import { create } from 'zustand';
 import type { Node, Edge, NodeChange, EdgeChange, Connection } from 'reactflow';
 import { applyNodeChanges, applyEdgeChanges, addEdge } from 'reactflow';
@@ -47,15 +46,19 @@ const flowSlice = (set: any, get: any) => ({
   onConnect: (connection: Connection) => {
     const { edges } = get();
 
-    // Any given source handle can only have one outgoing connection.
-    const sourceHandleHasConnection = edges.some(
-      (edge: Edge) => edge.source === connection.source && edge.sourceHandle === connection.sourceHandle
-    );
+    // Allow multiple connections from the same source handle for condition nodes
+    const sourceNode = get().nodes.find((n: Node) => n.id === connection.source);
+    if (sourceNode?.data.type !== 'logic') {
+        const sourceHandleHasConnection = edges.some(
+          (edge: Edge) => edge.source === connection.source && edge.sourceHandle === connection.sourceHandle
+        );
 
-    if (sourceHandleHasConnection) {
-      console.warn(`Connection from source ${connection.source} (handle: ${connection.sourceHandle}) already exists.`);
-      return; // Abort connection
+        if (sourceHandleHasConnection) {
+          console.warn(`Connection from source ${connection.source} (handle: ${connection.sourceHandle}) already exists.`);
+          return; // Abort connection
+        }
     }
+
 
     set({
       edges: addEdge({ ...connection, type: 'bezier', markerEnd: { type: MarkerType.ArrowClosed, width: 20, height: 20 } }, get().edges),
