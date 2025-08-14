@@ -7,7 +7,7 @@ import { nanoid } from 'nanoid';
 
 import HeaderBar from '@/components/HeaderBar';
 import SidebarPalette, { PaletteItemPayload } from '@/components/SidebarPalette';
-import CanvasWithLayoutWorker from '@/components/CanvasWithLayoutWorker';
+import CanvasWithLayoutWorker from '@/components/CanvasWithLayoutWorker/CanvasWithLayoutWorker';
 import PropertiesPanel from '@/components/PropertiesPanel';
 import { useFlowStore, useFlowMetaStore, undo, redo } from '@/store/flow';
 import TestConsole from '@/components/TestConsole';
