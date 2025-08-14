@@ -109,7 +109,7 @@ function StudioPageContent() {
           node={selectedNode}
           onClose={() => setSelectedNode(null)}
           onSave={handleSaveNode}
-          waContext={meta.waMessageContext}
+          waContext={meta.waMessageMessageContext}
           channels={meta.channels}
         />
       </Dialog>
