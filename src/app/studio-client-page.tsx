@@ -16,6 +16,7 @@ import PublishBanner from '@/components/Presence/PublishBanner';
 import { FlowEngine } from '@/engine/FlowEngine';
 import { useHistoryStore } from '@/store/history';
 import { Dialog } from '@/components/ui/dialog';
+import { getRandomColor } from '@/lib/color-utils';
 
 function StudioPageContent() {
   const { nodes, edges, addNode, setNodes, onNodesChange, onEdgesChange, onConnect } = useFlowStore();
@@ -58,7 +59,7 @@ function StudioPageContent() {
       data: { 
         label: item.label, 
         icon: item.icon,
-        color: item.color,
+        color: getRandomColor(),
         description: item.description,
         type: item.type,
       },
@@ -109,7 +110,7 @@ function StudioPageContent() {
           node={selectedNode}
           onClose={() => setSelectedNode(null)}
           onSave={handleSaveNode}
-          waContext={meta.waMessageMessageContext}
+          waContext={meta.waMessageContext}
           channels={meta.channels}
         />
       </Dialog>

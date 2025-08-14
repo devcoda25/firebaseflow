@@ -26,6 +26,7 @@ import LiveCursors from '@/components/Presence/LiveCursors';
 import { usePresence } from '@/presence/PresenceProvider';
 import { useFlowStore } from '@/store/flow';
 import type { PaletteItemPayload } from '../SidebarPalette';
+import { getRandomColor } from '@/lib/color-utils';
 
 const GRID_SIZE = 20;
 
@@ -90,7 +91,7 @@ function InnerCanvas({
         data: { 
             label: item.label, 
             icon: item.icon,
-            color: item.color,
+            color: getRandomColor(),
             description: item.description,
             type: item.type,
         },
