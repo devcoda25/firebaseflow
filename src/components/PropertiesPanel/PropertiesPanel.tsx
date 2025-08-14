@@ -90,13 +90,18 @@ export default function PropertiesPanel({
   const nodeType = node?.data?.type || 'end';
   
   const getTabsForNode = () => {
+    const baseTabs: TabKey[] = ['general', 'schedule'];
+    const specificTabs: TabKey[] = [];
+  
     if (node?.data?.label?.toLowerCase().includes('google sheets')) {
-        return ['googleSheets'];
+      specificTabs.push('googleSheets');
+    } else if (node?.data?.type === 'integrations') {
+      specificTabs.push('api');
+    } else {
+        specificTabs.push(...(TABS_FOR_NODE_TYPE[nodeType] || []));
     }
-    if (node?.data?.type === 'integrations') {
-        return ['api'];
-    }
-    return TABS_FOR_NODE_TYPE[nodeType] || [];
+  
+    return [...new Set([...baseTabs, ...specificTabs])];
   }
 
   const availableTabs = getTabsForNode();
@@ -179,7 +184,7 @@ export default function PropertiesPanel({
         <div className={styles.body}>
           {availableTabs.length > 1 ? (
              <Tabs value={activeTab} onValueChange={(val) => setActiveTab(val as TabKey)} className="w-full flex flex-col min-h-0">
-                <TabsList className={`grid w-full grid-cols-${availableTabs.length}`}>
+                <TabsList className={`grid w-full grid-cols-${availableTabs.length > 4 ? 4 : availableTabs.length}`}>
                     {availableTabs.map((k) => (
                         <TabsTrigger key={k} value={k}>
                             {TAB_LABEL[k]}
