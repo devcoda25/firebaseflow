@@ -3,7 +3,6 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, Di
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import Image from 'next/image';
 import { ImageIcon } from 'lucide-react';
 
 type Media = { type: 'image', url: string, name?: string };
@@ -65,7 +64,8 @@ export default function ImageAttachmentModal({
         <div className="grid gap-4 py-4">
             <div className="flex items-center justify-center h-48 bg-muted rounded-md overflow-hidden">
                 {url ? 
-                    <Image src={url} alt="Image preview" width={200} height={200} className="object-contain" /> : 
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img src={url} alt="Image preview" width={200} height={200} className="object-contain max-h-full" /> : 
                     <ImageIcon className="w-16 h-16 text-muted-foreground" />
                 }
             </div>
