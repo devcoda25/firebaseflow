@@ -3,7 +3,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, Di
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { ImageIcon } from 'lucide-react';
+import { ImageIcon, FileX } from 'lucide-react';
 
 type Media = { type: 'image' | 'video' | 'audio' | 'document', url: string, name?: string };
 
@@ -23,15 +23,24 @@ export default function ImageAttachmentModal({
   media
 }: ImageAttachmentModalProps) {
   const [url, setUrl] = useState('');
+  const [isError, setIsError] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
-    if (media && media.type === 'image') {
-      setUrl(media.url);
-    } else {
-      setUrl('');
+    if (isOpen) {
+        if (media && media.type === 'image') {
+            setUrl(media.url);
+        } else {
+            setUrl('');
+        }
+        setIsError(false);
     }
   }, [media, isOpen]);
+
+  useEffect(() => {
+    setIsError(false);
+  }, [url]);
+
 
   const handleSave = () => {
     if (!url) return;
@@ -63,10 +72,19 @@ export default function ImageAttachmentModal({
         </DialogHeader>
         <div className="grid gap-4 py-4">
             <div className="flex items-center justify-center h-48 bg-muted rounded-md overflow-hidden">
-                {url ? 
+                {url && !isError ? 
                     // eslint-disable-next-line @next/next/no-img-element
-                    <img src={url} alt="Image preview" width={200} height={200} className="object-contain max-h-full" /> : 
-                    <ImageIcon className="w-16 h-16 text-muted-foreground" />
+                    <img 
+                      src={url} 
+                      alt="Image preview" 
+                      width={200} 
+                      height={200} 
+                      className="object-contain max-h-full"
+                      onError={() => setIsError(true)}
+                    /> : 
+                    isError ?
+                      <FileX className="w-16 h-16 text-destructive" /> :
+                      <ImageIcon className="w-16 h-16 text-muted-foreground" />
                 }
             </div>
             <div className="grid gap-2">
@@ -89,7 +107,7 @@ export default function ImageAttachmentModal({
             </div>
             <div className="flex gap-2">
               <Button variant="ghost" onClick={onClose}>Cancel</Button>
-              <Button onClick={handleSave} disabled={!url}>Save</Button>
+              <Button onClick={handleSave} disabled={!url || isError}>Save</Button>
             </div>
         </DialogFooter>
       </DialogContent>

@@ -3,7 +3,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, Di
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { VideoIcon } from 'lucide-react';
+import { VideoIcon, FileX } from 'lucide-react';
 
 type Media = { type: 'image' | 'video' | 'audio' | 'document', url: string, name?: string };
 
@@ -23,15 +23,23 @@ export default function VideoAttachmentModal({
   media
 }: VideoAttachmentModalProps) {
   const [url, setUrl] = useState('');
+  const [isError, setIsError] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
-    if (media && media.type === 'video') {
-      setUrl(media.url);
-    } else {
-      setUrl('');
+    if (isOpen) {
+        if (media && media.type === 'video') {
+            setUrl(media.url);
+        } else {
+            setUrl('');
+        }
+        setIsError(false);
     }
   }, [media, isOpen]);
+
+  useEffect(() => {
+    setIsError(false);
+  }, [url]);
 
   const handleSave = () => {
     if (!url) return;
@@ -62,9 +70,16 @@ export default function VideoAttachmentModal({
         </DialogHeader>
         <div className="grid gap-4 py-4">
           <div className="flex items-center justify-center h-48 bg-muted rounded-md overflow-hidden">
-            {url ? 
-              <video src={url} controls className="w-full h-full object-contain" /> : 
-              <VideoIcon className="w-16 h-16 text-muted-foreground" />
+            {url && !isError ? 
+              <video 
+                src={url} 
+                controls 
+                className="w-full h-full object-contain"
+                onError={() => setIsError(true)} 
+              /> : 
+              isError ?
+                <FileX className="w-16 h-16 text-destructive" /> :
+                <VideoIcon className="w-16 h-16 text-muted-foreground" />
             }
           </div>
           <div className="grid gap-2">
@@ -87,7 +102,7 @@ export default function VideoAttachmentModal({
           </div>
           <div className="flex gap-2">
             <Button variant="ghost" onClick={onClose}>Cancel</Button>
-            <Button onClick={handleSave} disabled={!url}>Save</Button>
+            <Button onClick={handleSave} disabled={!url || isError}>Save</Button>
           </div>
         </DialogFooter>
       </DialogContent>
