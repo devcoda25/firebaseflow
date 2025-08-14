@@ -50,7 +50,9 @@ export const SECTION_DATA: SectionDefinition[] = [
       title: 'Messaging',
       items: [
           { key: 'message', label: 'Send a Message', icon: 'Send', type: 'messaging', color: 'hsl(16 84% 62%)', description: 'Send text, media, or interactive messages' },
-          { key: 'askQuestion', label: 'Ask a Question', icon: 'HelpCircle', type: 'inputs', color: 'hsl(221 83% 53%)', description: 'Ask a question and wait for a user reply' },
+          { key: 'askQuestion', label: 'Ask a Question', icon: 'HelpCircle', type: 'inputs', color: 'hsl(221 83% 53%)', description: 'Ask an open-ended question and wait for a reply' },
+          { key: 'buttons', label: 'Buttons', icon: 'MessageSquarePlus', type: 'inputs', color: 'hsl(221 83% 53%)', description: 'Ask a question with up to 3 buttons' },
+          { key: 'list', label: 'List', icon: 'List', type: 'inputs', color: 'hsl(221 83% 53%)', description: 'Ask a question with a list of up to 10 choices' },
           { key: 'sendTemplate', label: 'Send a Template', icon: 'Mailbox', type: 'messaging', color: 'hsl(16 84% 62%)', description: 'Send a pre-approved template message', channels: ['whatsapp'] },
       ]
     },
