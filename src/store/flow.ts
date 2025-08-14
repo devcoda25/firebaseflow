@@ -47,10 +47,7 @@ const flowSlice = (set: any, get: any) => ({
   onConnect: (connection: Connection) => {
     const { edges } = get();
 
-    // A condition node can have multiple connections from its distinct handles ('true' and 'false')
-    // Other nodes can only have one connection from any given source handle.
-    const sourceNode = get().nodes.find((n: Node) => n.id === connection.source);
-
+    // Any given source handle can only have one outgoing connection.
     const sourceHandleHasConnection = edges.some(
       (edge: Edge) => edge.source === connection.source && edge.sourceHandle === connection.sourceHandle
     );
@@ -61,7 +58,7 @@ const flowSlice = (set: any, get: any) => ({
     }
 
     set({
-      edges: addEdge({ ...connection, type: 'bezier', markerEnd: { type: MarkerType.ArrowClosed } }, get().edges),
+      edges: addEdge({ ...connection, type: 'bezier', markerEnd: { type: MarkerType.ArrowClosed, width: 20, height: 20 } }, get().edges),
     });
   },
   addNode: (node: Node) => {
