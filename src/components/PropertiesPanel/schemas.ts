@@ -110,3 +110,8 @@ export const subflowSchema = z.object({
   inputMapping: z.array(mappingRow).default([]),
   returnMapping: z.array(mappingRow).default([]),
 });
+
+// ---- Google Sheets
+export const googleSheetsSchema = z.object({
+  googleAccountId: z.string().optional(),
+});

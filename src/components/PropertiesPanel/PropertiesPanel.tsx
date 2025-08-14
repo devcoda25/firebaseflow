@@ -18,6 +18,7 @@ import {
   handoffSchema,
   analyticsSchema,
   subflowSchema,
+  googleSheetsSchema,
 } from './schemas';
 import GeneralTab from './tabs/GeneralTab';
 import MessageTab from './tabs/MessageTab';
@@ -29,6 +30,7 @@ import AITab from './tabs/AITab';
 import HandoffTab from './tabs/HandoffTab';
 import AnalyticsTab from './tabs/AnalyticsTab';
 import SubflowTab from './tabs/SubflowTab';
+import GoogleSheetsTab from './tabs/GoogleSheetsTab';
 import { useDebouncedCallback } from '@/hooks/useDebouncedCallback';
 import { X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -46,6 +48,7 @@ const TAB_LABEL: Record<TabKey, string> = {
   handoff: 'Handoff',
   analytics: 'Analytics',
   subflow: 'Sub‑flow',
+  googleSheets: 'Google Sheets',
 };
 
 const TAB_SCHEMA_MAP: Record<TabKey, any> = {
@@ -59,6 +62,7 @@ const TAB_SCHEMA_MAP: Record<TabKey, any> = {
     handoff: handoffSchema,
     analytics: analyticsSchema,
     subflow: subflowSchema,
+    googleSheets: googleSheetsSchema,
 }
 
 const TAB_COMPONENTS: Record<TabKey, React.FC<any>> = {
@@ -72,6 +76,7 @@ const TAB_COMPONENTS: Record<TabKey, React.FC<any>> = {
     handoff: HandoffTab,
     analytics: AnalyticsTab,
     subflow: SubflowTab,
+    googleSheets: GoogleSheetsTab,
 };
 
 
@@ -83,7 +88,18 @@ export default function PropertiesPanel({
   channels
 }: PropertiesPanelProps) {
   const nodeType = node?.data?.type || 'end';
-  const availableTabs = TABS_FOR_NODE_TYPE[nodeType] || [];
+  
+  const getTabsForNode = () => {
+    if (node?.data?.label?.toLowerCase().includes('google sheets')) {
+        return ['googleSheets'];
+    }
+    if (node?.data?.type === 'integrations') {
+        return ['api'];
+    }
+    return TABS_FOR_NODE_TYPE[nodeType] || [];
+  }
+
+  const availableTabs = getTabsForNode();
   
   const [activeTab, setActiveTab] = useState<TabKey | undefined>(availableTabs[0]);
 

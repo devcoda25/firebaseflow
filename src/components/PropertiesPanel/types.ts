@@ -12,10 +12,11 @@ export type TabKey =
   | 'ai'
   | 'handoff'
   | 'analytics'
-  | 'subflow';
+  | 'subflow'
+  | 'googleSheets';
 
 export const TAB_KEYS: TabKey[] = [
-  'general','message','api','logic', 'ai', 'schedule','campaign','handoff','analytics','subflow'
+  'general','message','api','logic', 'ai', 'schedule','campaign','handoff','analytics','subflow', 'googleSheets'
 ];
 
 export const TABS_FOR_NODE_TYPE: Record<NodeCategory, TabKey[]> = {
@@ -23,7 +24,7 @@ export const TABS_FOR_NODE_TYPE: Record<NodeCategory, TabKey[]> = {
     messaging: ['message'],
     inputs: ['message'],
     logic: ['logic'],
-    integrations: ['api'],
+    integrations: ['api', 'googleSheets'],
     handoff: ['handoff'],
     end: [],
 };
