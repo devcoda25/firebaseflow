@@ -103,6 +103,7 @@ function InnerCanvas({
 
   const onSelectionChange = useCallback(
     ({ nodes: selNodes }: { nodes: Node[]; edges: Edge[] }) => {
+      if (!awareness) return;
       const st = (awareness.getLocalState() as any) || {};
       const nodeId = selNodes?.[0]?.id;
       awareness.setLocalState({ ...st, selection: { nodeId, ts: Date.now() } });
