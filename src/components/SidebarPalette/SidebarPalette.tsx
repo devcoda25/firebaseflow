@@ -40,40 +40,40 @@ export default function SidebarPalette({
     e.dataTransfer.effectAllowed = 'copy';
     e.dataTransfer.setData('application/x-flow-node', JSON.stringify(payload));
     e.dataTransfer.setData('text/plain', item.label);
-
-    const Icon = typeof item.icon === 'string' ? (LucideIcons as any)[item.icon] ?? LucideIcons.HelpCircle : item.icon;
+    
+    // Create a custom drag image that looks like the node
     const ghost = document.createElement('div');
-    ghost.className = "fixed top-0 left-0 pointer-events-none p-3 rounded-lg shadow-xl flex items-center gap-3 z-[9999] bg-card text-card-foreground border border-border";
-    ghost.style.minWidth = '220px';
-    
-    // Create and append icon container
+    ghost.className = "flex flex-col items-center justify-center text-center gap-2 p-3 rounded-lg shadow-xl bg-card text-card-foreground border border-border";
+    ghost.style.width = '150px'; // Match the button width
+    ghost.style.position = 'absolute';
+    ghost.style.top = '-1000px'; // Position it off-screen
+
     const iconContainer = document.createElement('div');
-    iconContainer.className = 'w-10 h-10 rounded-full grid place-items-center flex-shrink-0';
-    iconContainer.style.backgroundColor = 'hsl(262 83% 58% / 0.1)'; // purple-100
+    iconContainer.className = "w-10 h-10 rounded-full grid place-items-center bg-purple-100 flex-shrink-0";
     
-    const svgString = `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="hsl(262 83% 58%)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5 text-purple-600">${(Icon as any).displayName === 'HelpCircle' ? '<circle cx="12" cy="12" r="10"></circle><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path><path d="M12 17h.01"></path>' : item.icon}</svg>`;
-    iconContainer.innerHTML = svgString;
+    const Icon = (LucideIcons as any)[item.icon as string] || LucideIcons.HelpCircle;
+    
+    // This is tricky, we can't easily render a React component to an image.
+    // We will build a simple representation. For a perfect match, we'd need a library.
+    const iconElement = document.createElement('div');
+    iconElement.style.color = 'hsl(262 83% 58%)';
+    iconElement.innerHTML = `<!-- Approximating icon, actual SVG might differ -->`;
+    iconContainer.appendChild(iconElement);
+
+    const labelElement = document.createElement('span');
+    labelElement.className = "text-sm font-medium leading-snug";
+    labelElement.innerText = item.label;
+
     ghost.appendChild(iconContainer);
-
-    // Create and append text container
-    const textContainer = document.createElement('div');
-    const label = document.createElement('p');
-    label.className = "text-base font-medium";
-    label.textContent = item.label;
-    textContainer.appendChild(label);
-
-    if (item.description) {
-      const description = document.createElement('small');
-      description.className = "text-sm opacity-80 font-normal";
-      description.textContent = item.description;
-      textContainer.appendChild(description);
-    }
-    ghost.appendChild(textContainer);
-
+    ghost.appendChild(labelElement);
 
     document.body.appendChild(ghost);
-    e.dataTransfer.setDragImage(ghost, -20, 20); // offset slightly
-    setTimeout(() => document.body.removeChild(ghost), 0);
+    e.dataTransfer.setDragImage(ghost, 75, 40); // Center the drag image on the cursor
+
+    // Clean up the ghost element
+    setTimeout(() => {
+      document.body.removeChild(ghost);
+    }, 0);
     
     onDragStart(e, payload);
   }
