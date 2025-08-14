@@ -45,6 +45,7 @@ export default function BaseNode({ id, data, selected }: { id: string; data: Bas
   const Icon = data.icon ? (LucideIcons as any)[data.icon] ?? LucideIcons.HelpCircle : LucideIcons.MessageSquare;
   
   const isMessageNode = data.type === 'messaging';
+  const isAskQuestionNode = data.label === 'Ask a Question';
   const isInputNode = data.type === 'inputs';
   const isConditionNode = data.type === 'logic';
   const isButtonsNode = data.label === 'Buttons' || data.label === 'List';
@@ -126,7 +127,7 @@ export default function BaseNode({ id, data, selected }: { id: string; data: Bas
       </div>
       <ScrollArea className="max-h-60">
         <div className={styles.nodeBody}>
-          {isMessageNode || (isInputNode && !isButtonsNode) ? (
+          {isMessageNode ? (
             <div className={styles.messageNodeBody}>
               <div className={styles.messageContent}>
                 {data.content && <button className={styles.deleteButton} onClick={onDeleteMessageContent} title="Delete message content"><Trash2 size={14} /></button>}
@@ -146,6 +147,10 @@ export default function BaseNode({ id, data, selected }: { id: string; data: Bas
                 <Button variant="outline" size="sm" onClick={() => setModal('audio')}>Audio</Button>
                 <Button variant="outline" size="sm" onClick={() => setModal('document')}>Document</Button>
               </div>
+            </div>
+          ) : isAskQuestionNode ? (
+            <div className={styles.buttonsNodeBody}>
+              <p className={styles.buttonsQuestion}>{data.content || 'Ask a question here'}</p>
             </div>
           ) : isConditionNode ? (
             <div className={styles.conditionBody}>
@@ -254,7 +259,7 @@ export default function BaseNode({ id, data, selected }: { id: string; data: Bas
             </>
           )}
         </>
-      ) : isInputNode && !isButtonsNode ? (
+      ) : isAskQuestionNode ? (
         <>
             <Handle type="source" position={Position.Right} id="reply" className={styles.handle} style={{ top: '50%' }} />
              <div className={styles.handleLabel} style={{ top: '50%' }}>Reply</div>
