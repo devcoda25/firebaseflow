@@ -1,6 +1,6 @@
 export const NODE_COLORS = [
     'hsl(262 83% 58%)', // purple
-    'hsl(16 84% 62%)',  // orange
+    'hsl(145 63% 49%)', // green
 ];
 
 export function getRandomColor(): string {
