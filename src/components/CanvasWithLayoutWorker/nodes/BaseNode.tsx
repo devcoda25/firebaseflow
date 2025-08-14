@@ -175,31 +175,32 @@ export default function BaseNode({ id, data, selected }: { id: string; data: Bas
       
       {isConditionNode ? (
         <>
-            {data.branches?.map((branch, i) => {
-              const pos = (i + 1) / (branchCount + 1);
-              return (
-                <React.Fragment key={branch.id}>
-                    <Handle 
-                        type="source" 
-                        position={Position.Right} 
-                        id={branch.id}
-                        className={styles.handle} 
-                        style={{ top: `${pos * 100}%` }}
-                    />
-                    <div className={styles.handleLabel} style={{ top: `${pos * 100}%` }}>
-                        {branch.label}
-                    </div>
-                </React.Fragment>
-              )
-            })}
-             {branchCount === 0 && (
+            {branchCount > 0 ? (
+                data.branches?.map((branch, i) => {
+                    const pos = (i + 1) / (branchCount + 1);
+                    return (
+                        <React.Fragment key={branch.id}>
+                            <Handle 
+                                type="source" 
+                                position={Position.Right} 
+                                id={branch.id}
+                                className={styles.handle} 
+                                style={{ top: `${pos * 100}%` }}
+                            />
+                            <div className={styles.handleLabel} style={{ top: `${pos * 100}%` }}>
+                                {branch.label}
+                            </div>
+                        </React.Fragment>
+                    )
+                })
+            ) : (
                 <>
                     <Handle type="source" position={Position.Right} id="true" className={styles.handle} style={{ top: '33.3%' }} />
                     <div className={styles.handleLabel} style={{ top: '33.3%' }}>True</div>
                     <Handle type="source" position={Position.Right} id="false" className={styles.handle} style={{ top: '66.6%' }} />
                     <div className={styles.handleLabel} style={{ top: '66.6%' }}>False</div>
                 </>
-             )}
+            )}
         </>
       ) : (
         <Handle type="source" position={Position.Right} className={styles.handle} />
