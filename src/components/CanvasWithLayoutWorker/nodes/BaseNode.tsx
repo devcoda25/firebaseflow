@@ -44,6 +44,7 @@ export default function BaseNode({ id, data, selected }: { id: string; data: Bas
   const Icon = data.icon ? (LucideIcons as any)[data.icon] ?? LucideIcons.HelpCircle : LucideIcons.MessageSquare;
   
   const isMessageNode = data.type === 'messaging';
+  const isInputNode = data.type === 'inputs';
   const isConditionNode = data.type === 'logic';
   const isStartNode = startNodeId === id;
 
@@ -109,7 +110,7 @@ export default function BaseNode({ id, data, selected }: { id: string; data: Bas
       </div>
       <ScrollArea className="max-h-60">
         <div className={styles.nodeBody}>
-          {isMessageNode ? (
+          {isMessageNode || isInputNode ? (
             <div className={styles.messageNodeBody}>
               <div className={styles.messageContent}>
                 <textarea 
@@ -180,36 +181,15 @@ export default function BaseNode({ id, data, selected }: { id: string; data: Bas
       
       {isConditionNode ? (
         <>
-            {branchCount > 0 ? (
-                data.branches?.map((branch, i) => {
-                    const pos = (i + 1) / (branchCount + 1);
-                    return (
-                        <React.Fragment key={branch.id}>
-                            <Handle 
-                                type="source" 
-                                position={Position.Right} 
-                                id={branch.id}
-                                className={styles.handle} 
-                                style={{ top: `${pos * 100}%` }}
-                            />
-                            <div className={styles.handleLabel} style={{ top: `${pos * 100}%` }}>
-                                {branch.label}
-                            </div>
-                        </React.Fragment>
-                    )
-                })
-            ) : (
-                <>
-                    <Handle type="source" position={Position.Right} id="true" className={styles.handle} style={{ top: '33.3%' }} />
-                    <div className={styles.handleLabel} style={{ top: '33.3%' }}>True</div>
-                    <Handle type="source" position={Position.Right} id="false" className={styles.handle} style={{ top: '66.6%' }} />
-                    <div className={styles.handleLabel} style={{ top: '66.6%' }}>False</div>
-                </>
-            )}
-            <Handle type="source" position={Position.Right} id="default" className={styles.handle} style={{ top: `${(branchCount + 1) / (branchCount + 2) * 100}%` }} />
-            <div className={styles.handleLabel} style={{ top: `${(branchCount + 1) / (branchCount + 2) * 100}%` }}>
-                Else
-            </div>
+           <Handle type="source" position={Position.Right} id="true" className={styles.handle} style={{ top: '33.3%' }} />
+           <div className={styles.handleLabel} style={{ top: '33.3%' }}>True</div>
+           <Handle type="source" position={Position.Right} id="false" className={styles.handle} style={{ top: '66.6%' }} />
+           <div className={styles.handleLabel} style={{ top: '66.6%' }}>False</div>
+        </>
+      ) : isInputNode ? (
+        <>
+            <Handle type="source" position={Position.Right} id="reply" className={styles.handle} style={{ top: '50%' }} />
+             <div className={styles.handleLabel} style={{ top: '50%' }}>Reply</div>
         </>
       ) : (
         <Handle type="source" position={Position.Right} className={styles.handle} />

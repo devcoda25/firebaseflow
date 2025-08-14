@@ -21,7 +21,7 @@ export const TAB_KEYS: TabKey[] = [
 export const TABS_FOR_NODE_TYPE: Record<NodeCategory, TabKey[]> = {
     main_actions: ['message'],
     operations: ['api'],
-    triggers: ['api'],
+    triggers: [],
     messaging: ['message'],
     inputs: ['message'],
     logic: ['logic'],

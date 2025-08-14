@@ -38,17 +38,21 @@ export const apiSchema = z.object({
 });
 
 // ---- Logic
-export const logicSchema = z.object({
-    branches: z.array(z.object({
-        id: z.string().min(1, "Branch must have an ID"),
-        label: z.string().min(1, "Branch label is required"),
-        conditions: z.array(z.object({
-            variable: z.string().min(1, 'Variable is required.'),
-            operator: z.string().min(1, 'Operator is required.'),
-            value: z.string().min(1, 'Value is required.'),
-        })).min(1, 'At least one condition is required for a branch.')
-    })).min(1, "At least one branch is required for a condition node.").optional(),
+const conditionSchema = z.object({
+  variable: z.string().min(1, 'Variable is required.'),
+  operator: z.string().min(1, 'Operator is required.'),
+  value: z.string().min(1, 'Value is required.'),
 });
+
+const conditionGroupSchema = z.object({
+  type: z.enum(['and', 'or']),
+  conditions: z.array(conditionSchema),
+});
+
+export const logicSchema = z.object({
+    groups: z.array(conditionGroupSchema).min(1, 'At least one condition group is required.'),
+});
+
 
 // ---- Schedule
 export const hhmm = z.string().regex(/^([01]\d|2[0-3]):[0-5]\d$/, 'Use 24h HH:MM');
