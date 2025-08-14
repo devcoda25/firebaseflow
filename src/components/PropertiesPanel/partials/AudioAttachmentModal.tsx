@@ -5,7 +5,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Music } from 'lucide-react';
 
-type Media = { type: 'audio', url: string, name?: string };
+type Media = { type: 'image' | 'video' | 'audio' | 'document', url: string, name?: string };
 
 type AudioAttachmentModalProps = {
   isOpen: boolean;
@@ -26,7 +26,7 @@ export default function AudioAttachmentModal({
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
-    if (media) {
+    if (media && media.type === 'audio') {
       setUrl(media.url);
     } else {
       setUrl('');
@@ -83,7 +83,7 @@ export default function AudioAttachmentModal({
         </div>
         <DialogFooter className="justify-between">
           <div>
-            {media && <Button variant="destructive" onClick={onDelete}>Delete</Button>}
+            {media && media.type === 'audio' && <Button variant="destructive" onClick={onDelete}>Delete</Button>}
           </div>
           <div className="flex gap-2">
             <Button variant="ghost" onClick={onClose}>Cancel</Button>

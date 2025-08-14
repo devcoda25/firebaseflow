@@ -5,7 +5,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { ImageIcon } from 'lucide-react';
 
-type Media = { type: 'image', url: string, name?: string };
+type Media = { type: 'image' | 'video' | 'audio' | 'document', url: string, name?: string };
 
 type ImageAttachmentModalProps = {
   isOpen: boolean;
@@ -26,7 +26,7 @@ export default function ImageAttachmentModal({
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
-    if (media) {
+    if (media && media.type === 'image') {
       setUrl(media.url);
     } else {
       setUrl('');
@@ -85,7 +85,7 @@ export default function ImageAttachmentModal({
         </div>
         <DialogFooter className="justify-between">
             <div>
-              {media && <Button variant="destructive" onClick={onDelete}>Delete</Button>}
+              {media && media.type === 'image' && <Button variant="destructive" onClick={onDelete}>Delete</Button>}
             </div>
             <div className="flex gap-2">
               <Button variant="ghost" onClick={onClose}>Cancel</Button>

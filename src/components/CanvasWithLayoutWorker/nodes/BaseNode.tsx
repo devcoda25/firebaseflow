@@ -162,28 +162,28 @@ export default function BaseNode({ id, data, selected }: { id: string; data: Bas
         onClose={() => setModal(null)}
         onSave={onSaveMedia}
         onDelete={onDeleteMedia}
-        media={data.media?.type === 'image' ? data.media : undefined}
+        media={data.media}
       />
       <VideoAttachmentModal 
         isOpen={modal === 'video'}
         onClose={() => setModal(null)}
         onSave={onSaveMedia}
         onDelete={onDeleteMedia}
-        media={data.media?.type === 'video' ? data.media : undefined}
+        media={data.media}
       />
       <AudioAttachmentModal
         isOpen={modal === 'audio'}
         onClose={() => setModal(null)}
         onSave={onSaveMedia}
         onDelete={onDeleteMedia}
-        media={data.media?.type === 'audio' ? data.media : undefined}
+        media={data.media}
       />
       <DocumentAttachmentModal
         isOpen={modal === 'document'}
         onClose={() => setModal(null)}
         onSave={onSaveMedia}
         onDelete={onDeleteMedia}
-        media={data.media?.type === 'document' ? data.media : undefined}
+        media={data.media}
       />
 
       <Handle type="target" position={Position.Left} className={styles.handle} />

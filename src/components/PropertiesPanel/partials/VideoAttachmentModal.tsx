@@ -5,7 +5,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { VideoIcon } from 'lucide-react';
 
-type Media = { type: 'video', url: string, name?: string };
+type Media = { type: 'image' | 'video' | 'audio' | 'document', url: string, name?: string };
 
 type VideoAttachmentModalProps = {
   isOpen: boolean;
@@ -26,7 +26,7 @@ export default function VideoAttachmentModal({
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
-    if (media) {
+    if (media && media.type === 'video') {
       setUrl(media.url);
     } else {
       setUrl('');
@@ -83,7 +83,7 @@ export default function VideoAttachmentModal({
         </div>
         <DialogFooter className="justify-between">
           <div>
-            {media && <Button variant="destructive" onClick={onDelete}>Delete</Button>}
+            {media && media.type === 'video' && <Button variant="destructive" onClick={onDelete}>Delete</Button>}
           </div>
           <div className="flex gap-2">
             <Button variant="ghost" onClick={onClose}>Cancel</Button>

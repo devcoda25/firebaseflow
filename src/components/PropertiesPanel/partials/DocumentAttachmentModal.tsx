@@ -5,7 +5,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { File, FileText, FileSpreadsheet, FileJson, FileQuestion } from 'lucide-react';
 
-type Media = { type: 'document', url: string, name?: string };
+type Media = { type: 'image' | 'video' | 'audio' | 'document', url: string, name?: string };
 
 type DocumentAttachmentModalProps = {
   isOpen: boolean;
@@ -41,7 +41,7 @@ export default function DocumentAttachmentModal({
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
-    if (media) {
+    if (media && media.type === 'document') {
       setUrl(media.url);
       setName(media.name || '');
     } else {
@@ -102,7 +102,7 @@ export default function DocumentAttachmentModal({
         </div>
         <DialogFooter className="justify-between">
           <div>
-            {media && <Button variant="destructive" onClick={onDelete}>Delete</Button>}
+            {media && media.type === 'document' && <Button variant="destructive" onClick={onDelete}>Delete</Button>}
           </div>
           <div className="flex gap-2">
             <Button variant="ghost" onClick={onClose}>Cancel</Button>
