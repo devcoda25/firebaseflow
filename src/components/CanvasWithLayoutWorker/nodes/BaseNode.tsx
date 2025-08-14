@@ -65,6 +65,11 @@ export default function BaseNode({ id, data, selected }: { id: string; data: Bas
     setModal(null);
   };
 
+  const onDeleteMessageContent = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    updateNodeData(id, { content: undefined });
+  }
+
   const getConditionString = (condition: { variable?: string, operator?: string, value?: string }): string => {
     if (!condition) return '';
     return `${condition.variable || ''} ${condition.operator || ''} ${condition.value || ''}`;
@@ -116,6 +121,7 @@ export default function BaseNode({ id, data, selected }: { id: string; data: Bas
           {isMessageNode || isInputNode ? (
             <div className={styles.messageNodeBody}>
               <div className={styles.messageContent}>
+                {data.content && <button className={styles.deleteButton} onClick={onDeleteMessageContent} title="Delete message content"><Trash2 size={14} /></button>}
                 <p className="whitespace-pre-wrap break-words text-sm">
                   {data.content || 'Got it! I just need some information from you to look up your order.'}
                 </p>
