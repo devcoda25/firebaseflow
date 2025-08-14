@@ -102,29 +102,27 @@ export default function LogicTab() {
 
   return (
     <div className={styles.tabBody}>
-      <ScrollArea className="h-full max-h-[500px] pr-4">
-        <div className="space-y-4">
-          {fields.map((field, index) => (
-            <React.Fragment key={field.id}>
-              {index > 0 && <div className={localStyles.orDivider}>OR</div>}
-              <ConditionGroup
-                groupIndex={index}
-                onRemoveGroup={() => remove(index)}
-                onCopyGroup={() => copyGroup(index)}
-              />
-            </React.Fragment>
-          ))}
-        </div>
-        <Button
-          type="button"
-          variant="outline"
-          size="sm"
-          className="mt-4 gap-2"
-          onClick={addGroup}
-        >
-          <PlusCircle className="h-4 w-4" /> Add OR Condition Group
-        </Button>
-      </ScrollArea>
+      <div className="space-y-4">
+        {fields.map((field, index) => (
+          <React.Fragment key={field.id}>
+            {index > 0 && <div className={localStyles.orDivider}>OR</div>}
+            <ConditionGroup
+              groupIndex={index}
+              onRemoveGroup={() => remove(index)}
+              onCopyGroup={() => copyGroup(index)}
+            />
+          </React.Fragment>
+        ))}
+      </div>
+      <Button
+        type="button"
+        variant="outline"
+        size="sm"
+        className="mt-4 gap-2"
+        onClick={addGroup}
+      >
+        <PlusCircle className="h-4 w-4" /> Add OR Condition Group
+      </Button>
     </div>
   );
 }

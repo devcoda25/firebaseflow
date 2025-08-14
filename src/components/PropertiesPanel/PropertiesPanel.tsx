@@ -162,7 +162,7 @@ export default function PropertiesPanel({
       <FormProvider {...methods}>
         <div className={styles.body}>
           {availableTabs.length > 1 ? (
-             <Tabs value={activeTab} onValueChange={(val) => setActiveTab(val as TabKey)} className="w-full">
+             <Tabs value={activeTab} onValueChange={(val) => setActiveTab(val as TabKey)} className="w-full flex flex-col min-h-0">
                 <TabsList className={`grid w-full grid-cols-${availableTabs.length}`}>
                     {availableTabs.map((k) => (
                         <TabsTrigger key={k} value={k}>
