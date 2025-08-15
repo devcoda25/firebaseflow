@@ -2,7 +2,7 @@
   "rewrites": [
     {
       "source": "/(.*)",
-      "destination": "/studio-client-page.tsx"
+      "destination": "/"
     }
   ]
 }
