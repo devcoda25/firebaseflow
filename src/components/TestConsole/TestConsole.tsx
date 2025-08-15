@@ -94,15 +94,9 @@ export default function TestConsole({
     <aside ref={panelRef} className={cn(styles.root, className)} aria-label="Test Console">
       <div className={styles.header}>
         <h2 className={styles.title}>Test Console</h2>
-        <div className={styles.headerRight}>
-          <div className={styles.inline}>
-            <Checkbox id="autoscroll" checked={autoScroll} onCheckedChange={(c) => setAutoScroll(!!c)} />
-            <Label htmlFor="autoscroll" className="text-xs">Auto-scroll</Label>
-          </div>
-          <Button variant="ghost" size="icon" onClick={onClose} aria-label="Close">
+        <Button variant="ghost" size="icon" onClick={onClose} aria-label="Close" className="h-8 w-8">
             <X className="h-4 w-4" />
-          </Button>
-        </div>
+        </Button>
       </div>
 
       <Toolbar
@@ -117,6 +111,8 @@ export default function TestConsole({
         onClearTrace={() => setTrace([])}
         onToggleContext={() => setShowContext((v) => !v)}
         onExportTrace={onExportTrace}
+        autoScroll={autoScroll}
+        onAutoScrollChange={setAutoScroll}
       />
 
       <div className={styles.body}>
