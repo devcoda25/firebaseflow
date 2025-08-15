@@ -28,6 +28,7 @@ export type BaseNodeData = {
   media?: { type: 'image' | 'video' | 'document' | 'audio', url: string, name?: string };
   branches?: { id: string; label: string; conditions: any[] }[];
   groups?: { type: 'and' | 'or', conditions: { variable: string, operator: string, value: string }[] }[];
+  quickReplies?: { id: string; label: string }[];
   onOpenProperties?: (node: Node) => void;
   onNodeDoubleClick?: (node: Node) => void;
   onOpenAttachmentModal?: (nodeId: string, type: 'image' | 'video' | 'audio' | 'document') => void;
@@ -63,12 +64,6 @@ export default function BaseNode({ id, data, selected }: { id: string; data: Bas
 
   const hasConditions = data.groups && data.groups.some(g => g.conditions && g.conditions.length > 0);
 
-  const defaultBranches = [
-    { id: 'answer1', label: 'Answer 1' },
-    { id: 'default', label: 'Default' },
-  ];
-  
-  const nodeBranches = data.branches && data.branches.length > 0 ? data.branches : defaultBranches;
   const thisNode = nodes.find(n => n.id === id);
 
   const handleDoubleClick = () => {
@@ -173,19 +168,21 @@ export default function BaseNode({ id, data, selected }: { id: string; data: Bas
           ) : isButtonsNode ? (
             <div className={styles.buttonsNodeBody}>
               <p className={styles.buttonsQuestion}>{data.content || 'Ask a question here'}</p>
-              <div className={styles.buttonsList}>
-                {nodeBranches.map((branch) => (
-                    <div key={branch.id} className={styles.buttonItem}>
-                        <span>{branch.label}</span>
-                         <Handle
-                            type="source"
-                            position={Position.Right}
-                            id={branch.id}
-                            className={styles.buttonHandle}
-                         />
-                    </div>
-                ))}
-              </div>
+              <ScrollArea className="max-h-48">
+                <div className={styles.buttonsList}>
+                  {(data.quickReplies || []).map((branch: any) => (
+                      <div key={branch.id} className={styles.buttonItem}>
+                          <span>{branch.label}</span>
+                           <Handle
+                              type="source"
+                              position={Position.Right}
+                              id={branch.id}
+                              className={styles.buttonHandle}
+                           />
+                      </div>
+                  ))}
+                </div>
+              </ScrollArea>
             </div>
           ) : (
             <p>{data.description || 'Double-click to configure.'}</p>

@@ -91,7 +91,10 @@ const flowSlice = (set: any, get: any) => ({
         ...nodeToDuplicate.data,
         branches: (nodeToDuplicate.data.label === 'Buttons' || nodeToDuplicate.data.label === 'List') 
             ? [{id: 'answer1', label: 'Answer 1'}, {id: 'default', label: 'Default'}] 
-            : nodeToDuplicate.data.branches
+            : nodeToDuplicate.data.branches,
+        quickReplies: (nodeToDuplicate.data.label === 'Buttons' || nodeToDuplicate.data.label === 'List')
+            ? [{id: nanoid(), label: 'Button 1'}]
+            : nodeToDuplicate.data.quickReplies,
       },
       selected: false,
     };

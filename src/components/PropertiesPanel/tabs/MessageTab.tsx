@@ -11,11 +11,15 @@ import { Input } from '@/components/ui/input'
 import { Trash2 } from 'lucide-react'
 
 export default function MessageTab({ waContext = 'template', channels }: { waContext?: MessageContext; channels?: string[] }) {
-  const { register, control, formState: { errors }, watch } = useFormContext()
+  const { register, control, formState: { errors }, watch, getValues } = useFormContext()
   const { fields, append, remove } = useFieldArray({ control, name: 'quickReplies' })
-  const qrCap = waContext === 'template'
+
+  const nodeLabel = getValues('label');
+  const isButtonsOrList = nodeLabel === 'Buttons' || nodeLabel === 'List';
+
+  const qrCap = isButtonsOrList ? 10 : (waContext === 'template'
     ? WhatsAppRules.template.quickReplyMax
-    : WhatsAppRules.interactive.replyButtonsInSessionMax
+    : WhatsAppRules.interactive.replyButtonsInSessionMax)
 
   const currentQr = watch('quickReplies') ?? []
   const over = currentQr.length > qrCap
@@ -28,7 +32,7 @@ export default function MessageTab({ waContext = 'template', channels }: { waCon
         </CardHeader>
         <CardContent>
           <div className={styles.field}>
-            <Label htmlFor="message-text">Message Text</Label>
+            <Label htmlFor="message-text">{isButtonsOrList ? 'Question' : 'Message Text'}</Label>
             <Textarea id="message-text" {...register('text')} rows={5} placeholder="Type the message…"/>
             {errors.text && <span className={styles.err}>{String(errors.text.message)}</span>}
           </div>
@@ -37,10 +41,10 @@ export default function MessageTab({ waContext = 'template', channels }: { waCon
       
       <Card>
         <CardHeader>
-          <CardTitle>Quick Reply Buttons</CardTitle>
+          <CardTitle>{isButtonsOrList ? 'Buttons' : 'Quick Reply Buttons'}</CardTitle>
           <CardDescription>
             Add buttons to guide the user's response.
-             <span className="block mt-1 text-xs font-semibold text-primary">WhatsApp Limit: {qrCap} replies for {waContext} context.</span>
+             <span className="block mt-1 text-xs font-semibold text-primary">{isButtonsOrList ? `Max ${qrCap} buttons.` : `WhatsApp Limit: ${qrCap} replies for ${waContext} context.`}</span>
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -61,7 +65,7 @@ export default function MessageTab({ waContext = 'template', channels }: { waCon
                 </li>
               ))}
             </ul>
-             {over && <div className={styles.warn}>Too many quick replies for {waContext}. Remove {currentQr.length - qrCap}.</div>}
+             {over && <div className={styles.warn}>Too many buttons. Remove {currentQr.length - qrCap}.</div>}
 
              <Button
                 type="button"

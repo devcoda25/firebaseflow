@@ -52,7 +52,7 @@ export const SECTION_DATA: SectionDefinition[] = [
       items: [
           { key: 'message', label: 'Send a Message', icon: 'Send', type: 'messaging', color: NODE_COLORS[1], description: 'Send text, media, or interactive messages' },
           { key: 'askQuestion', label: 'Ask a Question', icon: 'HelpCircle', type: 'inputs', color: NODE_COLORS[2], description: 'Ask an open-ended question and wait for a reply' },
-          { key: 'buttons', label: 'Buttons', icon: 'MessageSquarePlus', type: 'inputs', color: NODE_COLORS[2], description: 'Ask a question with up to 3 buttons' },
+          { key: 'buttons', label: 'Buttons', icon: 'MessageSquarePlus', type: 'inputs', color: NODE_COLORS[2], description: 'Ask a question with up to 10 buttons' },
           { key: 'list', label: 'List', icon: 'List', type: 'inputs', color: NODE_COLORS[2], description: 'Ask a question with a list of up to 10 choices' },
           { key: 'sendTemplate', label: 'Send a Template', icon: 'Mailbox', type: 'messaging', color: NODE_COLORS[1], description: 'Send a pre-approved template message', channels: ['whatsapp'] },
       ]
@@ -85,4 +85,3 @@ export const SECTION_DATA: SectionDefinition[] = [
       ]
     }
   ]
-  
