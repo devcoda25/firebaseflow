@@ -81,7 +81,7 @@
   background: hsl(var(--card));
   border: 1px solid hsl(var(--border));
   color: hsl(var(--card-foreground));
-  box-shadow: 0 4px 12px hsla(var(--foreground), 0.08);
+  box-shadow: 0 4px 12px hsla(var(--foreground), 0.04);
   min-width: 320px;
 }
 
@@ -89,7 +89,7 @@
 .subflow[aria-selected='true'],
 .groupBox[aria-selected='true'] {
   border-color: hsl(var(--ring));
-  box-shadow: 0 0 0 1px hsl(var(--ring)), 0 6px 18px hsla(var(--foreground), 0.12);
+  box-shadow: 0 0 0 1px hsl(var(--ring)), 0 6px 18px hsla(var(--foreground), 0.08);
 }
 
 
