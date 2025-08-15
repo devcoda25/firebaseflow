@@ -43,11 +43,15 @@
 
 .tab {
   height: 32px; padding: 0 10px; white-space: nowrap;
-  background: hsl(var(--secondary)); color: hsl(var(--secondary-foreground));
-  border: 1px solid hsl(var(--border)); border-radius: 8px; cursor: pointer;
+  background: hsl(var(--accent) / 0.1); 
+  color: hsl(var(--accent));
+  border: 1px solid hsl(var(--accent) / 0.2); 
+  border-radius: 8px; 
+  cursor: pointer;
+  font-weight: 500;
 }
 .tab:hover {
-    background: hsl(var(--muted));
+    background: hsl(var(--accent) / 0.2);
 }
 .tabActive { 
     background: hsl(var(--primary));
