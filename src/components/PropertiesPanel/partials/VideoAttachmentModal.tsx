@@ -72,6 +72,7 @@ export default function VideoAttachmentModal({
           <div className="flex items-center justify-center h-48 bg-muted rounded-md overflow-hidden">
             {url && !isError ? 
               <video 
+                key={url}
                 src={url} 
                 controls 
                 className="w-full h-full object-contain"
