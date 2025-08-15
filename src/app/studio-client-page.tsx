@@ -27,9 +27,10 @@ import ConditionModal from '@/components/PropertiesPanel/partials/ConditionModal
 import GoogleSheetsModal from '@/components/PropertiesPanel/partials/GoogleSheetsModal';
 import AssignUserModal from '@/components/PropertiesPanel/partials/AssignUserModal';
 import AssignTeamModal from '@/components/PropertiesPanel/partials/AssignTeamModal';
+import ButtonsModal from '@/components/PropertiesPanel/partials/ButtonsModal';
 
 type ModalState = {
-  type: 'message' | 'image' | 'video' | 'document' | 'audio' | 'webhook' | 'condition' | 'googleSheets' | 'assignUser' | 'assignTeam';
+  type: 'message' | 'image' | 'video' | 'document' | 'audio' | 'webhook' | 'condition' | 'googleSheets' | 'assignUser' | 'assignTeam' | 'buttons';
   nodeId: string;
   data?: any;
 } | null;
@@ -57,8 +58,10 @@ function StudioPageContent() {
     const type = node.data?.type;
     const label = node.data?.label;
 
-    if (type === 'messaging' || label === 'Ask a Question' || label === 'Buttons' || label === 'List') {
+    if (type === 'messaging' || label === 'Ask a Question') {
         setModalState({ type: 'message', nodeId: node.id, data: { content: node.data.content, media: node.data.media } });
+    } else if (label === 'Buttons' || label === 'List') {
+        setModalState({ type: 'buttons', nodeId: node.id, data: { content: node.data.content, quickReplies: node.data.quickReplies } });
     } else if (label === 'Webhook') {
         setModalState({ type: 'webhook', nodeId: node.id, data: node.data });
     } else if (label === 'Set a Condition') {
@@ -182,6 +185,12 @@ function StudioPageContent() {
         onClose={() => setModalState(null)}
         onSave={(content) => onSaveModal({ content })}
         content={modalState?.data?.content}
+      />
+      <ButtonsModal
+        isOpen={modalState?.type === 'buttons'}
+        onClose={() => setModalState(null)}
+        onSave={onSaveModal}
+        initialData={modalState?.data}
       />
       <ImageAttachmentModal
         isOpen={modalState?.type === 'image'}
