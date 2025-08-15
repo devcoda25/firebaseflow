@@ -15,15 +15,15 @@ export default function TracePanel({
   onClear: () => void;
 }) {
   const [q, setQ] = useState('');
-  const [typeFilter, setTypeFilter] = useState<string>('');
+  const [typeFilter, setTypeFilter] = useState<string>('all-types');
 
   const types = useMemo(() => {
     const s = new Set(trace.map(t => t.type).filter(Boolean));
-    return ['', ...Array.from(s)];
+    return ['all-types', ...Array.from(s)];
   }, [trace]);
 
   const filtered = useMemo(() => trace.filter(t => {
-    if (typeFilter && t.type !== typeFilter) return false;
+    if (typeFilter && typeFilter !== 'all-types' && t.type !== typeFilter) return false;
     if (!q) return true;
     const line = `${t.type} ${t.nodeId ?? ''} ${t.nodeLabel ?? ''} ${t.result ?? ''} ${JSON.stringify(t.data ?? {})}`.toLowerCase();
     return line.includes(q.toLowerCase());
@@ -36,7 +36,7 @@ export default function TracePanel({
         <Select value={typeFilter} onValueChange={setTypeFilter}>
             <SelectTrigger className="w-[120px] h-8 text-xs"><SelectValue placeholder="All types"/></SelectTrigger>
             <SelectContent>
-                {types.map(t => <SelectItem key={t || 'all'} value={t}>{t || 'All types'}</SelectItem>)}
+                {types.map(t => <SelectItem key={t} value={t}>{t === 'all-types' ? 'All types' : t}</SelectItem>)}
             </SelectContent>
         </Select>
       </div>
