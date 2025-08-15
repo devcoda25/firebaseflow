@@ -77,7 +77,7 @@
   background: hsl(var(--muted));
 }
 .badgeGreen { color: hsl(var(--foreground)); background: hsl(145 63% 49% / 0.1); border-color: hsl(145 63% 49% / 0.2); }
-.badgeOrange { color: hsl(var(--foreground)); background: hsl(39 100% 50% / 0.1); border-color: hsl(39 100% 50% / 0.2); }
+.badgeOrange { color: hsl(var(--foreground)); background: hsl(var(--primary) / 0.1); border-color: hsl(var(--primary) / 0.2); }
 
 .body { display: grid; grid-template-rows: 1fr auto minmax(150px, 220px); gap: 8px; padding: 0 8px 8px; overflow: hidden; }
 

@@ -43,16 +43,16 @@
 
 .tab {
   height: 32px; padding: 0 10px; white-space: nowrap;
-  background: var(--secondary); color: var(--secondary-foreground);
+  background: hsl(var(--secondary)); color: hsl(var(--secondary-foreground));
   border: 1px solid var(--border-muted); border-radius: 8px; cursor: pointer;
 }
 .tab:hover {
     background: hsl(var(--accent) / 0.1);
 }
 .tabActive { 
-    background: var(--primary);
-    color: var(--primary-foreground);
-    border-color: var(--primary); 
+    background: hsl(var(--primary));
+    color: hsl(var(--primary-foreground));
+    border-color: hsl(var(--primary)); 
 }
 
 .body { overflow: auto; padding: 16px; }

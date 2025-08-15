@@ -89,7 +89,7 @@ export default function WebhookModal({
                     <Switch checked={showHeaders} onCheckedChange={setShowHeaders} />
                 </div>
                 {showHeaders && <KeyValueEditor items={headers} onChange={setHeaders} />}
-                 <p className="text-xs text-orange-500">User-Agent is not sent as a header by default. make sure you include it if necessary.</p>
+                 <p className="text-xs text-muted-foreground">User-Agent is not sent as a header by default. make sure you include it if necessary.</p>
             </div>
             
             <div className="space-y-2">
@@ -109,7 +109,7 @@ export default function WebhookModal({
                     <Switch checked={showTest} onCheckedChange={setShowTest} />
                 </div>
                 {showTest && <KeyValueEditor items={testVars} onChange={setTestVars} placeholderKey="variable" placeholderValue="test value" />}
-                <p className="text-xs text-orange-500">If your request contains variables, you can manually set their values for testing purposes.</p>
+                <p className="text-xs text-muted-foreground">If your request contains variables, you can manually set their values for testing purposes.</p>
             </div>
 
 

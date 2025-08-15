@@ -1,32 +1,56 @@
 import React from 'react'
 import { useFormContext } from 'react-hook-form'
 import styles from '../properties-panel.module.css'
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
+import { Label } from '@/components/ui/label'
+import { Input } from '@/components/ui/input'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 
 export default function GeneralTab() {
   const { register, formState: { errors } } = useFormContext()
 
   return (
     <div className={styles.tabBody}>
-      <label className={styles.field}>
-        <span className={styles.label}>Label</span>
-        <input {...register('label')} className={styles.input}/>
-        {errors.label && <span className={styles.err}>{String(errors.label.message)}</span>}
-      </label>
+      <Card>
+        <CardHeader>
+          <CardTitle>Node Details</CardTitle>
+          <CardDescription>Basic information for this node.</CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className={styles.field}>
+            <Label>Label</Label>
+            <Input {...register('label')} />
+            {errors.label && <span className={styles.err}>{String(errors.label.message)}</span>}
+          </div>
 
-      <label className={styles.field}>
-        <span className={styles.label}>Icon (emoji)</span>
-        <input {...register('icon')} className={styles.input}/>
-      </label>
-
-      <label className={styles.field}>
-        <span className={styles.label}>Channel Override</span>
-        <select {...register('channel')} className={styles.select}>
-          <option value="">— Default —</option>
-          <option value="whatsapp">WhatsApp</option>
-          <option value="sms">SMS</option>
-          <option value="email">Email</option>
-        </select>
-      </label>
+          <div className={styles.field}>
+            <Label>Icon (from Lucide)</Label>
+            <Input {...register('icon')} placeholder="e.g. MessageSquare" />
+          </div>
+        </CardContent>
+      </Card>
+      <Card>
+        <CardHeader>
+          <CardTitle>Channel Override</CardTitle>
+          <CardDescription>Force this node to use a specific channel, overriding the flow's default.</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className={styles.field}>
+            <Label>Channel</Label>
+            <Select>
+                <SelectTrigger>
+                    <SelectValue placeholder="— Default —" />
+                </SelectTrigger>
+                <SelectContent>
+                    <SelectItem value="">— Default —</SelectItem>
+                    <SelectItem value="whatsapp">WhatsApp</SelectItem>
+                    <SelectItem value="sms">SMS</SelectItem>
+                    <SelectItem value="email">Email</SelectItem>
+                </SelectContent>
+            </Select>
+          </div>
+        </CardContent>
+      </Card>
     </div>
   )
 }
