@@ -22,7 +22,7 @@
     --muted: 215 20% 95%;
     --muted-foreground: 220 15% 45%;
 
-    --accent: 16 100% 66%; /* Coral */
+    --accent: 262 83% 58%; /* Purple */
     --accent-foreground: 0 0% 100%;
 
     --destructive: 0 84% 60%;
@@ -30,7 +30,7 @@
 
     --border: 215 20% 90%;
     --input: 215 20% 90%;
-    --ring: 16 100% 66%; /* Coral for focus rings */
+    --ring: 262 83% 58%; /* Purple for focus rings */
 
     --radius: 0.5rem;
 
