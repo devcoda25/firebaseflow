@@ -8,7 +8,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
-import { Undo, Redo, TestTube, Save, ChevronDown } from 'lucide-react';
+import { Undo, Redo, TestTube, Save, ChevronDown, Check } from 'lucide-react';
 import { publishFlow } from '@/api/flows';
 import { usePresence } from '@/presence/PresenceProvider';
 
@@ -196,7 +196,8 @@ export default function HeaderBar({
                       onMouseDown={(e) => e.preventDefault()}
                       onClick={() => toggleChannel(ch.id)}
                     >
-                      <input type="checkbox" checked={checked} readOnly />
+                      <input type="checkbox" checked={checked} readOnly className="hidden" />
+                      {checked ? <Check size={16} /> : <div className="w-4 h-4" />}
                       <span className={styles.itemLabel}>{ch.label}</span>
                       <span className={styles.itemShort}>{ch.short}</span>
                     </li>

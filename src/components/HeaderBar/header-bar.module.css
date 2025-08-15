@@ -60,7 +60,12 @@
 
 .list { list-style: none; margin: 0; padding: 8px; max-height: 300px; overflow: auto; display: grid; gap: 4px; }
 .item { display: grid; grid-template-columns: 20px 1fr auto; align-items: center; gap: 10px; padding: 8px; border-radius: 6px; cursor: pointer; }
-.item:hover { background: hsl(var(--accent)); }
+.item:hover { background: hsl(var(--accent) / 0.1); }
+.item[aria-selected='true'] {
+  background: hsl(var(--primary) / 0.1);
+  color: hsl(var(--primary));
+}
+
 .itemLabel { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-weight: 500; }
 .itemShort { color: hsl(var(--muted-foreground)); font-size: 12px; }
 
@@ -71,8 +76,8 @@
   padding: 6px 10px; border: 1px solid transparent; border-radius: 8px;
   background: transparent; cursor: text;
 }
-.titleButton:hover { background: hsl(var(--accent)); }
-.titleButton:focus-visible { border-color: hsl(var(--ring)); outline: none; background: hsl(var(--accent)); }
+.titleButton:hover { background: hsl(var(--accent) / 0.1); }
+.titleButton:focus-visible { border-color: hsl(var(--ring)); outline: none; background: hsl(var(--accent) / 0.1); }
 .titleText { font-size: 18px; font-weight: 600; color: hsl(var(--foreground)); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
 .titleInput {
