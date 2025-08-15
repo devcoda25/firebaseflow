@@ -155,6 +155,7 @@ function StudioPageContent() {
           setNodes={setNodes}
           onNodeDoubleClick={handleNodeDoubleClick}
           onNodeSelectForProperties={handleNodeSelectForProperties}
+          onOpenAttachmentModal={openAttachmentModal}
           viewportKey="flow-editor-viewport"
         />
       </main>
