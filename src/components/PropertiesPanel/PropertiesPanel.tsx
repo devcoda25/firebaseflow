@@ -83,22 +83,6 @@ export default function PropertiesPanel({
     return () => sub.unsubscribe()
   }, [methods, debouncedSave])
 
-  if (!visible) return null;
-
-  const TabComp = {
-    general: GeneralTab,
-    message: () => <MessageTab waContext={waContext} channels={channels} />,
-    api: APITab,
-    logic: LogicTab,
-    schedule: ScheduleTab,
-    campaign: CampaignTab,
-    ai: AITab,
-    handoff: HandoffTab,
-    analytics: AnalyticsTab,
-    subflow: SubflowTab,
-    googleSheets: GoogleSheetsTab,
-  }[activeTab] as React.FC<any>
-
   const availableTabs = useMemo(() => {
     if (!node?.data?.type) {
       return TAB_KEYS;
@@ -124,6 +108,22 @@ export default function PropertiesPanel({
     return nodeTypeTabs || TAB_KEYS;
   }, [node]);
 
+  const TabComp = {
+    general: GeneralTab,
+    message: () => <MessageTab waContext={waContext} channels={channels} />,
+    api: APITab,
+    logic: LogicTab,
+    schedule: ScheduleTab,
+    campaign: CampaignTab,
+    ai: AITab,
+    handoff: HandoffTab,
+    analytics: AnalyticsTab,
+    subflow: SubflowTab,
+    googleSheets: GoogleSheetsTab,
+  }[activeTab] as React.FC<any>
+
+
+  if (!visible) return null;
 
   return (
     <aside className={styles.root} role="dialog" aria-label="Node properties" aria-modal="true">
