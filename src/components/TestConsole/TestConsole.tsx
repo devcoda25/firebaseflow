@@ -116,24 +116,26 @@ export default function TestConsole({
       />
 
       <div className={styles.body}>
-        {channel === 'voice' ? (
-          <VoicePreview ttsText={lastBotText} />
-        ) : (
-          <ChatPreview messages={messages} channel={channel} onUserReply={sendUserReply} autoScroll={autoScroll} />
-        )}
+        <div className={styles.mainAndContext}>
+            {channel === 'voice' ? (
+              <VoicePreview ttsText={lastBotText} />
+            ) : (
+              <ChatPreview messages={messages} channel={channel} onUserReply={sendUserReply} autoScroll={autoScroll} />
+            )}
 
-        {showContext && (
-          <div className={styles.contextPanel}>
-            <ContextEditor
-              initial={initialContext}
-              onApply={(ctx) => {
-                engine.reset();
-                engine.configure({ channel, ...ctx });
-                engine.start(flowId);
-              }}
-            />
-          </div>
-        )}
+            {showContext && (
+              <div className={styles.contextPanel}>
+                <ContextEditor
+                  initial={initialContext}
+                  onApply={(ctx) => {
+                    engine.reset();
+                    engine.configure({ channel, ...ctx });
+                    engine.start(flowId);
+                  }}
+                />
+              </div>
+            )}
+        </div>
 
         <div className={styles.tracePanel}>
           <TracePanel trace={trace} onClear={() => setTrace([])} />

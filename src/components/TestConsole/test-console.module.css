@@ -10,7 +10,6 @@
   border-left: 1px solid hsl(var(--border));
   display: grid; 
   grid-template-rows: auto auto 1fr; 
-  gap: 8px;
   z-index: 100;
   box-shadow: -10px 0 30px rgba(0,0,0,0.1);
 }
@@ -29,7 +28,7 @@
   flex-wrap: wrap; 
   gap: 8px; 
   align-items: center;
-  padding: 0 12px 8px; 
+  padding: 8px 12px; 
   border-bottom: 1px solid hsl(var(--border)); 
 }
 .group { display: inline-flex; gap: 6px; align-items: center; }
@@ -46,7 +45,21 @@
 .badgeGreen { color: hsl(var(--success)); background: hsl(var(--success) / 0.1); border-color: hsl(var(--success) / 0.2); }
 .badgeOrange { color: hsl(var(--primary)); background: hsl(var(--primary) / 0.1); border-color: hsl(var(--primary) / 0.2); }
 
-.body { display: grid; grid-template-rows: 1fr auto minmax(150px, 220px); gap: 12px; padding: 0 12px 12px; overflow: hidden; }
+.body { 
+  display: grid; 
+  grid-template-rows: 1fr auto; 
+  gap: 12px; 
+  padding: 0 12px 12px; 
+  overflow: hidden; 
+}
+.mainAndContext {
+  display: grid;
+  grid-template-rows: auto auto;
+  gap: 8px;
+  overflow: auto;
+  padding-bottom: 4px;
+}
+
 
 .contextPanel {
   border: 1px solid hsl(var(--border)); 
@@ -60,10 +73,11 @@
   border-radius: 12px; 
   overflow: hidden; 
   background: hsl(var(--card));
+  min-height: 150px;
 }
 
 /* Chat */
-.chatRoot { display: grid; grid-template-rows: 1fr auto; border: 1px solid hsl(var(--border)); border-radius: 12px; overflow: hidden; background: hsl(var(--background)); }
+.chatRoot { display: grid; grid-template-rows: 1fr auto; border: 1px solid hsl(var(--border)); border-radius: 12px; overflow: hidden; background: hsl(var(--background)); min-height: 300px; }
 .chatScroll { overflow: auto; padding: 10px; display: flex; flex-direction: column; gap: 8px; }
 .bubble {
   max-width: 82%;
