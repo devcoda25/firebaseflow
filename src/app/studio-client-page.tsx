@@ -25,9 +25,11 @@ import AudioAttachmentModal from '@/components/PropertiesPanel/partials/AudioAtt
 import WebhookModal from '@/components/PropertiesPanel/partials/WebhookModal';
 import ConditionModal from '@/components/PropertiesPanel/partials/ConditionModal';
 import GoogleSheetsModal from '@/components/PropertiesPanel/partials/GoogleSheetsModal';
+import AssignUserModal from '@/components/PropertiesPanel/partials/AssignUserModal';
+import AssignTeamModal from '@/components/PropertiesPanel/partials/AssignTeamModal';
 
 type ModalState = {
-  type: 'message' | 'image' | 'video' | 'document' | 'audio' | 'webhook' | 'condition' | 'googleSheets';
+  type: 'message' | 'image' | 'video' | 'document' | 'audio' | 'webhook' | 'condition' | 'googleSheets' | 'assignUser' | 'assignTeam';
   nodeId: string;
   data?: any;
 } | null;
@@ -63,6 +65,10 @@ function StudioPageContent() {
         setModalState({ type: 'condition', nodeId: node.id, data: { groups: node.data.groups } });
     } else if (label === 'Google Sheets') {
         setModalState({ type: 'googleSheets', nodeId: node.id, data: node.data });
+    } else if (label === 'Assign to User') {
+        setModalState({ type: 'assignUser', nodeId: node.id, data: node.data });
+    } else if (label === 'Assign to Team') {
+        setModalState({ type: 'assignTeam', nodeId: node.id, data: node.data });
     }
   }, []);
 
@@ -222,6 +228,18 @@ function StudioPageContent() {
           onClose={() => setModalState(null)}
           onSave={onSaveModal}
           initialData={modalState?.data}
+      />
+      <AssignUserModal
+        isOpen={modalState?.type === 'assignUser'}
+        onClose={() => setModalState(null)}
+        onSave={onSaveModal}
+        initialData={modalState?.data}
+      />
+      <AssignTeamModal
+        isOpen={modalState?.type === 'assignTeam'}
+        onClose={() => setModalState(null)}
+        onSave={onSaveModal}
+        initialData={modalState?.data}
       />
 
 
