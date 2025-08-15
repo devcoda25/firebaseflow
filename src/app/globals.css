@@ -13,7 +13,7 @@
     --popover: 0 0% 100%;
     --popover-foreground: 220 15% 20%;
 
-    --primary: 218 28% 38%; /* Deep Indigo */
+    --primary: 262 83% 58%; /* Purple */
     --primary-foreground: 0 0% 100%;
 
     --secondary: 215 20% 95%;
@@ -22,10 +22,10 @@
     --muted: 215 20% 95%;
     --muted-foreground: 220 15% 45%;
 
-    --accent: 262 83% 58%; /* Purple */
+    --accent: 145 63% 49%; /* Green */
     --accent-foreground: 0 0% 100%;
 
-    --destructive: 0 84% 60%;
+    --destructive: 145 63% 42%; /* Darker Green for destructive actions */
     --destructive-foreground: 0 0% 100%;
 
     --border: 215 20% 90%;
@@ -40,9 +40,9 @@
     --text: hsl(220 15% 20%);
     --text-muted: hsl(220 15% 45%);
     --border-muted: hsl(215 20% 90%);
-    --danger: hsl(0 84% 60%);
+    --danger: hsl(145 63% 42%);
     --success: hsl(145 63% 49%);
-    --focus: hsl(221 83% 60%);
+    --focus: hsl(262 83% 58%);
   }
 }
 

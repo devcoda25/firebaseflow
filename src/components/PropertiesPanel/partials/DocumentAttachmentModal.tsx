@@ -19,12 +19,12 @@ const getFileIcon = (fileName?: string) => {
     if (!fileName) return <File className="w-16 h-16 text-muted-foreground" />;
     const ext = fileName.split('.').pop()?.toLowerCase();
     switch (ext) {
-        case 'pdf': return <FileText className="w-16 h-16 text-red-500" />;
-        case 'docx': return <FileText className="w-16 h-16 text-blue-500" />;
-        case 'txt': return <FileText className="w-16 h-16 text-gray-500" />;
+        case 'pdf': return <FileText className="w-16 h-16 text-primary" />;
+        case 'docx': return <FileText className="w-16 h-16 text-primary" />;
+        case 'txt': return <FileText className="w-16 h-16 text-muted-foreground" />;
         case 'csv':
-        case 'xlsx': return <FileSpreadsheet className="w-16 h-16 text-green-500" />;
-        case 'json': return <FileJson className="w-16 h-16 text-yellow-500" />;
+        case 'xlsx': return <FileSpreadsheet className="w-16 h-16 text-accent" />;
+        case 'json': return <FileJson className="w-16 h-16 text-accent" />;
         default: return <FileQuestion className="w-16 h-16 text-muted-foreground" />;
     }
 }
