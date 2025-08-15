@@ -152,7 +152,7 @@ function InnerCanvas({
           fitView
           proOptions={{ hideAttribution: true }}
         >
-          <Background variant={BackgroundVariant.Lines} gap={GRID_SIZE} />
+          <Background variant={BackgroundVariant.Lines} gap={GRID_SIZE} style={{backgroundColor: 'hsl(var(--background))', stroke: 'hsl(var(--border))', strokeWidth: 0.5}} />
           <Controls className={styles.controls} />
           <MiniMap pannable zoomable />
           <div style={{ position: 'absolute', inset: 0, pointerEvents: 'none', zIndex: 10 }}>
