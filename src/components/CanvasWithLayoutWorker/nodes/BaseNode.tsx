@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import { Handle, Position, Node } from 'reactflow'
 import styles from '../canvas-layout.module.css'
 import NodeAvatars from '@/components/Presence/NodeAvatars';
-import { MoreHorizontal, Trash2, Copy, PlayCircle, XCircle, Settings } from 'lucide-react';
+import { MoreHorizontal, Trash2, Copy, PlayCircle, XCircle, Settings, Image, Video, AudioLines, FileText } from 'lucide-react';
 import * as LucideIcons from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import MessageContentModal from '@/components/PropertiesPanel/partials/MessageContentModal';
@@ -38,6 +38,7 @@ export type BaseNodeData = {
   groups?: { type: 'and' | 'or', conditions: { variable: string, operator: string, value: string }[] }[];
   onNodeSelectForProperties?: (node: Node) => void;
   onNodeDoubleClick?: (node: Node) => void;
+  onOpenAttachmentModal?: (nodeId: string, type: 'image' | 'video' | 'audio' | 'document') => void;
 }
 
 export default function BaseNode({ id, data, selected }: { id: string; data: BaseNodeData; selected: boolean }) {
@@ -161,6 +162,12 @@ export default function BaseNode({ id, data, selected }: { id: string; data: Bas
                        Attachment: {data.media.type.toUpperCase()}
                    </div>
                 )}
+              </div>
+              <div className={styles.messageButtons}>
+                  <Button variant="outline" size="sm" onClick={() => data.onOpenAttachmentModal?.(id, 'image')}><Image size={16}/> Image</Button>
+                  <Button variant="outline" size="sm" onClick={() => data.onOpenAttachmentModal?.(id, 'video')}><Video size={16}/> Video</Button>
+                  <Button variant="outline" size="sm" onClick={() => data.onOpenAttachmentModal?.(id, 'audio')}><AudioLines size={16}/> Audio</Button>
+                  <Button variant="outline" size="sm" onClick={() => data.onOpenAttachmentModal?.(id, 'document')}><FileText size={16}/> Document</Button>
               </div>
             </div>
           ) : isAskQuestionNode ? (

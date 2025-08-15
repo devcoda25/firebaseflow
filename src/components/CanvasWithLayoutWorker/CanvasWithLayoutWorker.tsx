@@ -44,7 +44,8 @@ export type CanvasWithLayoutWorkerProps = {
   onConnect: (connection: Connection) => void;
   setNodes: (nodes: Node[]) => void;
   onNodeDoubleClick?: (node: Node) => void;
-  onNodeSelectForProperties?: (node: Node) => void;
+  onNodeSelectForProperties?: (node: Node | null) => void;
+  onOpenAttachmentModal?: (nodeId: string, type: 'image' | 'video' | 'audio' | 'document') => void;
   viewportKey?: string;
 };
 
@@ -56,7 +57,8 @@ function InnerCanvas({
   onEdgesChange,
   onConnect,
   onNodeDoubleClick,
-  onNodeSelectForProperties
+  onNodeSelectForProperties,
+  onOpenAttachmentModal
 }: CanvasWithLayoutWorkerProps) {
   const rfRef = useRef<import('reactflow').ReactFlowInstance | null>(null);
   const { project } = useReactFlow();
@@ -107,12 +109,13 @@ function InnerCanvas({
 
   const onSelectionChange = useCallback(
     ({ nodes: selNodes }: { nodes: Node[]; edges: Edge[] }) => {
+      onNodeSelectForProperties?.(selNodes[0] || null);
       if (!awareness) return;
       const st = (awareness.getLocalState() as any) || {};
       const nodeId = selNodes?.[0]?.id;
       awareness.setLocalState({ ...st, selection: { nodeId, ts: Date.now() } });
     },
-    [awareness]
+    [awareness, onNodeSelectForProperties]
   );
   
   const handleNodeDoubleClick = useCallback((_event: React.MouseEvent, node: Node) => {
@@ -124,9 +127,10 @@ function InnerCanvas({
     data: {
       ...node.data,
       onNodeSelectForProperties: onNodeSelectForProperties,
-      onNodeDoubleClick: onNodeDoubleClick
+      onNodeDoubleClick: onNodeDoubleClick,
+      onOpenAttachmentModal: onOpenAttachmentModal,
     }
-  })), [nodes, onNodeSelectForProperties, onNodeDoubleClick]);
+  })), [nodes, onNodeSelectForProperties, onNodeDoubleClick, onOpenAttachmentModal]);
 
   return (
     <div className={styles.root}>

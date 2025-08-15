@@ -65,6 +65,12 @@ function StudioPageContent() {
         setModalState({ type: 'googleSheets', nodeId: node.id, data: node.data });
     }
   }, []);
+
+  const openAttachmentModal = useCallback((nodeId: string, type: 'image' | 'video' | 'audio' | 'document') => {
+    const node = nodes.find(n => n.id === nodeId);
+    if (!node) return;
+    setModalState({ type, nodeId, data: { media: node.data.media } });
+  }, [nodes]);
   
   const handleNodeSelectForProperties = useCallback((node: Node | null) => {
     setSelectedNodeId(node?.id || null);
@@ -81,13 +87,13 @@ function StudioPageContent() {
   };
   
   const onSaveMedia = (media: any) => {
-    if (modalState?.type !== 'message') return;
+    if (!modalState) return;
     updateNodeData(modalState.nodeId, { media });
     setModalState(null);
   }
   
   const onDeleteMedia = () => {
-    if (modalState?.type !== 'message') return;
+    if (!modalState) return;
     updateNodeData(modalState.nodeId, { media: undefined });
     setModalState(null);
   }
@@ -153,7 +159,7 @@ function StudioPageContent() {
         />
       </main>
       
-      {selectedNode && (
+      {selectedNodeId && (
         <PropertiesPanel
             node={selectedNode}
             onClose={() => setSelectedNodeId(null)}
@@ -170,23 +176,53 @@ function StudioPageContent() {
         onSave={(content) => onSaveModal({ content })}
         content={modalState?.data?.content}
       />
+      <ImageAttachmentModal
+        isOpen={modalState?.type === 'image'}
+        onClose={() => setModalState(null)}
+        onSave={onSaveMedia}
+        onDelete={onDeleteMedia}
+        media={modalState?.data?.media}
+      />
+      <VideoAttachmentModal
+        isOpen={modalState?.type === 'video'}
+        onClose={() => setModalState(null)}
+        onSave={onSaveMedia}
+        onDelete={onDeleteMedia}
+        media={modalState?.data?.media}
+      />
+      <AudioAttachmentModal
+        isOpen={modalState?.type === 'audio'}
+        onClose={() => setModalState(null)}
+        onSave={onSaveMedia}
+        onDelete={onDeleteMedia}
+        media={modalState?.data?.media}
+      />
+      <DocumentAttachmentModal
+        isOpen={modalState?.type === 'document'}
+        onClose={() => setModalState(null)}
+        onSave={onSaveMedia}
+        onDelete={onDeleteMedia}
+        media={modalState?.data?.media}
+      />
        <WebhookModal
         isOpen={modalState?.type === 'webhook'}
         onClose={() => setModalState(null)}
         onSave={onSaveModal}
         initialData={modalState?.data}
       />
-      <ConditionModal
+       <ConditionModal
         isOpen={modalState?.type === 'condition'}
         onClose={() => setModalState(null)}
         onSave={onSaveModal}
         initialData={modalState?.data}
       />
-      <GoogleSheetsModal
+       <GoogleSheetsModal
         isOpen={modalState?.type === 'googleSheets'}
         onClose={() => setModalState(null)}
         onSave={onSaveModal}
-      />
+        initialData={modalState?.data}
+       />
+
 
       <TestConsole isOpen={isTestConsoleOpen} onClose={toggleTestConsole} engine={engine} flowId={meta.id} />
     </div>
