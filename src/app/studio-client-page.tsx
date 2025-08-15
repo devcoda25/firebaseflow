@@ -18,7 +18,7 @@ import { useHistoryStore } from '@/store/history';
 import { getRandomColor } from '@/lib/color-utils';
 
 function StudioPageContent() {
-  const { nodes, edges, addNode, setNodes, onNodesChange, onEdgesChange, onConnect } = useFlowStore();
+  const { nodes, edges, addNode, setNodes, onNodesChange, onEdgesChange, onConnect, updateNodeData } = useFlowStore();
   const { meta, setTitle, setChannels, setPublished, setWaContext } = useFlowMetaStore();
 
   const [selectedNode, setSelectedNode] = useState<Node | null>(null);
@@ -35,9 +35,7 @@ function StudioPageContent() {
   }, []);
 
   const handleSaveNode = (nodeId: string, data: Record<string, any>) => {
-    setNodes(
-      nodes.map((n) => (n.id === nodeId ? { ...n, data: { ...n.data, ...data } } : n))
-    );
+    updateNodeData(nodeId, data);
   };
 
   const handleDragStart = (_e: React.DragEvent, item: PaletteItemPayload) => {
@@ -96,17 +94,20 @@ function StudioPageContent() {
           onConnect={onConnect}
           setNodes={setNodes}
           onNodeDoubleClick={handleNodeDoubleClick}
+          onNodeSelectForProperties={setSelectedNode}
           viewportKey="flow-editor-viewport"
         />
       </main>
       
-      <PropertiesPanel
-        node={selectedNode}
-        onClose={() => setSelectedNode(null)}
-        onSave={handleSaveNode}
-        waContext={meta.waMessageContext}
-        channels={meta.channels}
-      />
+      {selectedNode && (
+        <PropertiesPanel
+            node={selectedNode}
+            onClose={() => setSelectedNode(null)}
+            onSave={handleSaveNode}
+            waContext={meta.waMessageContext}
+            channels={meta.channels}
+        />
+      )}
       
       <TestConsole isOpen={isTestConsoleOpen} onClose={toggleTestConsole} engine={engine} flowId={meta.id} />
     </div>

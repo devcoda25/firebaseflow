@@ -44,6 +44,7 @@ export type CanvasWithLayoutWorkerProps = {
   onConnect: (connection: Connection) => void;
   setNodes: (nodes: Node[]) => void;
   onNodeDoubleClick?: (event: React.MouseEvent, node: Node) => void;
+  onNodeSelectForProperties?: (node: Node) => void;
   viewportKey?: string;
 };
 
@@ -55,6 +56,7 @@ function InnerCanvas({
   onEdgesChange,
   onConnect,
   onNodeDoubleClick,
+  onNodeSelectForProperties
 }: CanvasWithLayoutWorkerProps) {
   const rfRef = useRef<import('reactflow').ReactFlowInstance | null>(null);
   const { project } = useReactFlow();
@@ -94,12 +96,13 @@ function InnerCanvas({
             color: getRandomColor(),
             description: item.description,
             type: item.type,
+            onNodeSelectForProperties: onNodeSelectForProperties,
         },
       };
 
       addNode(newNode);
     },
-    [project, addNode]
+    [project, addNode, onNodeSelectForProperties]
   );
 
   const onSelectionChange = useCallback(
@@ -111,12 +114,20 @@ function InnerCanvas({
     },
     [awareness]
   );
+  
+  const nodesWithProps = useMemo(() => nodes.map(node => ({
+    ...node,
+    data: {
+      ...node.data,
+      onNodeSelectForProperties: onNodeSelectForProperties,
+    }
+  })), [nodes, onNodeSelectForProperties]);
 
   return (
     <div className={styles.root}>
       <div className={styles.canvas} onDrop={onDrop} onDragOver={onDragOver}>
         <ReactFlow
-          nodes={nodes}
+          nodes={nodesWithProps}
           edges={edges}
           onNodesChange={onNodesChange}
           onEdgesChange={onEdgesChange}

@@ -1,8 +1,8 @@
 import React, { useState } from 'react'
-import { Handle, Position } from 'reactflow'
+import { Handle, Position, Node } from 'reactflow'
 import styles from '../canvas-layout.module.css'
 import NodeAvatars from '@/components/Presence/NodeAvatars';
-import { MoreHorizontal, Trash2, Copy, PlayCircle, XCircle } from 'lucide-react';
+import { MoreHorizontal, Trash2, Copy, PlayCircle, XCircle, Settings } from 'lucide-react';
 import * as LucideIcons from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import ImageAttachmentModal from '@/components/PropertiesPanel/partials/ImageAttachmentModal';
@@ -32,10 +32,11 @@ export type BaseNodeData = {
   media?: { type: 'image' | 'video' | 'document' | 'audio', url: string, name?: string };
   branches?: { id: string; label: string; conditions: any[] }[];
   groups?: { type: 'and' | 'or', conditions: { variable: string, operator: string, value: string }[] }[];
+  onNodeSelectForProperties?: (node: Node) => void;
 }
 
 export default function BaseNode({ id, data, selected }: { id: string; data: BaseNodeData; selected: boolean }) {
-  const { deleteNode, duplicateNode, setStartNode, startNodeId, updateNodeData } = useFlowStore();
+  const { deleteNode, duplicateNode, setStartNode, startNodeId, updateNodeData, nodes } = useFlowStore();
   const [modal, setModal] = useState<'message' | 'image' | 'video' | 'document' | 'audio' | null>(null);
   
   const customStyle = {
@@ -85,6 +86,7 @@ export default function BaseNode({ id, data, selected }: { id: string; data: Bas
   ];
   
   const nodeBranches = data.branches && data.branches.length > 0 ? data.branches : defaultBranches;
+  const thisNode = nodes.find(n => n.id === id);
 
   return (
     <div className={styles.baseNode} style={customStyle} aria-selected={selected}>
@@ -102,6 +104,13 @@ export default function BaseNode({ id, data, selected }: { id: string; data: Bas
                 <button className={styles.nodeMore}><MoreHorizontal size={18}/></button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
+                {thisNode && data.onNodeSelectForProperties && (
+                  <DropdownMenuItem onClick={() => data.onNodeSelectForProperties?.(thisNode)}>
+                      <Settings className="mr-2 h-4 w-4" />
+                      <span>Properties</span>
+                  </DropdownMenuItem>
+                )}
+                <DropdownMenuSeparator />
                 {isStartNode ? (
                     <DropdownMenuItem onClick={() => setStartNode(null)}>
                         <XCircle className="mr-2 h-4 w-4" />
