@@ -1,5 +1,5 @@
 import React from 'react'
-import { useFormContext } from 'react-hook-form'
+import { useFormContext, Controller } from 'react-hook-form'
 import styles from '../properties-panel.module.css'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
 import { Label } from '@/components/ui/label'
@@ -7,7 +7,7 @@ import { Input } from '@/components/ui/input'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 
 export default function GeneralTab() {
-  const { register, formState: { errors } } = useFormContext()
+  const { control, register, formState: { errors } } = useFormContext()
 
   return (
     <div className={styles.tabBody}>
@@ -37,17 +37,23 @@ export default function GeneralTab() {
         <CardContent>
           <div className={styles.field}>
             <Label>Channel</Label>
-            <Select>
-                <SelectTrigger>
-                    <SelectValue placeholder="— Default —" />
-                </SelectTrigger>
-                <SelectContent>
-                    <SelectItem value="">— Default —</SelectItem>
-                    <SelectItem value="whatsapp">WhatsApp</SelectItem>
-                    <SelectItem value="sms">SMS</SelectItem>
-                    <SelectItem value="email">Email</SelectItem>
-                </SelectContent>
-            </Select>
+            <Controller
+                control={control}
+                name="channel"
+                render={({ field }) => (
+                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                        <SelectTrigger>
+                            <SelectValue placeholder="— Default —" />
+                        </SelectTrigger>
+                        <SelectContent>
+                            <SelectItem value="default">— Default —</SelectItem>
+                            <SelectItem value="whatsapp">WhatsApp</SelectItem>
+                            <SelectItem value="sms">SMS</SelectItem>
+                            <SelectItem value="email">Email</SelectItem>
+                        </SelectContent>
+                    </Select>
+                )}
+            />
           </div>
         </CardContent>
       </Card>
