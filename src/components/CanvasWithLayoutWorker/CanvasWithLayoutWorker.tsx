@@ -15,6 +15,7 @@ import ReactFlow, {
   NodeChange,
   EdgeChange,
   Panel,
+  BackgroundVariant,
 } from 'reactflow';
 import 'reactflow/dist/style.css';
 import { nanoid } from 'nanoid';
@@ -151,7 +152,7 @@ function InnerCanvas({
           fitView
           proOptions={{ hideAttribution: true }}
         >
-          <Background gap={GRID_SIZE} />
+          <Background variant={BackgroundVariant.Lines} gap={GRID_SIZE} />
           <Controls className={styles.controls} />
           <MiniMap pannable zoomable />
           <div style={{ position: 'absolute', inset: 0, pointerEvents: 'none', zIndex: 10 }}>
