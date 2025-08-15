@@ -4,8 +4,8 @@
   width: 380px;
   max-width: 92vw;
   height: 100%;
-  background: var(--bg-panel);
-  border-left: 1px solid var(--border-muted);
+  background: hsl(var(--card));
+  border-left: 1px solid hsl(var(--border));
   display: grid;
   grid-template-rows: auto auto 1fr auto;
   box-shadow: -14px 0 40px rgba(0,0,0,.15);
@@ -15,18 +15,18 @@
 .header {
   display: flex; align-items: center; justify-content: space-between;
   padding: 10px 12px;
-  border-bottom: 1px solid var(--border-muted);
+  border-bottom: 1px solid hsl(var(--border));
 }
 .titleWrap { display: grid; gap: 2px; }
-.title { margin: 0; font-size: 16px; font-weight: 700; color: var(--text); }
-.subtitle { margin: 0; font-size: 12px; color: var(--text-muted); }
+.title { margin: 0; font-size: 16px; font-weight: 700; color: hsl(var(--card-foreground)); }
+.subtitle { margin: 0; font-size: 12px; color: hsl(var(--muted-foreground)); }
 .close {
   font-size: 20px; line-height: 18px;
   height: 28px; width: 28px;
   display: grid; place-items: center;
-  border: 1px solid var(--border-muted);
+  border: 1px solid hsl(var(--border));
   border-radius: 6px;
-  background: var(--bg-elevated); color: var(--text); cursor: pointer;
+  background: hsl(var(--background)); color: hsl(var(--foreground)); cursor: pointer;
 }
 
 .tabs {
@@ -34,7 +34,7 @@
   overflow-x: auto; 
   gap: 6px; 
   padding: 6px;
-  border-bottom: 1px solid var(--border-muted);
+  border-bottom: 1px solid hsl(var(--border));
   scrollbar-width: none; /* Firefox */
 }
 .tabs::-webkit-scrollbar {
@@ -44,74 +44,59 @@
 .tab {
   height: 32px; padding: 0 10px; white-space: nowrap;
   background: hsl(var(--secondary)); color: hsl(var(--secondary-foreground));
-  border: 1px solid var(--border-muted); border-radius: 8px; cursor: pointer;
+  border: 1px solid hsl(var(--border)); border-radius: 8px; cursor: pointer;
 }
 .tab:hover {
-    background: hsl(var(--accent) / 0.1);
+    background: hsl(var(--muted));
 }
 .tabActive { 
     background: hsl(var(--primary));
     color: hsl(var(--primary-foreground));
     border-color: hsl(var(--primary)); 
 }
+.tabActive:hover {
+    background: hsl(var(--primary) / 0.9);
+}
 
 .body { overflow: auto; padding: 16px; }
 
 .footer {
-  border-top: 1px solid var(--border-muted);
+  border-top: 1px solid hsl(var(--border));
   display: flex; align-items: center; justify-content: space-between;
   padding: 8px 12px; gap: 10px;
-  background: var(--bg-panel);
+  background: hsl(var(--background));
 }
 
-.ok { color: var(--success); font-size: 12px; }
-.tip { color: var(--text-muted); font-size: 12px; }
+.ok { color: hsl(var(--success)); font-size: 12px; }
+.tip { color: hsl(var(--muted-foreground)); font-size: 12px; }
 
 .problems { list-style: none; padding: 0; margin: 0; display: grid; gap: 2px; }
 .problemItem { display: grid; grid-template-columns: 100px 1fr; gap: 8px; }
-.problemField { color: var(--text-muted); font-size: 12px; }
-.problemMsg { color: var(--danger); font-size: 12px; }
+.problemField { color: hsl(var(--muted-foreground)); font-size: 12px; }
+.problemMsg { color: hsl(var(--destructive)); font-size: 12px; }
 
 /* Shared form styles */
-.tabBody { display: grid; gap: 16px; }
+.tabBody { display: grid; gap: 24px; }
 .field { display: grid; gap: 6px; }
 .fieldNarrow { display: grid; gap: 6px; min-width: 140px; }
-.label { font-size: 13px; font-weight: 500; color: var(--text); }
-.input, .select, .textarea {
-  width: 100%; 
-  color: var(--text);
-  background: hsl(var(--background)); 
-  border: 1px solid var(--border-muted); 
-  border-radius: 8px;
-  padding: 8px 10px;
-}
-.textarea { min-height: 120px; }
+
 
 .row { display: grid; grid-template-columns: 160px 1fr; gap: 8px; align-items: end; }
 .rowHeader { display: flex; align-items: center; justify-content: space-between; }
-.subhead { margin: 0; font-size: 14px; font-weight: 600; color: var(--text); }
+.subhead { margin: 0; font-size: 14px; font-weight: 600; color: hsl(var(--foreground)); }
 
 .list { display: grid; gap: 6px; padding: 0; margin: 0; list-style: none; }
 .listItem { display: grid; grid-template-columns: 1fr auto; gap: 6px; align-items: center; }
 .listItemTwo { display: grid; grid-template-columns: 1fr 1fr auto; gap: 6px; align-items: center; }
 
-.addBtn, .removeBtn {
-  height: 28px; padding: 0 10px; border: 1px solid var(--border-muted);
-  background: var(--bg-elevated); color: var(--text); border-radius: 6px; cursor: pointer;
-}
-.removeBtn { width: 28px; display: grid; place-items: center; }
 
-.err { color: var(--danger); font-size: 12px; }
-.warn { color: var(--danger); font-size: 12px; }
+.err { color: hsl(var(--destructive)); font-size: 12px; }
+.warn { color: hsl(var(--destructive)); font-size: 12px; }
 
 .infoRow { display: flex; gap: 8px; align-items: center; }
-.badge {
-  padding: 2px 8px; border-radius: 999px;
-  background: var(--secondary); border: 1px solid var(--border-muted);
-  color: var(--text-muted); font-size: 12px;
-}
-.muted { color: var(--text-muted); font-size: 12px; }
-.details { border: 1px dashed var(--border-muted); border-radius: 8px; padding: 8px; }
+
+.muted { color: hsl(var(--muted-foreground)); font-size: 12px; }
+.details { border: 1px dashed hsl(var(--border)); border-radius: 8px; padding: 8px; }
 .attachRow { padding-top: 4px; }
 
 /* Mobile: bottom sheet */
@@ -120,7 +105,7 @@
     width: 100%;
     left: 0; right: 0;
     top: auto; bottom: 0; height: min(82vh, 720px);
-    border-left: none; border-top: 1px solid var(--border-muted);
+    border-left: none; border-top: 1px solid hsl(var(--border));
     border-radius: 12px 12px 0 0;
   }
 }
