@@ -5,11 +5,15 @@ import NodeAvatars from '@/components/Presence/NodeAvatars';
 import { MoreHorizontal, Trash2, Copy, PlayCircle, XCircle, Settings } from 'lucide-react';
 import * as LucideIcons from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import MessageContentModal from '@/components/PropertiesPanel/partials/MessageContentModal';
 import ImageAttachmentModal from '@/components/PropertiesPanel/partials/ImageAttachmentModal';
 import VideoAttachmentModal from '@/components/PropertiesPanel/partials/VideoAttachmentModal';
 import DocumentAttachmentModal from '@/components/PropertiesPanel/partials/DocumentAttachmentModal';
 import AudioAttachmentModal from '@/components/PropertiesPanel/partials/AudioAttachmentModal';
-import MessageContentModal from '@/components/PropertiesPanel/partials/MessageContentModal';
+import WebhookModal from '@/components/PropertiesPanel/partials/WebhookModal';
+import ConditionModal from '@/components/PropertiesPanel/partials/ConditionModal';
+import GoogleSheetsModal from '@/components/PropertiesPanel/partials/GoogleSheetsModal';
+
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -33,11 +37,11 @@ export type BaseNodeData = {
   branches?: { id: string; label: string; conditions: any[] }[];
   groups?: { type: 'and' | 'or', conditions: { variable: string, operator: string, value: string }[] }[];
   onNodeSelectForProperties?: (node: Node) => void;
+  onNodeDoubleClick?: (node: Node) => void;
 }
 
 export default function BaseNode({ id, data, selected }: { id: string; data: BaseNodeData; selected: boolean }) {
   const { deleteNode, duplicateNode, setStartNode, startNodeId, updateNodeData, nodes } = useFlowStore();
-  const [modal, setModal] = useState<'message' | 'image' | 'video' | 'document' | 'audio' | null>(null);
   
   const customStyle = {
     '--node-color': data.color || 'hsl(var(--primary))'
@@ -48,24 +52,23 @@ export default function BaseNode({ id, data, selected }: { id: string; data: Bas
   const isMessageNode = data.type === 'messaging';
   const isAskQuestionNode = data.label === 'Ask a Question';
   const isInputNode = data.type === 'inputs';
-  const isConditionNode = data.type === 'logic';
+  const isConditionNode = data.type === 'logic' && data.label === 'Set a Condition';
+  const isWebhookNode = data.label === 'Webhook';
+  const isGoogleSheetsNode = data.label === 'Google Sheets';
   const isButtonsNode = data.label === 'Buttons' || data.label === 'List';
   const isStartNode = startNodeId === id;
 
 
   const onSaveMedia = (media: BaseNodeData['media']) => {
     updateNodeData(id, { media });
-    setModal(null);
   }
 
   const onDeleteMedia = () => {
     updateNodeData(id, { media: undefined });
-    setModal(null);
   }
   
   const onSaveMessageContent = (content: string) => {
     updateNodeData(id, { content });
-    setModal(null);
   };
 
   const onDeleteMessageContent = (e: React.MouseEvent) => {
@@ -88,8 +91,18 @@ export default function BaseNode({ id, data, selected }: { id: string; data: Bas
   const nodeBranches = data.branches && data.branches.length > 0 ? data.branches : defaultBranches;
   const thisNode = nodes.find(n => n.id === id);
 
+  const handleDoubleClick = () => {
+    if (thisNode && data.onNodeDoubleClick) {
+      data.onNodeDoubleClick(thisNode);
+    }
+  };
+  
+  const onSaveModalData = (modalData: any) => {
+    updateNodeData(id, modalData);
+  }
+
   return (
-    <div className={styles.baseNode} style={customStyle} aria-selected={selected}>
+    <div className={styles.baseNode} style={customStyle} aria-selected={selected} onDoubleClick={handleDoubleClick}>
        <NodeAvatars nodeId={id} />
       <div className={styles.nodeHeader}>
         <div className={styles.headerLeft}>
@@ -141,20 +154,13 @@ export default function BaseNode({ id, data, selected }: { id: string; data: Bas
               <div className={styles.messageContent}>
                 {data.content && <button className={styles.deleteButton} onClick={onDeleteMessageContent} title="Delete message content"><Trash2 size={14} /></button>}
                 <p className="whitespace-pre-wrap break-words text-sm">
-                  {data.content || 'Got it! I just need some information from you to look up your order.'}
+                  {data.content || 'Click to edit message.'}
                 </p>
                 {data.media && (
                    <div className="mt-2 text-xs text-muted-foreground font-semibold">
                        Attachment: {data.media.type.toUpperCase()}
                    </div>
                 )}
-              </div>
-              <div className={styles.messageButtons}>
-                <Button variant="outline" size="sm" onClick={() => setModal('message')}>Message</Button>
-                <Button variant="outline" size="sm" onClick={() => setModal('image')}>Image</Button>
-                <Button variant="outline" size="sm" onClick={() => setModal('video')}>Video</Button>
-                <Button variant="outline" size="sm" onClick={() => setModal('audio')}>Audio</Button>
-                <Button variant="outline" size="sm" onClick={() => setModal('document')}>Document</Button>
               </div>
             </div>
           ) : isAskQuestionNode ? (
@@ -179,7 +185,7 @@ export default function BaseNode({ id, data, selected }: { id: string; data: Bas
                   </React.Fragment>
                 ))
               ) : (
-                 <p>{data.description || 'Define branches in the properties panel.'}</p>
+                 <p>{data.description || 'Double-click to set conditions.'}</p>
               )}
             </div>
           ) : isButtonsNode ? (
@@ -200,45 +206,10 @@ export default function BaseNode({ id, data, selected }: { id: string; data: Bas
               </div>
             </div>
           ) : (
-            <p>{data.description || 'Node description goes here.'}</p>
+            <p>{data.description || 'Double-click to configure.'}</p>
           )}
         </div>
       </ScrollArea>
-
-      <MessageContentModal
-        isOpen={modal === 'message'}
-        onClose={() => setModal(null)}
-        onSave={onSaveMessageContent}
-        content={data.content}
-      />
-      <ImageAttachmentModal 
-        isOpen={modal === 'image'}
-        onClose={() => setModal(null)}
-        onSave={onSaveMedia}
-        onDelete={onDeleteMedia}
-        media={data.media?.type === 'image' ? data.media : undefined}
-      />
-      <VideoAttachmentModal 
-        isOpen={modal === 'video'}
-        onClose={() => setModal(null)}
-        onSave={onSaveMedia}
-        onDelete={onDeleteMedia}
-        media={data.media?.type === 'video' ? data.media : undefined}
-      />
-      <AudioAttachmentModal
-        isOpen={modal === 'audio'}
-        onClose={() => setModal(null)}
-        onSave={onSaveMedia}
-        onDelete={onDeleteMedia}
-        media={data.media?.type === 'audio' ? data.media : undefined}
-      />
-      <DocumentAttachmentModal
-        isOpen={modal === 'document'}
-        onClose={() => setModal(null)}
-        onSave={onSaveMedia}
-        onDelete={onDeleteMedia}
-        media={data.media?.type === 'document' ? data.media : undefined}
-      />
 
       <Handle type="target" position={Position.Left} className={styles.handle} />
       

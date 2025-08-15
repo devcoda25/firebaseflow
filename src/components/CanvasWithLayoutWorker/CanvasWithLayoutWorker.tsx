@@ -43,7 +43,7 @@ export type CanvasWithLayoutWorkerProps = {
   onEdgesChange: (changes: EdgeChange[]) => void;
   onConnect: (connection: Connection) => void;
   setNodes: (nodes: Node[]) => void;
-  onNodeDoubleClick?: (event: React.MouseEvent, node: Node) => void;
+  onNodeDoubleClick?: (node: Node) => void;
   onNodeSelectForProperties?: (node: Node) => void;
   viewportKey?: string;
 };
@@ -115,13 +115,18 @@ function InnerCanvas({
     [awareness]
   );
   
+  const handleNodeDoubleClick = useCallback((_event: React.MouseEvent, node: Node) => {
+    onNodeDoubleClick?.(node);
+  }, [onNodeDoubleClick]);
+
   const nodesWithProps = useMemo(() => nodes.map(node => ({
     ...node,
     data: {
       ...node.data,
       onNodeSelectForProperties: onNodeSelectForProperties,
+      onNodeDoubleClick: onNodeDoubleClick
     }
-  })), [nodes, onNodeSelectForProperties]);
+  })), [nodes, onNodeSelectForProperties, onNodeDoubleClick]);
 
   return (
     <div className={styles.root}>
@@ -134,7 +139,7 @@ function InnerCanvas({
           onConnect={onConnect}
           onInit={(inst) => (rfRef.current = inst)}
           onSelectionChange={onSelectionChange}
-          onNodeDoubleClick={onNodeDoubleClick}
+          onNodeDoubleClick={handleNodeDoubleClick}
           nodeTypes={defaultNodeTypes}
           connectionMode={ConnectionMode.Loose}
           snapToGrid
