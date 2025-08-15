@@ -4,7 +4,6 @@ import { useState, useCallback, useMemo } from 'react';
 import type { Node } from 'reactflow';
 import { ReactFlowProvider, useReactFlow } from 'reactflow';
 import { nanoid } from 'nanoid';
-import { FormProvider } from 'react-hook-form';
 
 import HeaderBar from '@/components/HeaderBar';
 import SidebarPalette, { PaletteItemPayload } from '@/components/SidebarPalette';
@@ -123,7 +122,7 @@ function StudioPageContent() {
   return (
     <div className="h-screen w-screen grid grid-rows-[56px_1fr] md:grid-cols-[280px_1fr] bg-background text-foreground relative overflow-hidden">
       <PublishBanner />
-      <div className="col-span-full row-start-1 z-10">
+      <div className="col-span-full row-start-1 z-20">
         <HeaderBar
             title={meta.title}
             onSave={setTitle}
