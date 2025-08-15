@@ -11,7 +11,7 @@ export async function layoutDagre(
 ): Promise<Record<string, { x: number; y: number }>> {
   const dagre = await import('dagre')
   const g = new dagre.graphlib.Graph()
-  g.setGraph({ rankdir: direction, nodesep: 60, ranksep: 100, acyclicer: 'greedy' })
+  g.setGraph({ rankdir: direction, nodesep: 50, ranksep: 50, acyclicer: 'greedy' })
   g.setDefaultEdgeLabel(() => ({}))
 
   nodes.forEach((n) => g.setNode(n.id, { width: n.width ?? 180, height: n.height ?? 60 }))
