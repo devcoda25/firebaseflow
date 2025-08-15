@@ -4,6 +4,7 @@ import { useState, useCallback, useMemo } from 'react';
 import type { Node } from 'reactflow';
 import { ReactFlowProvider, useReactFlow } from 'reactflow';
 import { nanoid } from 'nanoid';
+import { FormProvider } from 'react-hook-form';
 
 import HeaderBar from '@/components/HeaderBar';
 import SidebarPalette, { PaletteItemPayload } from '@/components/SidebarPalette';
@@ -72,7 +73,7 @@ function StudioPageContent() {
     setModalState({ type, nodeId, data: { media: node.data.media } });
   }, [nodes]);
   
-  const handleNodeSelectForProperties = useCallback((node: Node | null) => {
+  const openPropertiesForNode = useCallback((node: Node | null) => {
     setSelectedNodeId(node?.id || null);
   }, []);
 
@@ -154,7 +155,7 @@ function StudioPageContent() {
           onConnect={onConnect}
           setNodes={setNodes}
           onNodeDoubleClick={handleNodeDoubleClick}
-          onNodeSelectForProperties={handleNodeSelectForProperties}
+          onOpenProperties={openPropertiesForNode}
           onOpenAttachmentModal={openAttachmentModal}
           viewportKey="flow-editor-viewport"
         />
@@ -205,24 +206,24 @@ function StudioPageContent() {
         onDelete={onDeleteMedia}
         media={modalState?.data?.media}
       />
-       <WebhookModal
-        isOpen={modalState?.type === 'webhook'}
-        onClose={() => setModalState(null)}
-        onSave={onSaveModal}
-        initialData={modalState?.data}
+      <WebhookModal
+          isOpen={modalState?.type === 'webhook'}
+          onClose={() => setModalState(null)}
+          onSave={onSaveModal}
+          initialData={modalState?.data}
       />
-       <ConditionModal
+      <ConditionModal
         isOpen={modalState?.type === 'condition'}
         onClose={() => setModalState(null)}
         onSave={onSaveModal}
         initialData={modalState?.data}
       />
-       <GoogleSheetsModal
-        isOpen={modalState?.type === 'googleSheets'}
-        onClose={() => setModalState(null)}
-        onSave={onSaveModal}
-        initialData={modalState?.data}
-       />
+      <GoogleSheetsModal
+          isOpen={modalState?.type === 'googleSheets'}
+          onClose={() => setModalState(null)}
+          onSave={onSaveModal}
+          initialData={modalState?.data}
+      />
 
 
       <TestConsole isOpen={isTestConsoleOpen} onClose={toggleTestConsole} engine={engine} flowId={meta.id} />

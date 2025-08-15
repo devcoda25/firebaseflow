@@ -36,7 +36,7 @@ export type BaseNodeData = {
   media?: { type: 'image' | 'video' | 'document' | 'audio', url: string, name?: string };
   branches?: { id: string; label: string; conditions: any[] }[];
   groups?: { type: 'and' | 'or', conditions: { variable: string, operator: string, value: string }[] }[];
-  onNodeSelectForProperties?: (node: Node) => void;
+  onOpenProperties?: (node: Node) => void;
   onNodeDoubleClick?: (node: Node) => void;
   onOpenAttachmentModal?: (nodeId: string, type: 'image' | 'video' | 'audio' | 'document') => void;
 }
@@ -118,8 +118,8 @@ export default function BaseNode({ id, data, selected }: { id: string; data: Bas
                 <button className={styles.nodeMore}><MoreHorizontal size={18}/></button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
-                {thisNode && data.onNodeSelectForProperties && (
-                  <DropdownMenuItem onClick={() => data.onNodeSelectForProperties?.(thisNode)}>
+                {thisNode && data.onOpenProperties && (
+                  <DropdownMenuItem onClick={() => data.onOpenProperties?.(thisNode)}>
                       <Settings className="mr-2 h-4 w-4" />
                       <span>Properties</span>
                   </DropdownMenuItem>

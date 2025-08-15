@@ -44,7 +44,7 @@ export type CanvasWithLayoutWorkerProps = {
   onConnect: (connection: Connection) => void;
   setNodes: (nodes: Node[]) => void;
   onNodeDoubleClick?: (node: Node) => void;
-  onNodeSelectForProperties?: (node: Node | null) => void;
+  onOpenProperties?: (node: Node | null) => void;
   onOpenAttachmentModal?: (nodeId: string, type: 'image' | 'video' | 'audio' | 'document') => void;
   viewportKey?: string;
 };
@@ -57,7 +57,7 @@ function InnerCanvas({
   onEdgesChange,
   onConnect,
   onNodeDoubleClick,
-  onNodeSelectForProperties,
+  onOpenProperties,
   onOpenAttachmentModal
 }: CanvasWithLayoutWorkerProps) {
   const rfRef = useRef<import('reactflow').ReactFlowInstance | null>(null);
@@ -98,24 +98,24 @@ function InnerCanvas({
             color: getRandomColor(),
             description: item.description,
             type: item.type,
-            onNodeSelectForProperties: onNodeSelectForProperties,
+            onOpenProperties: onOpenProperties,
         },
       };
 
       addNode(newNode);
     },
-    [project, addNode, onNodeSelectForProperties]
+    [project, addNode, onOpenProperties]
   );
 
   const onSelectionChange = useCallback(
     ({ nodes: selNodes }: { nodes: Node[]; edges: Edge[] }) => {
-      onNodeSelectForProperties?.(selNodes[0] || null);
+      // onOpenProperties?.(selNodes[0] || null); // This line is removed
       if (!awareness) return;
       const st = (awareness.getLocalState() as any) || {};
       const nodeId = selNodes?.[0]?.id;
       awareness.setLocalState({ ...st, selection: { nodeId, ts: Date.now() } });
     },
-    [awareness, onNodeSelectForProperties]
+    [awareness] // onOpenProperties removed from dependencies
   );
   
   const handleNodeDoubleClick = useCallback((_event: React.MouseEvent, node: Node) => {
@@ -126,11 +126,11 @@ function InnerCanvas({
     ...node,
     data: {
       ...node.data,
-      onNodeSelectForProperties: onNodeSelectForProperties,
+      onOpenProperties: onOpenProperties,
       onNodeDoubleClick: onNodeDoubleClick,
       onOpenAttachmentModal: onOpenAttachmentModal,
     }
-  })), [nodes, onNodeSelectForProperties, onNodeDoubleClick, onOpenAttachmentModal]);
+  })), [nodes, onOpenProperties, onNodeDoubleClick, onOpenAttachmentModal]);
 
   return (
     <div className={styles.root}>
