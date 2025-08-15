@@ -1,41 +1,32 @@
 import React from 'react'
 import { useFormContext } from 'react-hook-form'
 import styles from '../properties-panel.module.css'
-import { Label } from '@/components/ui/label'
-import { Input } from '@/components/ui/input'
-import { FormField, FormItem, FormControl, FormMessage } from '@/components/ui/form'
 
 export default function GeneralTab() {
-  const { control } = useFormContext()
+  const { register, formState: { errors } } = useFormContext()
 
   return (
     <div className={styles.tabBody}>
-      <FormField
-        control={control}
-        name="label"
-        render={({ field }) => (
-          <FormItem className={styles.field}>
-            <Label>Label</Label>
-            <FormControl>
-              <Input {...field} />
-            </FormControl>
-            <FormMessage />
-          </FormItem>
-        )}
-      />
-      <FormField
-        control={control}
-        name="icon"
-        render={({ field }) => (
-          <FormItem className={styles.field}>
-            <Label>Icon (emoji)</Label>
-            <FormControl>
-              <Input {...field} />
-            </FormControl>
-            <FormMessage />
-          </FormItem>
-        )}
-      />
+      <label className={styles.field}>
+        <span className={styles.label}>Label</span>
+        <input {...register('label')} className={styles.input}/>
+        {errors.label && <span className={styles.err}>{String(errors.label.message)}</span>}
+      </label>
+
+      <label className={styles.field}>
+        <span className={styles.label}>Icon (emoji)</span>
+        <input {...register('icon')} className={styles.input}/>
+      </label>
+
+      <label className={styles.field}>
+        <span className={styles.label}>Channel Override</span>
+        <select {...register('channel')} className={styles.select}>
+          <option value="">— Default —</option>
+          <option value="whatsapp">WhatsApp</option>
+          <option value="sms">SMS</option>
+          <option value="email">Email</option>
+        </select>
+      </label>
     </div>
   )
 }

@@ -1,2 +1,2 @@
-export { default } from './PropertiesPanel';
-export type { PropertiesPanelProps, TabKey } from './types';
+export { default } from './PropertiesPanel'
+export type { PropertiesPanelProps, TabKey } from './types'

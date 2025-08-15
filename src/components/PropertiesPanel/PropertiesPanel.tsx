@@ -1,225 +1,187 @@
-'use client';
+import React, { useEffect, useMemo, useState } from 'react'
+import { FormProvider, useForm } from 'react-hook-form'
+import { zodResolver } from '@hookform/resolvers/zod'
+import styles from './properties-panel.module.css'
 
-import React, { useEffect, useMemo, useState } from 'react';
-import { FormProvider, useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import styles from './properties-panel.module.css';
-import { z } from 'zod';
+import { TAB_KEYS, type PropertiesPanelProps, type TabKey } from './types'
+import { generalSchema, messageSchema, apiSchema, logicSchema, scheduleSchema, campaignSchema, aiSchema, handoffSchema, analyticsSchema, subflowSchema, googleSheetsSchema } from './schemas'
+import GeneralTab from './tabs/GeneralTab'
+import MessageTab from './tabs/MessageTab'
+import APITab from './tabs/APITab'
+import LogicTab from './tabs/LogicTab'
+import ScheduleTab from './tabs/ScheduleTab'
+import CampaignTab from './tabs/CampaignTab'
+import AITab from './tabs/AITab'
+import HandoffTab from './tabs/HandoffTab'
+import AnalyticsTab from './tabs/AnalyticsTab'
+import SubflowTab from './tabs/SubflowTab'
+import GoogleSheetsTab from './tabs/GoogleSheetsTab'
+import { useDebouncedCallback } from './utils/useDebouncedCallback'
+import { useKeybind } from './utils/useKeybind'
 
-import { type PropertiesPanelProps, type TabKey, TABS_FOR_NODE_TYPE } from './types';
-import {
-  generalSchema,
-  messageSchema,
-  apiSchema,
-  logicSchema,
-  scheduleSchema,
-  campaignSchema,
-  aiSchema,
-  handoffSchema,
-  analyticsSchema,
-  subflowSchema,
-  googleSheetsSchema,
-} from './schemas';
-import GeneralTab from './tabs/GeneralTab';
-import MessageTab from './tabs/MessageTab';
-import APITab from './tabs/APITab';
-import LogicTab from './tabs/LogicTab';
-import ScheduleTab from './tabs/ScheduleTab';
-import CampaignTab from './tabs/CampaignTab';
-import AITab from './tabs/AITab';
-import HandoffTab from './tabs/HandoffTab';
-import AnalyticsTab from './tabs/AnalyticsTab';
-import SubflowTab from './tabs/SubflowTab';
-import GoogleSheetsTab from './tabs/GoogleSheetsTab';
-import { useDebouncedCallback } from '@/hooks/useDebouncedCallback';
-import { X } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
+/** Simple class combiner */
+function cn(...parts: Array<string | false | undefined>) { return parts.filter(Boolean).join(' ') }
 
 const TAB_LABEL: Record<TabKey, string> = {
-  general: 'General',
-  message: 'Message',
-  api: 'API/Webhook',
-  logic: 'Logic',
-  schedule: 'Schedule',
-  campaign: 'Campaign',
-  ai: 'AI Assist',
-  handoff: 'Handoff',
-  analytics: 'Analytics',
-  subflow: 'Sub‑flow',
-  googleSheets: 'Google Sheets',
-};
-
-const TAB_SCHEMA_MAP: Record<TabKey, any> = {
-    general: generalSchema,
-    message: messageSchema('template'), // default context
-    api: apiSchema,
-    logic: logicSchema,
-    schedule: scheduleSchema,
-    campaign: campaignSchema,
-    ai: aiSchema,
-    handoff: handoffSchema,
-    analytics: analyticsSchema,
-    subflow: subflowSchema,
-    googleSheets: googleSheetsSchema,
+  general: 'General', message: 'Message', api: 'API/Webhook', logic: 'Logic',
+  schedule: 'Schedule', campaign: 'Campaign', ai: 'AI Assist', handoff: 'Handoff',
+  analytics: 'Analytics', subflow: 'Sub‑flow', googleSheets: 'Google Sheets'
 }
-
-const TAB_COMPONENTS: Record<TabKey, React.FC<any>> = {
-    general: GeneralTab,
-    message: MessageTab,
-    api: APITab,
-    logic: LogicTab,
-    ai: AITab,
-    schedule: ScheduleTab,
-    campaign: CampaignTab,
-    handoff: HandoffTab,
-    analytics: AnalyticsTab,
-    subflow: SubflowTab,
-    googleSheets: GoogleSheetsTab,
-};
-
 
 export default function PropertiesPanel({
   node,
   onSave,
   onClose,
   waContext = 'template',
-  channels
+  channels,
+  open
 }: PropertiesPanelProps) {
-  const nodeType = node?.data?.type || 'end';
-  
-  const getTabsForNode = () => {
-    const baseTabs: TabKey[] = TABS_FOR_NODE_TYPE[nodeType] || [];
-    const specificTabs: TabKey[] = [];
+  const visible = !!node && (open ?? true)
+  const [activeTab, setActiveTab] = useState<TabKey>('general')
 
-    if (node?.data?.label?.toLowerCase().includes('google sheets')) {
-      specificTabs.push('googleSheets');
-    } else if (node?.data?.type === 'integrations') {
-      specificTabs.push('api');
-    }
-  
-    return ['general', ...specificTabs, ...baseTabs, 'schedule'];
-  }
-
-  const availableTabs = getTabsForNode();
-  
-  const [activeTab, setActiveTab] = useState<TabKey | undefined>(availableTabs[0]);
-
+  // choose schema per active tab (keep lightweight & fast)
   const schema = useMemo(() => {
-    if (!activeTab) return z.object({});
-    if (activeTab === 'message') {
-        return messageSchema(waContext);
+    switch (activeTab) {
+      case 'general': return generalSchema
+      case 'message': return messageSchema(waContext)
+      case 'api': return apiSchema
+      case 'logic': return logicSchema
+      case 'schedule': return scheduleSchema
+      case 'campaign': return campaignSchema
+      case 'ai': return aiSchema
+      case 'handoff': return handoffSchema
+      case 'analytics': return analyticsSchema
+      case 'subflow': return subflowSchema
+      case 'googleSheets': return googleSheetsSchema
+      default: return generalSchema
     }
-    return TAB_SCHEMA_MAP[activeTab];
-  }, [activeTab, waContext]);
+  }, [activeTab, waContext])
 
   const methods = useForm({
     resolver: zodResolver(schema),
     defaultValues: (node?.data as any) || {},
-    mode: 'onChange',
-  });
+    mode: 'onChange'
+  })
 
+  // reset form when node or tab changes
   useEffect(() => {
-    methods.reset((node?.data as any) || {});
-    setActiveTab(availableTabs[0]);
-  }, [node?.id, methods]);
+    methods.reset((node?.data as any) || {})
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [node?.id, activeTab])
 
+  // close on Esc
+  useKeybind('Escape', (e) => { if (visible) { e.preventDefault(); onClose() } })
+
+  // debounced autosave (tab‑scoped)
   const debouncedSave = useDebouncedCallback((vals: any) => {
-    if (!node) return;
-    onSave(node.id, vals);
-  }, 400);
+    if (!node) return
+    onSave(node.id, vals)
+  }, 400)
 
   useEffect(() => {
-    const subscription = methods.watch((value) => {
-        debouncedSave(value);
-    });
-    return () => subscription.unsubscribe();
-  }, [methods.watch, debouncedSave]);
-  
-  useEffect(() => {
-    if (!availableTabs.includes(activeTab as TabKey)) {
-        setActiveTab(availableTabs[0]);
+    const sub = methods.watch((vals) => debouncedSave(vals))
+    return () => sub.unsubscribe()
+  }, [methods, debouncedSave])
+
+  if (!visible) return null;
+
+  const TabComp = {
+    general: GeneralTab,
+    message: () => <MessageTab waContext={waContext} channels={channels} />,
+    api: APITab,
+    logic: LogicTab,
+    schedule: ScheduleTab,
+    campaign: CampaignTab,
+    ai: AITab,
+    handoff: HandoffTab,
+    analytics: AnalyticsTab,
+    subflow: SubflowTab,
+    googleSheets: GoogleSheetsTab,
+  }[activeTab] as React.FC<any>
+
+  const availableTabs = useMemo(() => {
+    if (!node?.data?.type) {
+      return TAB_KEYS;
     }
-  }, [availableTabs, activeTab]);
+    const nodeTypeTabs = {
+      triggers: ['general', 'schedule'],
+      messaging: ['general', 'message', 'schedule'],
+      inputs: ['general', 'message', 'schedule'],
+      logic: ['general', 'logic', 'schedule'],
+      integrations: ['general', 'api', 'googleSheets', 'schedule'],
+      handoff: ['general', 'handoff', 'schedule'],
+      end: ['general', 'analytics'],
+    }[node.data.type];
 
+    if (node.data.label === 'Google Sheets') {
+      return ['general', 'googleSheets', 'schedule'];
+    }
 
-  if (!node) return null;
+    if (node.data.type === 'integrations' && node.data.label !== 'Google Sheets') {
+      return ['general', 'api', 'schedule'];
+    }
 
-  if (availableTabs.length === 0) {
-    return (
-       <DialogContent className={styles.root}>
-        <DialogHeader>
-            <DialogTitle>Properties: {node?.data?.label ?? node?.id}</DialogTitle>
-            <DialogDescription>
-                This node has no configurable properties.
-            </DialogDescription>
-        </DialogHeader>
-         <DialogFooter>
-            <Button variant="outline" onClick={onClose}>Close</Button>
-        </DialogFooter>
-      </DialogContent>
-    )
-  }
+    return nodeTypeTabs || TAB_KEYS;
+  }, [node]);
 
-  const TabContent = activeTab ? TAB_COMPONENTS[activeTab] : null;
-  const tabProps = {
-    waContext,
-    channels,
-    // Add other props needed by specific tabs here
-  };
 
   return (
-    <DialogContent className={styles.root}>
-        <DialogHeader>
-            <DialogTitle>Properties: {node?.data?.label ?? node?.id}</DialogTitle>
-            <DialogDescription>
-                Configure the behavior of this node. Changes are saved automatically.
-            </DialogDescription>
-        </DialogHeader>
-
-      <FormProvider {...methods}>
-        <div className={styles.body}>
-          {availableTabs.length > 1 ? (
-             <Tabs value={activeTab} onValueChange={(val) => setActiveTab(val as TabKey)} className="w-full flex flex-col min-h-0">
-                <TabsList className={`grid w-full grid-cols-${availableTabs.length > 4 ? 4 : availableTabs.length}`}>
-                    {availableTabs.map((k) => (
-                        <TabsTrigger key={k} value={k}>
-                            {TAB_LABEL[k]}
-                        </TabsTrigger>
-                    ))}
-                </TabsList>
-                {TabContent && (
-                  <TabsContent value={activeTab!} className={styles.tabContent}>
-                      <TabContent {...tabProps} />
-                  </TabsContent>
-                )}
-            </Tabs>
-          ) : (
-             TabContent && <div className={styles.tabContent}><TabContent {...tabProps} /></div>
-          )}
+    <aside className={styles.root} role="dialog" aria-label="Node properties" aria-modal="true">
+      {/* Header */}
+      <div className={styles.header}>
+        <div className={styles.titleWrap}>
+          <h2 className={styles.title}>Node Properties</h2>
+          <p className={styles.subtitle}>{node?.data?.label ?? node?.id}</p>
         </div>
-      </FormProvider>
+        <button className={styles.close} onClick={onClose} aria-label="Close properties">×</button>
+      </div>
 
-      <DialogFooter className={styles.footer}>
+      {/* Tabs */}
+      <nav className={styles.tabs} aria-label="Properties tabs">
+        {availableTabs.map((k) => (
+          <button
+            key={k}
+            className={cn(styles.tab, activeTab === k && styles.tabActive)}
+            onClick={async () => {
+              // validate before switching tab (so users see errors)
+              await methods.trigger()
+              setActiveTab(k)
+            }}
+          >
+            {TAB_LABEL[k]}
+          </button>
+        ))}
+      </nav>
+
+      {/* Content */}
+      <div className={styles.body}>
+        <FormProvider {...methods}>
+          <TabComp />
+        </FormProvider>
+      </div>
+
+      {/* Footer with live validation */}
+      <div className={styles.footer}>
         <ValidationSummary errors={methods.formState.errors} />
-        <Button variant="outline" onClick={onClose}>Close</Button>
-      </DialogFooter>
-    </DialogContent>
-  );
+        <span className={styles.tip}>Changes autosave • Press Esc to close</span>
+      </div>
+    </aside>
+  )
 }
 
 function ValidationSummary({ errors }: { errors: Record<string, any> }) {
-    const errorMessages = Object.values(errors).map((e: any) => e.message).filter(Boolean);
-    if (errorMessages.length === 0) return <span className={styles.ok}>All good ✓</span>
-    
-    return (
-        <ul className={styles.problems} aria-live="polite">
-        {errorMessages.map((msg, i) => (
-            <li key={i} className={styles.problemItem}>
-            ⚠ {String(msg)}
-            </li>
-        ))}
-        </ul>
-    );
+  const list = Object.entries(errors)
+    .map(([k, v]) => ({ field: k, msg: (v as any)?.message || 'Invalid value' }))
+
+  if (list.length === 0) return <span className={styles.ok}>All good ✓</span>
+  return (
+    <ul className={styles.problems} aria-live="polite">
+      {list.map((e) => (
+        <li key={e.field} className={styles.problemItem}>
+          <span className={styles.problemField}>{e.field}</span>
+          <span className={styles.problemMsg}>{String(e.msg)}</span>
+        </li>
+      ))}
+    </ul>
+  )
 }
