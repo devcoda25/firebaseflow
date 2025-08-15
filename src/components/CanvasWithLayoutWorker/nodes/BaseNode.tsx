@@ -1,18 +1,10 @@
-import React, { useState } from 'react'
+import React from 'react'
 import { Handle, Position, Node } from 'reactflow'
 import styles from '../canvas-layout.module.css'
 import NodeAvatars from '@/components/Presence/NodeAvatars';
 import { MoreHorizontal, Trash2, Copy, PlayCircle, XCircle, Settings, Image, Video, AudioLines, FileText } from 'lucide-react';
 import * as LucideIcons from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import MessageContentModal from '@/components/PropertiesPanel/partials/MessageContentModal';
-import ImageAttachmentModal from '@/components/PropertiesPanel/partials/ImageAttachmentModal';
-import VideoAttachmentModal from '@/components/PropertiesPanel/partials/VideoAttachmentModal';
-import DocumentAttachmentModal from '@/components/PropertiesPanel/partials/DocumentAttachmentModal';
-import AudioAttachmentModal from '@/components/PropertiesPanel/partials/AudioAttachmentModal';
-import WebhookModal from '@/components/PropertiesPanel/partials/WebhookModal';
-import ConditionModal from '@/components/PropertiesPanel/partials/ConditionModal';
-import GoogleSheetsModal from '@/components/PropertiesPanel/partials/GoogleSheetsModal';
 
 import {
   DropdownMenu,
@@ -59,19 +51,6 @@ export default function BaseNode({ id, data, selected }: { id: string; data: Bas
   const isButtonsNode = data.label === 'Buttons' || data.label === 'List';
   const isStartNode = startNodeId === id;
 
-
-  const onSaveMedia = (media: BaseNodeData['media']) => {
-    updateNodeData(id, { media });
-  }
-
-  const onDeleteMedia = () => {
-    updateNodeData(id, { media: undefined });
-  }
-  
-  const onSaveMessageContent = (content: string) => {
-    updateNodeData(id, { content });
-  };
-
   const onDeleteMessageContent = (e: React.MouseEvent) => {
     e.stopPropagation();
     updateNodeData(id, { content: undefined });
@@ -98,10 +77,6 @@ export default function BaseNode({ id, data, selected }: { id: string; data: Bas
     }
   };
   
-  const onSaveModalData = (modalData: any) => {
-    updateNodeData(id, modalData);
-  }
-
   return (
     <div className={styles.baseNode} style={customStyle} aria-selected={selected} onDoubleClick={handleDoubleClick}>
        <NodeAvatars nodeId={id} />

@@ -5,7 +5,7 @@ import React, { useMemo } from 'react';
 import { SECTION_DATA, ItemDefinition, PaletteItemPayload, Channel } from './sections-data';
 import * as LucideIcons from 'lucide-react';
 import { cn } from '@/lib/utils';
-
+import styles from './sidebar-palette.module.css';
 
 export type SidebarPaletteProps = {
   onDragStart: (e: React.DragEvent, item: PaletteItemPayload) => void;
@@ -49,14 +49,14 @@ export default function SidebarPalette({
     ghost.style.top = '-1000px'; // Position it off-screen
 
     const iconContainer = document.createElement('div');
-    iconContainer.className = "w-10 h-10 rounded-full grid place-items-center bg-purple-100 flex-shrink-0";
+    iconContainer.className = "w-10 h-10 rounded-full grid place-items-center bg-primary/10 flex-shrink-0";
     
     const Icon = (LucideIcons as any)[item.icon as string] || LucideIcons.HelpCircle;
     
     // This is tricky, we can't easily render a React component to an image.
     // We will build a simple representation. For a perfect match, we'd need a library.
     const iconElement = document.createElement('div');
-    iconElement.style.color = 'hsl(262 83% 58%)';
+    iconElement.style.color = 'hsl(var(--primary))';
     iconElement.innerHTML = `<!-- Approximating icon, actual SVG might differ -->`;
     iconContainer.appendChild(iconElement);
 
@@ -99,7 +99,7 @@ export default function SidebarPalette({
                         <button
                             key={item.key}
                             type="button"
-                            className="flex flex-col items-center justify-center text-center gap-2 p-3 rounded-lg bg-card text-card-foreground border border-border cursor-grab user-select-none transition-all duration-200 hover:shadow-md hover:border-black/10 active:cursor-grabbing active:scale-[0.98] shadow-sm"
+                            className={styles.paletteItem}
                             style={{'--item-color': item.color} as React.CSSProperties}
                             draggable
                             onDragStart={(e) => handleDragStart(e, item)}
@@ -107,10 +107,10 @@ export default function SidebarPalette({
                             aria-label={`Add ${item.label}`}
                             title={`${item.label}${item.description ? ` - ${item.description}`:''}`}
                         >
-                            <div className="w-10 h-10 rounded-full grid place-items-center bg-purple-100 flex-shrink-0">
-                                <Icon className="w-5 h-5 text-purple-600" />
+                            <div className={styles.paletteItemIconWrapper}>
+                                <Icon className={styles.paletteItemIcon} />
                             </div>
-                            <span className="text-sm font-medium leading-snug">{item.label}</span>
+                            <span className={styles.paletteItemLabel}>{item.label}</span>
                         </button>
                         )
                     })}
