@@ -30,18 +30,16 @@ export interface FlowMeta {
 }
 
 type ConnectionState = {
-    connection: {
-        connectingNodeId: string | null;
-        connectingHandleId: string | null;
-        onConnectEnd: boolean;
-    }
+    isConnecting: boolean;
+    sourceNode: string | null;
+    sourceHandle: string | null;
 }
 
 type RFState = {
     nodes: Node[];
     edges: Edge[];
     startNodeId: string | null;
-    connection: ConnectionState['connection'];
+    connection: ConnectionState;
     onNodesChange: (changes: NodeChange[]) => void;
     onEdgesChange: (changes: EdgeChange[]) => void;
     onConnect: (connection: Connection) => void;
@@ -62,10 +60,10 @@ const flowSlice = (set: any, get: any) => ({
   edges: [] as Edge[],
   startNodeId: null as string | null,
   connection: {
-    connectingNodeId: null,
-    connectingHandleId: null,
-    onConnectEnd: false
-  } as ConnectionState['connection'],
+    isConnecting: false,
+    sourceNode: null,
+    sourceHandle: null,
+  } as ConnectionState,
 
   onNodesChange: (changes: NodeChange[]) => {
     set({
@@ -80,7 +78,6 @@ const flowSlice = (set: any, get: any) => ({
   onConnect: (connection: Connection) => {
     const { edges } = get();
 
-    // Allow multiple connections from the same source handle for condition nodes
     const sourceNode = get().nodes.find((n: Node) => n.id === connection.source);
     if (sourceNode?.data.type !== 'logic' && sourceNode?.data.label !== 'Buttons' && sourceNode?.data.label !== 'List') {
         const sourceHandleHasConnection = edges.some(
@@ -89,7 +86,7 @@ const flowSlice = (set: any, get: any) => ({
 
         if (sourceHandleHasConnection) {
           console.warn(`Connection from source ${connection.source} (handle: ${connection.sourceHandle}) already exists.`);
-          return; // Abort connection
+          return;
         }
     }
 
@@ -98,12 +95,11 @@ const flowSlice = (set: any, get: any) => ({
       edges: addEdge({ ...connection, type: 'bezier', markerEnd: { type: MarkerType.ArrowClosed, width: 20, height: 20 } }, get().edges),
     });
   },
-  onConnectStart: (_: any, {nodeId, handleId}: {nodeId: string | null, handleId: string | null}) => {
-    set({ connection: { connectingNodeId: nodeId, connectingHandleId: handleId, onConnectEnd: false } });
+  onConnectStart: (_: any, {nodeId, handleId}: OnConnectStartParams) => {
+    set({ connection: { isConnecting: true, sourceNode: nodeId, sourceHandle: handleId } });
   },
   onConnectEnd: () => {
-    const { connection } = get();
-    set({ connection: { ...connection, onConnectEnd: true } });
+    set({ connection: { isConnecting: false, sourceNode: null, sourceHandle: null } });
   },
   addNode: (node: Node) => {
     set({
