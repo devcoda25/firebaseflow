@@ -215,8 +215,8 @@ export default function BaseNode({ id, data, selected }: { id: string; data: Bas
                     <div key={part.id} className={styles.messagePart}>
                         {part.type === 'text' && (
                              <div className={styles.messageContent}>
-                                <Textarea
-                                    ref={(el) => textRefs.current[part.id] = el}
+                                <textarea
+                                    ref={(el) => { if (el) textRefs.current[part.id] = el; }}
                                     className={styles.messageTextarea}
                                     placeholder="Click to edit message..."
                                     value={(part as any).content}
