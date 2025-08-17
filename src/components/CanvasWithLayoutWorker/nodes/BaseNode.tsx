@@ -106,8 +106,8 @@ export default function BaseNode({ id, data, selected }: { id: string; data: Bas
         if (part) {
             switch(part.type) {
                 case 'text':
-                    data.onNodeDoubleClick?.(thisNode, { partId, type: 'text' });
-                    break;
+                    // Inline editing, no modal needed
+                    return;
                 case 'image':
                 case 'video':
                 case 'audio':
