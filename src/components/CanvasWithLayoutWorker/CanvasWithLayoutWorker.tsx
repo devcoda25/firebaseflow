@@ -128,7 +128,7 @@ function InnerCanvas({
 
   const onSelectionChange = useCallback(
     ({ nodes: selNodes }: { nodes: Node[]; edges: Edge[] }) => {
-      onOpenProperties?.(selNodes[0] || null);
+      // onOpenProperties?.(selNodes[0] || null);
       if (!awareness) return;
       const st = (awareness.getLocalState() as any) || {};
       const nodeId = selNodes?.[0]?.id;
