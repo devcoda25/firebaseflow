@@ -60,9 +60,9 @@ function migrateData(data: BaseNodeData): ContentPart[] {
     parts.push({ id: nanoid(), type: data.media.type, url: data.media.url, name: data.media.name });
   }
 
-  // If no content or media, create a default text part
+  // If no content or media, start with an empty array
   if (parts.length === 0) {
-    parts.push({ id: nanoid(), type: 'text', content: 'Click to edit message.' });
+    return [];
   }
   return parts;
 }
@@ -130,12 +130,7 @@ export default function BaseNode({ id, data, selected }: { id: string; data: Bas
   
   const removePart = (partId: string) => {
     const newParts = parts.filter(p => p.id !== partId);
-    // Ensure there's always at least one part
-    if (newParts.length === 0) {
-      updateNodeData(id, { parts: [{ id: nanoid(), type: 'text', content: 'Click to edit message.' }] });
-    } else {
-      updateNodeData(id, { parts: newParts });
-    }
+    updateNodeData(id, { parts: newParts });
   };
   
   return (
@@ -188,12 +183,17 @@ export default function BaseNode({ id, data, selected }: { id: string; data: Bas
         <div className={styles.nodeBody}>
           {isMessageNode ? (
             <div className={styles.messageNodeBody}>
+                {parts.length === 0 && (
+                  <div className="text-center text-sm text-muted-foreground p-4">
+                    Add content using the buttons below.
+                  </div>
+                )}
                 {parts.map((part) => (
                     <div key={part.id} className={styles.messagePart}>
                         {part.type === 'text' && (
                             <div className={styles.messageContent} onClick={() => handleDoubleClick(part.id)}>
                                 <p className="whitespace-pre-wrap break-words text-sm">
-                                    {part.content || 'Click to edit message.'}
+                                    {part.content || <span className="text-muted-foreground italic">Click to edit message...</span>}
                                 </p>
                             </div>
                         )}

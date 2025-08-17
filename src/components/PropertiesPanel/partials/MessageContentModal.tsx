@@ -1,8 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
+import VariableChipAutocomplete from '@/components/VariableChipAutocomplete/VariableChipAutocomplete';
 
 type MessageContentModalProps = {
   isOpen: boolean;
@@ -18,6 +19,7 @@ export default function MessageContentModal({
   content
 }: MessageContentModalProps) {
   const [text, setText] = useState('');
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   useEffect(() => {
     if (isOpen) {
@@ -28,6 +30,20 @@ export default function MessageContentModal({
   const handleSave = () => {
     onSave(text);
   };
+  
+  const handleInsertVariable = (name: string) => {
+    const start = textareaRef.current?.selectionStart || text.length;
+    const end = textareaRef.current?.selectionEnd || text.length;
+    const variable = `{{${name}}}`;
+    const newText = text.substring(0, start) + variable + text.substring(end);
+    setText(newText);
+    textareaRef.current?.focus();
+    setTimeout(() => {
+        const newCursorPos = start + variable.length;
+        textareaRef.current?.setSelectionRange(newCursorPos, newCursorPos);
+    }, 0);
+  };
+
 
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
@@ -38,9 +54,16 @@ export default function MessageContentModal({
         </DialogHeader>
         <div className="grid gap-4 py-4">
           <div className="grid gap-2">
-            <Label htmlFor="message-text">Message Content</Label>
+            <div className="flex justify-between items-center">
+                <Label htmlFor="message-text">Message Content</Label>
+                <VariableChipAutocomplete 
+                    variables={['name', 'email', 'cart_item', 'order_id']} 
+                    onInsert={handleInsertVariable} 
+                />
+            </div>
             <Textarea 
               id="message-text" 
+              ref={textareaRef}
               value={text} 
               onChange={e => setText(e.target.value)} 
               placeholder="Type your message here..."
