@@ -1,6 +1,6 @@
 
 import { create } from 'zustand';
-import type { Node, Edge, NodeChange, EdgeChange, Connection } from 'reactflow';
+import type { Node, Edge, NodeChange, EdgeChange, Connection, OnConnectStartParams } from 'reactflow';
 import { applyNodeChanges, applyEdgeChanges, addEdge } from 'reactflow';
 import { nanoid } from 'nanoid';
 import { temporal } from 'zundo';
@@ -36,6 +36,26 @@ type ConnectionState = {
         onConnectEnd: boolean;
     }
 }
+
+type RFState = {
+    nodes: Node[];
+    edges: Edge[];
+    startNodeId: string | null;
+    connection: ConnectionState['connection'];
+    onNodesChange: (changes: NodeChange[]) => void;
+    onEdgesChange: (changes: EdgeChange[]) => void;
+    onConnect: (connection: Connection) => void;
+    onConnectStart: (_: React.MouseEvent, params: OnConnectStartParams) => void;
+    onConnectEnd: (event: MouseEvent) => void;
+    addNode: (node: Node) => void;
+    deleteNode: (nodeId: string) => void;
+    duplicateNode: (nodeId: string) => void;
+    updateNodeData: (nodeId: string, data: Record<string, any>) => void;
+    setNodes: (nodes: Node[]) => void;
+    setEdges: (edges: Edge[]) => void;
+    setStartNode: (nodeId: string | null) => void;
+}
+
 
 const flowSlice = (set: any, get: any) => ({
   nodes: [] as Node[],
@@ -136,7 +156,7 @@ const flowSlice = (set: any, get: any) => ({
 
 
 // Create the main store, with a temporal middleware for history
-export const useFlowStore = create(
+export const useFlowStore = create<RFState>()(
   temporal(flowSlice, {
     onSave: (_, state) => {
         const { temporal } = state as any;
@@ -175,5 +195,5 @@ export const useFlowMetaStore = create<FlowMetaState>((set) => ({
 }));
 
 // Expose undo/redo actions
-export const undo = () => useFlowStore.temporal.undo();
-export const redo = () => useFlowStore.temporal.redo();
+export const undo = () => (useFlowStore.temporal as any).undo();
+export const redo = () => (useFlowStore.temporal as any).redo();

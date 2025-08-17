@@ -19,6 +19,7 @@ import ReactFlow, {
   Background,
   ConnectionLineType,
   MarkerType,
+  OnConnectStartParams,
 } from 'reactflow';
 import 'reactflow/dist/style.css';
 import { nanoid } from 'nanoid';
@@ -48,6 +49,8 @@ export type CanvasWithLayoutWorkerProps = {
   onNodesChange: (changes: NodeChange[]) => void;
   onEdgesChange: (changes: EdgeChange[]) => void;
   onConnect: (connection: Connection) => void;
+  onConnectStart: (_: React.MouseEvent, params: OnConnectStartParams) => void;
+  onConnectEnd: (event: MouseEvent) => void;
   setNodes: (nodes: Node[]) => void;
   onNodeDoubleClick?: (node: Node) => void;
   onOpenProperties?: (node: Node | null) => void;
@@ -70,6 +73,8 @@ function InnerCanvas({
   onNodesChange,
   onEdgesChange,
   onConnect,
+  onConnectStart,
+  onConnectEnd,
   onNodeDoubleClick,
   onOpenProperties,
   onOpenAttachmentModal
@@ -138,10 +143,13 @@ function InnerCanvas({
     onNodeDoubleClick?.(node);
   }, [onNodeDoubleClick]);
 
-  const onConnectEnd = useCallback((event: MouseEvent) => {
-    if (!rfRef.current) return;
-    const { onConnectEnd, connectingNodeId: sourceNode, connectingHandleId: sourceHandle } = useFlowStore.getState().connection;
+  const handleConnectEnd = useCallback((event: MouseEvent) => {
+    onConnectEnd(event); // Propagate to store
     
+    if (!rfRef.current) return;
+    const { connection } = useFlowStore.getState();
+    const sourceNode = connection.connectingNodeId;
+
     if (!sourceNode || event.target?.closest('.react-flow__handle')) {
         return;
     }
@@ -150,11 +158,11 @@ function InnerCanvas({
     setNodeSelector({
         x: event.clientX - left,
         y: event.clientY - top,
-        sourceNode,
-        sourceHandle
+        sourceNode: sourceNode,
+        sourceHandle: connection.connectingHandleId
     })
 
-  }, [rfRef]);
+  }, [rfRef, onConnectEnd]);
 
   useClickAway(selectorRef, () => {
     setNodeSelector(null);
@@ -210,7 +218,8 @@ function InnerCanvas({
           onNodesChange={onNodesChange}
           onEdgesChange={onEdgesChange}
           onConnect={onConnect}
-          onConnectEnd={onConnectEnd}
+          onConnectStart={onConnectStart}
+          onConnectEnd={handleConnectEnd}
           onInit={(inst) => (rfRef.current = inst)}
           onSelectionChange={onSelectionChange}
           onNodeDoubleClick={handleNodeDoubleClick}
@@ -224,7 +233,7 @@ function InnerCanvas({
         >
           <Controls className={styles.controls} />
           <MiniMap pannable zoomable />
-          <Background style={{'--bg-color': 'hsl(215 30% 98%)', '--line-color': 'hsl(215 20% 88%)'} as React.CSSProperties}/>
+          <Background style={{'--bg-color': 'hsl(215 30% 98%)', '--line-color': 'hsla(215 20% 88%, 0.5)'} as React.CSSProperties}/>
           <div style={{ position: 'absolute', inset: 0, pointerEvents: 'none', zIndex: 10 }}>
             <LiveCursors />
           </div>
