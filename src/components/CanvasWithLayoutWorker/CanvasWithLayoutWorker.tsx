@@ -49,8 +49,8 @@ export type CanvasWithLayoutWorkerProps = {
   onNodesChange: (changes: NodeChange[]) => void;
   onEdgesChange: (changes: EdgeChange[]) => void;
   onConnect: (connection: Connection) => void;
-  onConnectStart: (_: React.MouseEvent, params: OnConnectStartParams) => void;
-  onConnectEnd: (event: MouseEvent) => void;
+  onConnectStart: (_: React.MouseEvent | React.TouchEvent, params: OnConnectStartParams) => void;
+  onConnectEnd: (event: MouseEvent | TouchEvent) => void;
   setNodes: (nodes: Node[]) => void;
   onNodeDoubleClick?: (node: Node) => void;
   onOpenProperties?: (node: Node | null) => void;
@@ -83,6 +83,7 @@ function InnerCanvas({
   const { project } = useReactFlow();
   const { awareness } = usePresence();
   const { addNode } = useFlowStore();
+  const onConnectEndStore = useFlowStore(s => s.onConnectEnd);
 
   const [nodeSelector, setNodeSelector] = useState<NodeSelectorState>(null);
   const selectorRef = useRef<HTMLDivElement>(null);
@@ -143,26 +144,31 @@ function InnerCanvas({
     onNodeDoubleClick?.(node);
   }, [onNodeDoubleClick]);
 
-  const handleConnectEnd = useCallback((event: MouseEvent) => {
-    onConnectEnd(event); // Propagate to store
+  const handleConnectEnd = useCallback((event: MouseEvent | TouchEvent) => {
+    onConnectEndStore(event as MouseEvent); 
     
     if (!rfRef.current) return;
+    
     const { connection } = useFlowStore.getState();
-    const sourceNode = connection.connectingNodeId;
+    const sourceNode = connection.sourceNode;
 
-    if (!sourceNode || event.target?.closest('.react-flow__handle')) {
+    if (!sourceNode || (event.target as HTMLElement)?.closest('.react-flow__handle')) {
+        setNodeSelector(null);
         return;
     }
     
     const { top, left } = rfRef.current.container.getBoundingClientRect();
+    const clientX = 'touches' in event ? event.touches[0].clientX : event.clientX;
+    const clientY = 'touches' in event ? event.touches[0].clientY : event.clientY;
+
     setNodeSelector({
-        x: event.clientX - left,
-        y: event.clientY - top,
+        x: clientX - left,
+        y: clientY - top,
         sourceNode: sourceNode,
-        sourceHandle: connection.connectingHandleId
+        sourceHandle: connection.sourceHandle
     })
 
-  }, [rfRef, onConnectEnd]);
+  }, [rfRef, onConnectEndStore]);
 
   useClickAway(selectorRef, () => {
     setNodeSelector(null);
@@ -177,7 +183,7 @@ function InnerCanvas({
     const newNode: Node = {
         id: newNodeId,
         type: 'base',
-        position: { x, y },
+        position: { x: x - 150, y: y - 50 }, // Offset to center on cursor
         data: {
             label: item.label,
             icon: item.icon,
@@ -233,7 +239,6 @@ function InnerCanvas({
         >
           <Controls className={styles.controls} />
           <MiniMap pannable zoomable />
-          <Background style={{'--bg-color': 'hsl(215 30% 98%)', '--line-color': 'hsla(215 20% 88%, 0.5)'} as React.CSSProperties}/>
           <div style={{ position: 'absolute', inset: 0, pointerEvents: 'none', zIndex: 10 }}>
             <LiveCursors />
           </div>

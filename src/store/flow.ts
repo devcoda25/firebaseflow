@@ -43,8 +43,8 @@ type RFState = {
     onNodesChange: (changes: NodeChange[]) => void;
     onEdgesChange: (changes: EdgeChange[]) => void;
     onConnect: (connection: Connection) => void;
-    onConnectStart: (_: React.MouseEvent, params: OnConnectStartParams) => void;
-    onConnectEnd: (event: MouseEvent) => void;
+    onConnectStart: (_: React.MouseEvent | React.TouchEvent, params: OnConnectStartParams) => void;
+    onConnectEnd: (event: MouseEvent | TouchEvent) => void;
     addNode: (node: Node) => void;
     deleteNode: (nodeId: string) => void;
     duplicateNode: (nodeId: string) => void;
@@ -99,7 +99,8 @@ const flowSlice = (set: any, get: any) => ({
     set({ connection: { isConnecting: true, sourceNode: nodeId, sourceHandle: handleId } });
   },
   onConnectEnd: () => {
-    set({ connection: { isConnecting: false, sourceNode: null, sourceHandle: null } });
+     // The connection state is kept for the canvas to decide what to do
+     // It will be reset there or on the next onConnectStart
   },
   addNode: (node: Node) => {
     set({
