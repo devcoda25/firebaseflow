@@ -76,11 +76,12 @@ function InnerCanvas({
   onOpenAttachmentModal
 }: CanvasWithLayoutWorkerProps) {
   const rfRef = useRef<import('reactflow').ReactFlowInstance | null>(null);
+  const canvasRef = useRef<HTMLDivElement>(null);
   const { project } = useReactFlow();
   const { awareness } = usePresence();
   const { addNode } = useFlowStore();
   
-  const connectingNodeId = useRef<OnConnectStartParams | null>(null);
+  const [connectingNodeId, setConnectingNodeId] = useState<OnConnectStartParams | null>(null);
   const [nodeSelector, setNodeSelector] = useState<NodeSelectorState>(null);
   const selectorRef = useRef<HTMLDivElement>(null);
 
@@ -141,17 +142,17 @@ function InnerCanvas({
   }, [onNodeDoubleClick]);
 
   const onConnectStart = useCallback((_: any, params: OnConnectStartParams) => {
-    connectingNodeId.current = params;
+    setConnectingNodeId(params);
   }, []);
 
   const onConnectEnd = useCallback((event: MouseEvent | TouchEvent) => {
     const targetIsPane = (event.target as HTMLElement).classList.contains('react-flow__pane');
 
-    if (targetIsPane && connectingNodeId.current) {
-        const { nodeId, handleId } = connectingNodeId.current;
-        if (!nodeId) return;
+    if (targetIsPane && connectingNodeId) {
+        const { nodeId, handleId } = connectingNodeId;
+        if (!nodeId || !canvasRef.current) return;
 
-        const { top, left } = rfRef.current!.container.getBoundingClientRect();
+        const { top, left } = canvasRef.current.getBoundingClientRect();
         const clientX = 'touches' in event ? event.touches[0].clientX : event.clientX;
         const clientY = 'touches' in event ? event.touches[0].clientY : event.clientY;
         
@@ -162,8 +163,8 @@ function InnerCanvas({
             sourceHandle: handleId
         })
     }
-    connectingNodeId.current = null;
-  }, [project]);
+    setConnectingNodeId(null);
+  }, [project, connectingNodeId]);
 
   useClickAway(selectorRef, () => {
     setNodeSelector(null);
@@ -210,7 +211,7 @@ function InnerCanvas({
   })), [nodes, onOpenProperties, onNodeDoubleClick, onOpenAttachmentModal]);
 
   return (
-    <div className={styles.root}>
+    <div ref={canvasRef} className={styles.root}>
       <div className={styles.canvas} onDrop={onDrop} onDragOver={onDragOver}>
         <ReactFlow
           ref={(instance) => (rfRef.current = instance)}
