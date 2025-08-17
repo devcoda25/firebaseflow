@@ -1,8 +1,8 @@
-import React from 'react'
-import { Handle, Position, Node } from 'reactflow'
+import React, {useCallback} from 'react'
+import { Handle, Position, Node, useReactFlow } from 'reactflow'
 import styles from '../canvas-layout.module.css'
 import NodeAvatars from '@/components/Presence/NodeAvatars';
-import { MoreHorizontal, Trash2, Copy, PlayCircle, XCircle, Settings, Image, Video, AudioLines, FileText } from 'lucide-react';
+import { MoreHorizontal, Trash2, Copy, PlayCircle, XCircle, Settings, Image, Video, AudioLines, FileText, MessageSquare as MessageSquareIcon, File as FileIcon, Film, Image as ImageIcon } from 'lucide-react';
 import * as LucideIcons from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
@@ -16,7 +16,15 @@ import {
 import { useFlowStore } from '@/store/flow';
 import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { nanoid } from 'nanoid';
 
+
+export type ContentPart = 
+  | { id: string; type: 'text'; content: string }
+  | { id: string; type: 'image'; url?: string; name?: string }
+  | { id: string; type: 'video'; url?: string; name?: string }
+  | { id: string; type: 'audio'; url?: string; name?: string }
+  | { id: string; type: 'document'; url?: string; name?: string };
 
 export type BaseNodeData = {
   label: string
@@ -24,38 +32,60 @@ export type BaseNodeData = {
   description?: string
   color?: string;
   type?: string;
+  
+  // Old properties - will be migrated
   content?: string;
   media?: { type: 'image' | 'video' | 'document' | 'audio', url: string, name?: string };
+  
+  // New property
+  parts?: ContentPart[];
+
   branches?: { id: string; label: string; conditions: any[] }[];
   groups?: { type: 'and' | 'or', conditions: { variable: string, operator: string, value: string }[] }[];
   quickReplies?: { id: string; label: string }[];
   onOpenProperties?: (node: Node) => void;
   onNodeDoubleClick?: (node: Node) => void;
-  onOpenAttachmentModal?: (nodeId: string, type: 'image' | 'video' | 'audio' | 'document') => void;
+  onOpenAttachmentModal?: (nodeId: string, partId: string, type: 'image' | 'video' | 'audio' | 'document') => void;
 }
+
+// Function to migrate old data structure to the new one
+function migrateData(data: BaseNodeData): ContentPart[] {
+  if (data.parts) return data.parts;
+
+  const parts: ContentPart[] = [];
+  if (data.content) {
+    parts.push({ id: nanoid(), type: 'text', content: data.content });
+  }
+  if (data.media) {
+    parts.push({ id: nanoid(), type: data.media.type, url: data.media.url, name: data.media.name });
+  }
+
+  // If no content or media, create a default text part
+  if (parts.length === 0) {
+    parts.push({ id: nanoid(), type: 'text', content: 'Click to edit message.' });
+  }
+  return parts;
+}
+
 
 export default function BaseNode({ id, data, selected }: { id: string; data: BaseNodeData; selected: boolean }) {
   const { deleteNode, duplicateNode, setStartNode, startNodeId, updateNodeData, nodes } = useFlowStore();
-  
+  const { getNode } = useReactFlow();
+
   const customStyle = {
     '--node-color': data.color || 'hsl(var(--primary))'
   } as React.CSSProperties;
 
   const Icon = data.icon ? (LucideIcons as any)[data.icon] ?? LucideIcons.HelpCircle : LucideIcons.MessageSquare;
   
-  const isMessageNode = data.type === 'messaging';
+  const isMessageNode = data.type === 'messaging' && data.label === 'Send a Message';
   const isAskQuestionNode = data.label === 'Ask a Question';
-  const isInputNode = data.type === 'inputs';
   const isConditionNode = data.type === 'logic' && data.label === 'Set a Condition';
-  const isWebhookNode = data.label === 'Webhook';
-  const isGoogleSheetsNode = data.label === 'Google Sheets';
   const isButtonsNode = data.label === 'Buttons' || data.label === 'List';
   const isStartNode = startNodeId === id;
 
-  const onDeleteMessageContent = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    updateNodeData(id, { content: undefined });
-  }
+  // Migrate old data to new parts structure if necessary
+  const parts = isMessageNode ? migrateData(data) : [];
 
   const getConditionString = (condition: { variable?: string, operator?: string, value?: string }): string => {
     if (!condition) return '';
@@ -66,14 +96,50 @@ export default function BaseNode({ id, data, selected }: { id: string; data: Bas
 
   const thisNode = nodes.find(n => n.id === id);
 
-  const handleDoubleClick = () => {
-    if (thisNode && data.onNodeDoubleClick) {
-      data.onNodeDoubleClick(thisNode);
+  const handleDoubleClick = (partId?: string) => {
+    if (!thisNode) return;
+
+    if (isMessageNode) {
+        const part = parts.find(p => p.id === partId);
+        if (part) {
+            switch(part.type) {
+                case 'text':
+                    data.onNodeDoubleClick?.(thisNode, { partId, type: 'text' });
+                    break;
+                case 'image':
+                case 'video':
+                case 'audio':
+                case 'document':
+                    data.onOpenAttachmentModal?.(id, partId, part.type);
+                    break;
+            }
+        }
+    } else {
+        data.onNodeDoubleClick?.(thisNode);
+    }
+  };
+
+  const addPart = (type: ContentPart['type']) => {
+    const newPart: ContentPart = 
+        type === 'text' 
+        ? { id: nanoid(), type: 'text', content: '' }
+        : { id: nanoid(), type, url: '', name: ''};
+    const newParts = [...parts, newPart];
+    updateNodeData(id, { parts: newParts });
+  };
+  
+  const removePart = (partId: string) => {
+    const newParts = parts.filter(p => p.id !== partId);
+    // Ensure there's always at least one part
+    if (newParts.length === 0) {
+      updateNodeData(id, { parts: [{ id: nanoid(), type: 'text', content: 'Click to edit message.' }] });
+    } else {
+      updateNodeData(id, { parts: newParts });
     }
   };
   
   return (
-    <div className={styles.baseNode} style={customStyle} aria-selected={selected} onDoubleClick={handleDoubleClick}>
+    <div className={styles.baseNode} style={customStyle} aria-selected={selected}>
        <NodeAvatars nodeId={id} />
       <div className={styles.nodeHeader}>
         <div className={styles.headerLeft}>
@@ -118,34 +184,60 @@ export default function BaseNode({ id, data, selected }: { id: string; data: Bas
             </DropdownMenuContent>
         </DropdownMenu>
       </div>
-      <ScrollArea className="max-h-60">
+      <ScrollArea className="max-h-96">
         <div className={styles.nodeBody}>
           {isMessageNode ? (
             <div className={styles.messageNodeBody}>
-              <div className={styles.messageContent}>
-                {data.content && <button className={styles.deleteButton} onClick={onDeleteMessageContent} title="Delete message content"><Trash2 size={14} /></button>}
-                <p className="whitespace-pre-wrap break-words text-sm">
-                  {data.content || 'Click to edit message.'}
-                </p>
-                {data.media && (
-                   <div className="mt-2 text-xs text-muted-foreground font-semibold">
-                       Attachment: {data.media.type.toUpperCase()}
-                   </div>
-                )}
-              </div>
-              <div className={styles.messageButtons}>
-                  <Button variant="outline" size="sm" onClick={() => data.onOpenAttachmentModal?.(id, 'image')}><Image size={16}/> Image</Button>
-                  <Button variant="outline" size="sm" onClick={() => data.onOpenAttachmentModal?.(id, 'video')}><Video size={16}/> Video</Button>
-                  <Button variant="outline" size="sm" onClick={() => data.onOpenAttachmentModal?.(id, 'audio')}><AudioLines size={16}/> Audio</Button>
-                  <Button variant="outline" size="sm" onClick={() => data.onOpenAttachmentModal?.(id, 'document')}><FileText size={16}/> Document</Button>
+                {parts.map((part) => (
+                    <div key={part.id} className={styles.messagePart}>
+                        {part.type === 'text' && (
+                            <div className={styles.messageContent} onClick={() => handleDoubleClick(part.id)}>
+                                <p className="whitespace-pre-wrap break-words text-sm">
+                                    {part.content || 'Click to edit message.'}
+                                </p>
+                            </div>
+                        )}
+                        {part.type === 'image' && (
+                            <button className={styles.attachmentBox} onClick={() => handleDoubleClick(part.id)}>
+                                <ImageIcon size={24} className="text-muted-foreground" />
+                                <span>{part.url ? 'Change image' : 'Upload image'}</span>
+                            </button>
+                        )}
+                        {part.type === 'video' && (
+                            <button className={styles.attachmentBox} onClick={() => handleDoubleClick(part.id)}>
+                                <Film size={24} className="text-muted-foreground" />
+                                <span>{part.url ? 'Change video' : 'Upload video'}</span>
+                            </button>
+                        )}
+                         {part.type === 'document' && (
+                            <button className={styles.attachmentBox} onClick={() => handleDoubleClick(part.id)}>
+                                <FileIcon size={24} className="text-muted-foreground" />
+                                <span>{part.url ? 'Change document' : 'Upload document'}</span>
+                            </button>
+                        )}
+                        {part.type === 'audio' && (
+                             <button className={styles.attachmentBox} onClick={() => handleDoubleClick(part.id)}>
+                                <AudioLines size={24} className="text-muted-foreground" />
+                                <span>{part.url ? 'Change audio' : 'Upload audio'}</span>
+                            </button>
+                        )}
+                        <button className={styles.deletePartButton} onClick={() => removePart(part.id)} title={`Delete ${part.type}`}><Trash2 size={14} /></button>
+                    </div>
+                ))}
+              <div className={styles.addPartButtons}>
+                  <Button variant="outline" size="sm" onClick={() => addPart('text')}><MessageSquareIcon size={16}/> Message</Button>
+                  <Button variant="outline" size="sm" onClick={() => addPart('image')}><Image size={16}/> Image</Button>
+                  <Button variant="outline" size="sm" onClick={() => addPart('video')}><Video size={16}/> Video</Button>
+                  <Button variant="outline" size="sm" onClick={() => addPart('audio')}><AudioLines size={16}/> Audio</Button>
+                  <Button variant="outline" size="sm" onClick={() => addPart('document')}><FileText size={16}/> Document</Button>
               </div>
             </div>
           ) : isAskQuestionNode ? (
-            <div className={styles.buttonsNodeBody}>
+            <div className={styles.buttonsNodeBody} onClick={() => handleDoubleClick()}>
               <p className={styles.buttonsQuestion}>{data.content || 'Ask a question here'}</p>
             </div>
           ) : isConditionNode ? (
-            <div className={styles.conditionBody}>
+            <div className={styles.conditionBody} onClick={() => handleDoubleClick()}>
               {hasConditions ? (
                 data.groups?.map((group, groupIndex) => (
                   <React.Fragment key={groupIndex}>
@@ -166,7 +258,7 @@ export default function BaseNode({ id, data, selected }: { id: string; data: Bas
               )}
             </div>
           ) : isButtonsNode ? (
-            <div className={styles.buttonsNodeBody}>
+            <div className={styles.buttonsNodeBody} onClick={() => handleDoubleClick()}>
               <p className={styles.buttonsQuestion}>{data.content || 'Ask a question here'}</p>
               <ScrollArea className="max-h-48">
                 <div className={styles.buttonsList}>
@@ -185,7 +277,7 @@ export default function BaseNode({ id, data, selected }: { id: string; data: Bas
               </ScrollArea>
             </div>
           ) : (
-            <p>{data.description || 'Double-click to configure.'}</p>
+            <p onClick={() => handleDoubleClick()}>{data.description || 'Double-click to configure.'}</p>
           )}
         </div>
       </ScrollArea>
@@ -202,9 +294,9 @@ export default function BaseNode({ id, data, selected }: { id: string; data: Bas
                   position={Position.Right}
                   id={branch.id}
                   className={styles.handle}
-                  style={{ top: `${(index + 1) * (100 / (data.branches.length + 1))}%` }}
+                  style={{ top: `${(index + 1) * (100 / (data.branches!.length + 1))}%` }}
                 />
-                <div className={styles.handleLabel} style={{ top: `${(index + 1) * (100 / (data.branches.length + 1))}%` }}>
+                <div className={styles.handleLabel} style={{ top: `${(index + 1) * (100 / (data.branches!.length + 1))}%` }}>
                   {branch.label}
                 </div>
               </React.Fragment>
@@ -226,6 +318,9 @@ export default function BaseNode({ id, data, selected }: { id: string; data: Bas
       ) : isButtonsNode ? (
         // Handles are now inside the button list
         null
+      ) : isMessageNode ? (
+        // Message node now has a single output
+        <Handle type="source" position={Position.Right} className={styles.handle} />
       ) : (
         <Handle type="source" position={Position.Right} className={styles.handle} />
       )}

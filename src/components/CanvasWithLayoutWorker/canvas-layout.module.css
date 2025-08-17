@@ -192,11 +192,19 @@
   gap: 12px;
 }
 
+.messagePart {
+  position: relative;
+}
+
 .messageContent {
   position: relative;
   background: hsl(var(--muted));
   border-radius: 8px;
   padding: 12px;
+  cursor: pointer;
+}
+.messageContent:hover {
+  background: hsl(var(--border));
 }
 
 .messageTextarea {
@@ -211,7 +219,32 @@
   outline: none;
 }
 
-.deleteButton {
+.attachmentBox {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 16px;
+  border: 2px dashed hsl(var(--border));
+  border-radius: 8px;
+  background-color: hsl(var(--muted));
+  color: hsl(var(--muted-foreground));
+  font-weight: 500;
+  width: 100%;
+  cursor: pointer;
+}
+.attachmentBox:hover {
+  background-color: hsl(var(--accent) / 0.1);
+  border-color: hsl(var(--accent));
+  color: hsl(var(--accent));
+}
+.attachmentBox > span {
+  font-size: 14px;
+}
+
+
+.deletePartButton {
   position: absolute;
   top: 8px;
   right: 8px;
@@ -224,28 +257,28 @@
   display: grid;
   place-items: center;
   cursor: pointer;
+  z-index: 10;
 }
-.deleteButton:hover {
+.deletePartButton:hover {
   background: hsl(var(--destructive) / 0.1);
   color: hsl(var(--destructive));
 }
 
-.messageButtons {
+.addPartButtons {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  grid-template-columns: repeat(3, 1fr);
   gap: 8px;
+  padding-top: 8px;
+  border-top: 1px solid hsl(var(--border));
+  margin-top: 8px;
 }
-.messageButtons > button:nth-child(n+4) {
-    grid-column: span 1;
-}
-
-.messageButtons > button {
+.addPartButtons > button {
     background-color: hsl(var(--primary) / 0.1);
     color: hsl(var(--primary));
     border-color: hsl(var(--primary) / 0.2);
     font-weight: 500;
 }
-.messageButtons > button:hover {
+.addPartButtons > button:hover {
     background-color: hsl(var(--primary) / 0.2);
 }
 

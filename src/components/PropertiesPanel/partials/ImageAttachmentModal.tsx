@@ -4,15 +4,17 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { ImageIcon, FileX } from 'lucide-react';
+import type { ContentPart } from '@/components/CanvasWithLayoutWorker/nodes/BaseNode';
+
 
 type Media = { type: 'image' | 'video' | 'audio' | 'document', url: string, name?: string };
 
 type ImageAttachmentModalProps = {
   isOpen: boolean;
   onClose: () => void;
-  onSave: (media: Media) => void;
+  onSave: (media: Partial<Media>) => void;
   onDelete: () => void;
-  media?: Media;
+  media?: ContentPart;
 };
 
 export default function ImageAttachmentModal({
@@ -29,7 +31,7 @@ export default function ImageAttachmentModal({
   useEffect(() => {
     if (isOpen) {
         if (media && media.type === 'image') {
-            setUrl(media.url);
+            setUrl(media.url || '');
         } else {
             setUrl('');
         }
@@ -45,6 +47,7 @@ export default function ImageAttachmentModal({
   const handleSave = () => {
     if (!url) return;
     onSave({ type: 'image', url });
+    onClose();
   };
 
   const handleUploadClick = () => {
@@ -103,7 +106,7 @@ export default function ImageAttachmentModal({
         </div>
         <DialogFooter className="justify-between">
             <div>
-              {media && media.type === 'image' && <Button variant="destructive" onClick={onDelete}>Delete</Button>}
+              {media && media.type === 'image' && <Button variant="destructive" onClick={onDelete}>Delete Attachment</Button>}
             </div>
             <div className="flex gap-2">
               <Button variant="ghost" onClick={onClose}>Cancel</Button>

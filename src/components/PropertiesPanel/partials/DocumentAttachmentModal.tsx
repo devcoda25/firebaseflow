@@ -4,15 +4,16 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { File, FileText, FileSpreadsheet, FileJson, FileQuestion } from 'lucide-react';
+import type { ContentPart } from '@/components/CanvasWithLayoutWorker/nodes/BaseNode';
 
 type Media = { type: 'image' | 'video' | 'audio' | 'document', url: string, name?: string };
 
 type DocumentAttachmentModalProps = {
   isOpen: boolean;
   onClose: () => void;
-  onSave: (media: Media) => void;
+  onSave: (media: Partial<Media>) => void;
   onDelete: () => void;
-  media?: Media;
+  media?: ContentPart;
 };
 
 const getFileIcon = (fileName?: string) => {
@@ -41,10 +42,10 @@ export default function DocumentAttachmentModal({
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
-    if (media && media.type === 'document') {
-      setUrl(media.url);
+    if (isOpen && media && media.type === 'document') {
+      setUrl(media.url || '');
       setName(media.name || '');
-    } else {
+    } else if (isOpen) {
       setUrl('');
       setName('');
     }
@@ -53,6 +54,7 @@ export default function DocumentAttachmentModal({
   const handleSave = () => {
     if (!url) return;
     onSave({ type: 'document', url, name });
+    onClose();
   };
   
   const handleUploadClick = () => {
@@ -102,7 +104,7 @@ export default function DocumentAttachmentModal({
         </div>
         <DialogFooter className="justify-between">
           <div>
-            {media && media.type === 'document' && <Button variant="destructive" onClick={onDelete}>Delete</Button>}
+            {media && media.type === 'document' && <Button variant="destructive" onClick={onDelete}>Delete Attachment</Button>}
           </div>
           <div className="flex gap-2">
             <Button variant="ghost" onClick={onClose}>Cancel</Button>

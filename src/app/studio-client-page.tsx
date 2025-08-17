@@ -29,11 +29,13 @@ import GoogleSheetsModal from '@/components/PropertiesPanel/partials/GoogleSheet
 import AssignUserModal from '@/components/PropertiesPanel/partials/AssignUserModal';
 import AssignTeamModal from '@/components/PropertiesPanel/partials/AssignTeamModal';
 import ButtonsModal from '@/components/PropertiesPanel/partials/ButtonsModal';
+import type { ContentPart } from '@/components/CanvasWithLayoutWorker/nodes/BaseNode';
 
 type ModalState = {
   type: 'message' | 'image' | 'video' | 'document' | 'audio' | 'webhook' | 'condition' | 'googleSheets' | 'assignUser' | 'assignTeam' | 'buttons';
   nodeId: string;
   data?: any;
+  partId?: string;
 } | null;
 
 
@@ -55,31 +57,45 @@ function StudioPageContent() {
 
   engine.setFlow(nodes, edges);
 
-  const handleNodeDoubleClick = useCallback((node: Node) => {
-    const type = node.data?.type;
-    const label = node.data?.label;
+  const handleNodeDoubleClick = useCallback((node: Node, options?: { partId?: string, type?: string }) => {
+    const nodeType = node.data?.type;
+    const nodeLabel = node.data?.label;
 
-    if (type === 'messaging' || label === 'Ask a Question') {
+    if (nodeLabel === 'Send a Message' && options?.partId) {
+        switch(options.type) {
+            case 'text':
+                setModalState({ type: 'message', nodeId: node.id, partId: options.partId, data: node.data });
+                return;
+            case 'image':
+            case 'video':
+            case 'audio':
+            case 'document':
+                 setModalState({ type: options.type, nodeId: node.id, partId: options.partId, data: node.data });
+                 return;
+        }
+    }
+
+    if (nodeType === 'messaging' || nodeLabel === 'Ask a Question') {
         setModalState({ type: 'message', nodeId: node.id, data: { content: node.data.content, media: node.data.media } });
-    } else if (label === 'Buttons' || label === 'List') {
+    } else if (nodeLabel === 'Buttons' || nodeLabel === 'List') {
         setModalState({ type: 'buttons', nodeId: node.id, data: { content: node.data.content, quickReplies: node.data.quickReplies } });
-    } else if (label === 'Webhook') {
+    } else if (nodeLabel === 'Webhook') {
         setModalState({ type: 'webhook', nodeId: node.id, data: node.data });
-    } else if (label === 'Set a Condition') {
+    } else if (nodeLabel === 'Set a Condition') {
         setModalState({ type: 'condition', nodeId: node.id, data: { groups: node.data.groups } });
-    } else if (label === 'Google Sheets') {
+    } else if (nodeLabel === 'Google Sheets') {
         setModalState({ type: 'googleSheets', nodeId: node.id, data: node.data });
-    } else if (label === 'Assign to User') {
+    } else if (nodeLabel === 'Assign to User') {
         setModalState({ type: 'assignUser', nodeId: node.id, data: node.data });
-    } else if (label === 'Assign to Team') {
+    } else if (nodeLabel === 'Assign to Team') {
         setModalState({ type: 'assignTeam', nodeId: node.id, data: node.data });
     }
   }, []);
 
-  const openAttachmentModal = useCallback((nodeId: string, type: 'image' | 'video' | 'audio' | 'document') => {
+  const openAttachmentModal = useCallback((nodeId: string, partId: string, type: 'image' | 'video' | 'audio' | 'document') => {
     const node = nodes.find(n => n.id === nodeId);
     if (!node) return;
-    setModalState({ type, nodeId, data: { media: node.data.media } });
+    setModalState({ type, nodeId, partId, data: { parts: node.data.parts } });
   }, [nodes]);
   
   const openPropertiesForNode = useCallback((node: Node | null) => {
@@ -92,19 +108,35 @@ function StudioPageContent() {
   
   const onSaveModal = (data: any) => {
     if (!modalState) return;
-    updateNodeData(modalState.nodeId, data);
+    if (modalState.type === 'message' && modalState.partId) {
+        const node = nodes.find(n => n.id === modalState.nodeId);
+        if (node) {
+            const newParts = (node.data.parts || []).map((p: ContentPart) => p.id === modalState.partId ? { ...p, ...data } : p);
+            updateNodeData(modalState.nodeId, { parts: newParts });
+        }
+    } else {
+        updateNodeData(modalState.nodeId, data);
+    }
     setModalState(null);
   };
   
   const onSaveMedia = (media: any) => {
-    if (!modalState) return;
-    updateNodeData(modalState.nodeId, { media });
+    if (!modalState || !modalState.partId) return;
+    const node = nodes.find(n => n.id === modalState.nodeId);
+    if (node) {
+        const newParts = (node.data.parts || []).map((p: ContentPart) => p.id === modalState.partId ? { ...p, ...media } : p);
+        updateNodeData(modalState.nodeId, { parts: newParts });
+    }
     setModalState(null);
   }
   
   const onDeleteMedia = () => {
-    if (!modalState) return;
-    updateNodeData(modalState.nodeId, { media: undefined });
+    if (!modalState || !modalState.partId) return;
+    const node = nodes.find(n => n.id === modalState.nodeId);
+    if (node) {
+        const newParts = (node.data.parts || []).map((p: ContentPart) => p.id === modalState.partId ? { ...p, url: undefined, name: undefined } : p);
+        updateNodeData(modalState.nodeId, { parts: newParts });
+    }
     setModalState(null);
   }
 
@@ -128,6 +160,12 @@ function StudioPageContent() {
     };
     addNode(newNode);
   };
+  
+  const activePart = useMemo(() => {
+    if (!modalState?.nodeId || !modalState?.partId) return undefined;
+    const node = nodes.find(n => n.id === modalState.nodeId);
+    return node?.data.parts?.find((p: ContentPart) => p.id === modalState.partId);
+  }, [modalState, nodes]);
 
   return (
     <div className="h-screen w-screen grid grid-rows-[56px_1fr] md:grid-cols-[280px_1fr] bg-background text-foreground relative overflow-hidden">
@@ -185,7 +223,7 @@ function StudioPageContent() {
         isOpen={modalState?.type === 'message'}
         onClose={() => setModalState(null)}
         onSave={(content) => onSaveModal({ content })}
-        content={modalState?.data?.content}
+        content={activePart?.type === 'text' ? activePart.content : ''}
       />
       <ButtonsModal
         isOpen={modalState?.type === 'buttons'}
@@ -198,28 +236,28 @@ function StudioPageContent() {
         onClose={() => setModalState(null)}
         onSave={onSaveMedia}
         onDelete={onDeleteMedia}
-        media={modalState?.data?.media}
+        media={activePart}
       />
       <VideoAttachmentModal
         isOpen={modalState?.type === 'video'}
         onClose={() => setModalState(null)}
         onSave={onSaveMedia}
         onDelete={onDeleteMedia}
-        media={modalState?.data?.media}
+        media={activePart}
       />
       <AudioAttachmentModal
         isOpen={modalState?.type === 'audio'}
         onClose={() => setModalState(null)}
         onSave={onSaveMedia}
         onDelete={onDeleteMedia}
-        media={modalState?.data?.media}
+        media={activePart}
       />
       <DocumentAttachmentModal
         isOpen={modalState?.type === 'document'}
         onClose={() => setModalState(null)}
         onSave={onSaveMedia}
         onDelete={onDeleteMedia}
-        media={modalState?.data?.media}
+        media={activePart}
       />
       <WebhookModal
           isOpen={modalState?.type === 'webhook'}
