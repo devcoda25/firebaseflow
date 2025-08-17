@@ -32,7 +32,7 @@ import ButtonsModal from '@/components/PropertiesPanel/partials/ButtonsModal';
 import type { ContentPart } from '@/components/CanvasWithLayoutWorker/nodes/BaseNode';
 
 type ModalState = {
-  type: 'message' | 'image' | 'video' | 'document' | 'audio' | 'webhook' | 'condition' | 'googleSheets' | 'assignUser' | 'assignTeam' | 'buttons';
+  type: 'image' | 'video' | 'document' | 'audio' | 'webhook' | 'condition' | 'googleSheets' | 'assignUser' | 'assignTeam' | 'buttons';
   nodeId: string;
   data?: any;
   partId?: string;
@@ -40,11 +40,11 @@ type ModalState = {
 
 
 function StudioPageContent() {
-  const { nodes, edges, addNode, setNodes, onNodesChange, onEdgesChange, onConnect, updateNodeData } = useFlowStore();
+  const { nodes, edges, addNode, setNodes, onNodesChange, onEdgesChange, onConnectStart, onConnectEnd, onConnect, updateNodeData } = useFlowStore();
   const { meta, setTitle, setChannels, setPublished, setWaContext } = useFlowMetaStore();
 
   const [selectedNodeId, setSelectedNodeId] = useState<string | null>(null);
-  const [modalState, setModalState] = useState<ModalState>(null);
+  const [modalState, setModalState] = useState<ModalState | null>(null);
 
   const { isTestConsoleOpen, toggleTestConsole } = useUIStore();
   const { canUndo, canRedo } = useHistoryStore();
@@ -64,7 +64,7 @@ function StudioPageContent() {
     if (nodeLabel === 'Send a Message' && options?.partId) {
         switch(options.type) {
             case 'text':
-                setModalState({ type: 'message', nodeId: node.id, partId: options.partId, data: node.data });
+                // Inline editing, no modal needed
                 return;
             case 'image':
             case 'video':
@@ -76,7 +76,7 @@ function StudioPageContent() {
     }
 
     if (nodeType === 'messaging' || nodeLabel === 'Ask a Question') {
-        setModalState({ type: 'message', nodeId: node.id, data: { content: node.data.content, media: node.data.media } });
+        // Old logic for message modal, no longer used for Send a Message text parts
     } else if (nodeLabel === 'Buttons' || nodeLabel === 'List') {
         setModalState({ type: 'buttons', nodeId: node.id, data: { content: node.data.content, quickReplies: node.data.quickReplies } });
     } else if (nodeLabel === 'Webhook') {
@@ -108,15 +108,7 @@ function StudioPageContent() {
   
   const onSaveModal = (data: any) => {
     if (!modalState) return;
-    if (modalState.type === 'message' && modalState.partId) {
-        const node = nodes.find(n => n.id === modalState.nodeId);
-        if (node) {
-            const newParts = (node.data.parts || []).map((p: ContentPart) => p.id === modalState.partId ? { ...p, ...data } : p);
-            updateNodeData(modalState.nodeId, { parts: newParts });
-        }
-    } else {
-        updateNodeData(modalState.nodeId, data);
-    }
+    updateNodeData(modalState.nodeId, data);
     setModalState(null);
   };
   
@@ -200,6 +192,8 @@ function StudioPageContent() {
           onNodesChange={onNodesChange}
           onEdgesChange={onEdgesChange}
           onConnect={onConnect}
+          onConnectStart={onConnectStart}
+          onConnectEnd={onConnectEnd}
           setNodes={setNodes}
           onNodeDoubleClick={handleNodeDoubleClick}
           onOpenProperties={openPropertiesForNode}
@@ -219,12 +213,6 @@ function StudioPageContent() {
       )}
       
       {/* Modals for node functions */}
-      <MessageContentModal
-        isOpen={modalState?.type === 'message'}
-        onClose={() => setModalState(null)}
-        onSave={(content) => onSaveModal({ content })}
-        content={activePart?.type === 'text' ? activePart.content : ''}
-      />
       <ButtonsModal
         isOpen={modalState?.type === 'buttons'}
         onClose={() => setModalState(null)}

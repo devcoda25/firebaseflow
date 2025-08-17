@@ -8,27 +8,28 @@ import VariableChipAutocomplete from '@/components/VariableChipAutocomplete/Vari
 type MessageContentModalProps = {
   isOpen: boolean;
   onClose: () => void;
-  onSave: (content: string) => void;
-  content?: string;
+  onSave: (data: { content: string }) => void;
+  initialData?: { content: string };
 };
 
 export default function MessageContentModal({
   isOpen,
   onClose,
   onSave,
-  content
+  initialData
 }: MessageContentModalProps) {
   const [text, setText] = useState('');
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   useEffect(() => {
     if (isOpen) {
-      setText(content || '');
+      setText(initialData?.content || '');
     }
-  }, [content, isOpen]);
+  }, [initialData, isOpen]);
 
   const handleSave = () => {
-    onSave(text);
+    onSave({ content: text });
+    onClose();
   };
   
   const handleInsertVariable = (name: string) => {

@@ -1,4 +1,4 @@
-import React, {useCallback} from 'react'
+import React, {useCallback, useEffect, useRef} from 'react'
 import { Handle, Position, Node, useReactFlow } from 'reactflow'
 import styles from '../canvas-layout.module.css'
 import NodeAvatars from '@/components/Presence/NodeAvatars';
@@ -17,6 +17,8 @@ import { useFlowStore } from '@/store/flow';
 import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { nanoid } from 'nanoid';
+import VariableChipAutocomplete from '@/components/VariableChipAutocomplete/VariableChipAutocomplete';
+import { Textarea } from '@/components/ui/textarea';
 
 
 export type ContentPart = 
@@ -132,6 +134,27 @@ export default function BaseNode({ id, data, selected }: { id: string; data: Bas
     const newParts = parts.filter(p => p.id !== partId);
     updateNodeData(id, { parts: newParts });
   };
+
+  const updatePartContent = (partId: string, content: string) => {
+    const newParts = parts.map(p => p.id === partId ? { ...p, content } : p);
+    updateNodeData(id, { parts: newParts });
+  }
+
+  const handleTextChange = (e: React.ChangeEvent<HTMLTextAreaElement>, partId: string) => {
+    updatePartContent(partId, e.target.value);
+  }
+
+  const textRefs = useRef<Record<string, HTMLTextAreaElement | null>>({});
+
+  useEffect(() => {
+    // Auto-resize textareas
+    Object.values(textRefs.current).forEach(textarea => {
+      if (textarea) {
+        textarea.style.height = 'auto';
+        textarea.style.height = `${textarea.scrollHeight}px`;
+      }
+    });
+  }, [parts]);
   
   return (
     <div className={styles.baseNode} style={customStyle} aria-selected={selected}>
@@ -191,10 +214,24 @@ export default function BaseNode({ id, data, selected }: { id: string; data: Bas
                 {parts.map((part) => (
                     <div key={part.id} className={styles.messagePart}>
                         {part.type === 'text' && (
-                            <div className={styles.messageContent} onClick={() => handleDoubleClick(part.id)}>
-                                <p className="whitespace-pre-wrap break-words text-sm">
-                                    {part.content || <span className="text-muted-foreground italic">Click to edit message...</span>}
-                                </p>
+                             <div className={styles.messageContent}>
+                                <Textarea
+                                    ref={(el) => textRefs.current[part.id] = el}
+                                    className={styles.messageTextarea}
+                                    placeholder="Click to edit message..."
+                                    value={(part as any).content}
+                                    onChange={(e) => handleTextChange(e, part.id)}
+                                    rows={1}
+                                />
+                                <div className={styles.variableInserter}>
+                                    <VariableChipAutocomplete
+                                        variables={['name', 'email', 'cart_item', 'order_id']}
+                                        onInsert={(variable) => {
+                                            const currentContent = (part as any).content || '';
+                                            updatePartContent(part.id, currentContent + `{{${variable}}}`);
+                                        }}
+                                    />
+                                </div>
                             </div>
                         )}
                         {part.type === 'image' && (
