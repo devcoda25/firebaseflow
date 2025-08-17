@@ -1,3 +1,4 @@
+
 import { create } from 'zustand';
 import type { Node, Edge, NodeChange, EdgeChange, Connection } from 'reactflow';
 import { applyNodeChanges, applyEdgeChanges, addEdge } from 'reactflow';
@@ -28,11 +29,24 @@ export interface FlowMeta {
   waMessageContext: MessageContext;
 }
 
-// Separate the state structure that needs to be tracked by history
+type ConnectionState = {
+    connection: {
+        connectingNodeId: string | null;
+        connectingHandleId: string | null;
+        onConnectEnd: boolean;
+    }
+}
+
 const flowSlice = (set: any, get: any) => ({
   nodes: [] as Node[],
   edges: [] as Edge[],
   startNodeId: null as string | null,
+  connection: {
+    connectingNodeId: null,
+    connectingHandleId: null,
+    onConnectEnd: false
+  } as ConnectionState['connection'],
+
   onNodesChange: (changes: NodeChange[]) => {
     set({
       nodes: applyNodeChanges(changes, get().nodes),
@@ -63,6 +77,13 @@ const flowSlice = (set: any, get: any) => ({
     set({
       edges: addEdge({ ...connection, type: 'bezier', markerEnd: { type: MarkerType.ArrowClosed, width: 20, height: 20 } }, get().edges),
     });
+  },
+  onConnectStart: (_: any, {nodeId, handleId}: {nodeId: string | null, handleId: string | null}) => {
+    set({ connection: { connectingNodeId: nodeId, connectingHandleId: handleId, onConnectEnd: false } });
+  },
+  onConnectEnd: () => {
+    const { connection } = get();
+    set({ connection: { ...connection, onConnectEnd: true } });
   },
   addNode: (node: Node) => {
     set({

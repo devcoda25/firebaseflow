@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useCallback, useMemo } from 'react';
@@ -120,7 +121,7 @@ function StudioPageContent() {
       data: { 
         label: item.label, 
         icon: item.icon,
-        color: getRandomColor(),
+        color: item.color || getRandomColor(),
         description: item.description,
         type: item.type,
       },
@@ -154,7 +155,7 @@ function StudioPageContent() {
             <SidebarPalette onDragStart={handleDragStart} onItemClick={handleClickAdd} filterChannels={meta.channels} />
         </div>
       </aside>
-      <main className="md:col-start-2 row-start-2 col-start-1 relative overflow-hidden bg-background">
+      <main className="md:col-start-2 row-start-2 col-start-1 relative overflow-hidden bg-zinc-50">
         <CanvasWithLayoutWorker
           nodes={nodes}
           edges={edges}

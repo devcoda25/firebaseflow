@@ -1,10 +1,10 @@
+
 'use client';
 
 import React, { useCallback, useMemo, useRef, useState } from 'react';
 import ReactFlow, {
   ReactFlowProvider,
   addEdge,
-  Background,
   Connection,
   Controls,
   MiniMap,
@@ -16,6 +16,9 @@ import ReactFlow, {
   EdgeChange,
   Panel,
   BackgroundVariant,
+  Background,
+  ConnectionLineType,
+  MarkerType,
 } from 'reactflow';
 import 'reactflow/dist/style.css';
 import { nanoid } from 'nanoid';
@@ -28,6 +31,8 @@ import { usePresence } from '@/presence/PresenceProvider';
 import { useFlowStore } from '@/store/flow';
 import type { PaletteItemPayload } from '../SidebarPalette';
 import { getRandomColor } from '@/lib/color-utils';
+import NodeSelector from './NodeSelector';
+import { useClickAway } from 'react-use';
 
 const GRID_SIZE = 20;
 
@@ -50,6 +55,14 @@ export type CanvasWithLayoutWorkerProps = {
   viewportKey?: string;
 };
 
+type NodeSelectorState = {
+    x: number;
+    y: number;
+    sourceNode: string;
+    sourceHandle: string | null;
+} | null;
+
+
 function InnerCanvas({
   nodes,
   edges,
@@ -66,6 +79,8 @@ function InnerCanvas({
   const { awareness } = usePresence();
   const { addNode } = useFlowStore();
 
+  const [nodeSelector, setNodeSelector] = useState<NodeSelectorState>(null);
+  const selectorRef = useRef<HTMLDivElement>(null);
 
   const onDragOver = useCallback((event: React.DragEvent) => {
     event.preventDefault();
@@ -96,7 +111,7 @@ function InnerCanvas({
         data: { 
             label: item.label, 
             icon: item.icon,
-            color: getRandomColor(),
+            color: item.color || getRandomColor(),
             description: item.description,
             type: item.type,
             onOpenProperties: onOpenProperties,
@@ -110,18 +125,70 @@ function InnerCanvas({
 
   const onSelectionChange = useCallback(
     ({ nodes: selNodes }: { nodes: Node[]; edges: Edge[] }) => {
-      // onOpenProperties?.(selNodes[0] || null); // This line is removed
+      onOpenProperties?.(selNodes[0] || null);
       if (!awareness) return;
       const st = (awareness.getLocalState() as any) || {};
       const nodeId = selNodes?.[0]?.id;
       awareness.setLocalState({ ...st, selection: { nodeId, ts: Date.now() } });
     },
-    [awareness] // onOpenProperties removed from dependencies
+    [awareness, onOpenProperties]
   );
   
   const handleNodeDoubleClick = useCallback((_event: React.MouseEvent, node: Node) => {
     onNodeDoubleClick?.(node);
   }, [onNodeDoubleClick]);
+
+  const onConnectEnd = useCallback((event: MouseEvent) => {
+    if (!rfRef.current) return;
+    const { onConnectEnd, connectingNodeId: sourceNode, connectingHandleId: sourceHandle } = useFlowStore.getState().connection;
+    
+    if (!sourceNode || event.target?.closest('.react-flow__handle')) {
+        return;
+    }
+    
+    const { top, left } = rfRef.current.container.getBoundingClientRect();
+    setNodeSelector({
+        x: event.clientX - left,
+        y: event.clientY - top,
+        sourceNode,
+        sourceHandle
+    })
+
+  }, [rfRef]);
+
+  useClickAway(selectorRef, () => {
+    setNodeSelector(null);
+  });
+
+  const handleSelectNode = (item: PaletteItemPayload) => {
+    if (!nodeSelector) return;
+    const { x: paneX, y: paneY, sourceNode, sourceHandle } = nodeSelector;
+    const { x, y } = project({ x: paneX, y: paneY });
+    
+    const newNodeId = nanoid();
+    const newNode: Node = {
+        id: newNodeId,
+        type: 'base',
+        position: { x, y },
+        data: {
+            label: item.label,
+            icon: item.icon,
+            color: item.color || getRandomColor(),
+            description: item.description,
+            type: item.type,
+        },
+    };
+    addNode(newNode);
+
+    onConnect({
+        source: sourceNode,
+        sourceHandle: sourceHandle,
+        target: newNodeId,
+        targetHandle: null,
+    });
+    setNodeSelector(null);
+  };
+
 
   const nodesWithProps = useMemo(() => nodes.map(node => ({
     ...node,
@@ -137,15 +204,18 @@ function InnerCanvas({
     <div className={styles.root}>
       <div className={styles.canvas} onDrop={onDrop} onDragOver={onDragOver}>
         <ReactFlow
+          ref={(instance) => (rfRef.current = instance)}
           nodes={nodesWithProps}
           edges={edges}
           onNodesChange={onNodesChange}
           onEdgesChange={onEdgesChange}
           onConnect={onConnect}
+          onConnectEnd={onConnectEnd}
           onInit={(inst) => (rfRef.current = inst)}
           onSelectionChange={onSelectionChange}
           onNodeDoubleClick={handleNodeDoubleClick}
           nodeTypes={defaultNodeTypes}
+          connectionLineType={ConnectionLineType.Bezier}
           connectionMode={ConnectionMode.Loose}
           snapToGrid
           snapGrid={[GRID_SIZE, GRID_SIZE]}
@@ -154,10 +224,19 @@ function InnerCanvas({
         >
           <Controls className={styles.controls} />
           <MiniMap pannable zoomable />
+          <Background style={{'--bg-color': 'hsl(215 30% 98%)', '--line-color': 'hsl(215 20% 88%)'} as React.CSSProperties}/>
           <div style={{ position: 'absolute', inset: 0, pointerEvents: 'none', zIndex: 10 }}>
             <LiveCursors />
           </div>
         </ReactFlow>
+        {nodeSelector && (
+            <div
+                ref={selectorRef}
+                style={{ position: 'absolute', left: nodeSelector.x + 10, top: nodeSelector.y, zIndex: 1000 }}
+            >
+                <NodeSelector onSelect={handleSelectNode} />
+            </div>
+        )}
       </div>
     </div>
   );

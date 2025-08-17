@@ -1,10 +1,22 @@
+
 .root { 
   position: relative; 
   height: 100%; 
 }
 .canvas { 
   height: 100%; 
+  background-color: var(--bg-color, #fdfdfd);
 }
+
+.canvas :global(.react-flow__background) {
+    --line-color: hsl(215 20% 88%);
+    background-color: var(--bg-color, #fdfdfd);
+}
+.canvas :global(.react-flow__background) .react-flow__pattern path {
+  stroke: var(--line-color);
+  stroke-opacity: 0.5;
+}
+
 
 .toolbar {
   position: absolute; 
@@ -81,7 +93,7 @@
   background: hsl(var(--card));
   border: 1px solid hsl(var(--border));
   color: hsl(var(--card-foreground));
-  box-shadow: 0 4px 16px hsla(var(--foreground), 0.05);
+  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
   min-width: 320px;
 }
 
@@ -89,7 +101,7 @@
 .subflow[aria-selected='true'],
 .groupBox[aria-selected='true'] {
   border-color: hsl(var(--ring));
-  box-shadow: 0 0 0 1px hsl(var(--ring)), 0 8px 24px hsla(var(--foreground), 0.1);
+  box-shadow: 0 0 0 1px hsl(var(--ring)), 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
 }
 
 
