@@ -100,6 +100,10 @@ export default function PropertiesPanel({
     if (node.data.label === 'Google Sheets') {
       return ['general', 'googleSheets', 'schedule'];
     }
+    
+    if (node.data.label === 'Set a Condition') {
+      return ['general', 'logic', 'schedule'];
+    }
 
     if (node.data.type === 'integrations' && node.data.label !== 'Google Sheets') {
       return ['general', 'api', 'schedule'];

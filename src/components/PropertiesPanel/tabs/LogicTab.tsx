@@ -1,21 +1,28 @@
 import React from 'react'
 import { useFormContext } from 'react-hook-form'
-import styles from '../properties-panel.module.css'
+import ConditionalLogicTab from '@/components/ConditionalLogicTab'
 
 export default function LogicTab() {
-  const { register, formState: { errors } } = useFormContext()
-  return (
-    <div className={styles.tabBody}>
-      <label className={styles.field}>
-        <span className={styles.label}>Expression</span>
-        <textarea {...register('expression')} rows={5} className={styles.textarea} placeholder="user.age > 18 && country === 'US'"/>
-        {errors.expression && <span className={styles.err}>{String(errors.expression.message)}</span>}
-      </label>
+  const { getValues, reset } = useFormContext()
 
-      <label className={styles.field}>
-        <span className={styles.label}>Default Branch (optional)</span>
-        <input {...register('defaultBranch')} className={styles.input} placeholder="e.g. 'else'"/>
-      </label>
-    </div>
+  const variables = [
+    { name: 'country', label: 'Country Code', type: 'string' },
+    { name: 'age', label: 'User Age', type: 'number' },
+    { name: 'message', label: 'Last Message', type: 'string' },
+    { name: 'lastSeenAt', label: 'Last Seen (date)', type: 'date' },
+  ]
+  
+  return (
+      <ConditionalLogicTab
+        value={getValues()}
+        onChange={(v) => reset(v, { keepDirty: true })}
+        variables={variables}
+        initialTestContext={{ country: 'US', age: 21, message: 'refund please' }} // optional
+        branchTargets={[
+          // optional: show a "Route to" dropdown (could be node ids)
+          { id: 'continue', label: 'Continue' },
+          { id: 'end', label: 'End Session' }
+        ]}
+      />
   )
 }
