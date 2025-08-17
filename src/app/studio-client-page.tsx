@@ -38,7 +38,7 @@ type ModalState = {
 
 
 function StudioPageContent() {
-  const { nodes, edges, addNode, setNodes, onNodesChange, onEdgesChange, onConnect, onConnectStart, onConnectEnd, updateNodeData } = useFlowStore();
+  const { nodes, edges, addNode, setNodes, onNodesChange, onEdgesChange, onConnect, updateNodeData } = useFlowStore();
   const { meta, setTitle, setChannels, setPublished, setWaContext } = useFlowMetaStore();
 
   const [selectedNodeId, setSelectedNodeId] = useState<string | null>(null);
@@ -162,8 +162,6 @@ function StudioPageContent() {
           onNodesChange={onNodesChange}
           onEdgesChange={onEdgesChange}
           onConnect={onConnect}
-          onConnectStart={onConnectStart}
-          onConnectEnd={onConnectEnd}
           setNodes={setNodes}
           onNodeDoubleClick={handleNodeDoubleClick}
           onOpenProperties={openPropertiesForNode}

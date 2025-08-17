@@ -29,22 +29,13 @@ export interface FlowMeta {
   waMessageContext: MessageContext;
 }
 
-type ConnectionState = {
-    isConnecting: boolean;
-    sourceNode: string | null;
-    sourceHandle: string | null;
-}
-
 type RFState = {
     nodes: Node[];
     edges: Edge[];
     startNodeId: string | null;
-    connection: ConnectionState;
     onNodesChange: (changes: NodeChange[]) => void;
     onEdgesChange: (changes: EdgeChange[]) => void;
     onConnect: (connection: Connection) => void;
-    onConnectStart: (_: React.MouseEvent | React.TouchEvent, params: OnConnectStartParams) => void;
-    onConnectEnd: (event: MouseEvent | TouchEvent) => void;
     addNode: (node: Node) => void;
     deleteNode: (nodeId: string) => void;
     duplicateNode: (nodeId: string) => void;
@@ -59,11 +50,6 @@ const flowSlice = (set: any, get: any) => ({
   nodes: [] as Node[],
   edges: [] as Edge[],
   startNodeId: null as string | null,
-  connection: {
-    isConnecting: false,
-    sourceNode: null,
-    sourceHandle: null,
-  } as ConnectionState,
 
   onNodesChange: (changes: NodeChange[]) => {
     set({
@@ -76,9 +62,9 @@ const flowSlice = (set: any, get: any) => ({
     });
   },
   onConnect: (connection: Connection) => {
-    const { edges } = get();
+    const { edges, nodes } = get();
 
-    const sourceNode = get().nodes.find((n: Node) => n.id === connection.source);
+    const sourceNode = nodes.find((n: Node) => n.id === connection.source);
     if (sourceNode?.data.type !== 'logic' && sourceNode?.data.label !== 'Buttons' && sourceNode?.data.label !== 'List') {
         const sourceHandleHasConnection = edges.some(
           (edge: Edge) => edge.source === connection.source && edge.sourceHandle === connection.sourceHandle
@@ -94,13 +80,6 @@ const flowSlice = (set: any, get: any) => ({
     set({
       edges: addEdge({ ...connection, type: 'bezier', markerEnd: { type: MarkerType.ArrowClosed, width: 20, height: 20 } }, get().edges),
     });
-  },
-  onConnectStart: (_: any, {nodeId, handleId}: OnConnectStartParams) => {
-    set({ connection: { isConnecting: true, sourceNode: nodeId, sourceHandle: handleId } });
-  },
-  onConnectEnd: () => {
-     // The connection state is kept for the canvas to decide what to do
-     // It will be reset there or on the next onConnectStart
   },
   addNode: (node: Node) => {
     set({

@@ -49,8 +49,6 @@ export type CanvasWithLayoutWorkerProps = {
   onNodesChange: (changes: NodeChange[]) => void;
   onEdgesChange: (changes: EdgeChange[]) => void;
   onConnect: (connection: Connection) => void;
-  onConnectStart: (_: React.MouseEvent | React.TouchEvent, params: OnConnectStartParams) => void;
-  onConnectEnd: (event: MouseEvent | TouchEvent) => void;
   setNodes: (nodes: Node[]) => void;
   onNodeDoubleClick?: (node: Node) => void;
   onOpenProperties?: (node: Node | null) => void;
@@ -73,8 +71,6 @@ function InnerCanvas({
   onNodesChange,
   onEdgesChange,
   onConnect,
-  onConnectStart,
-  onConnectEnd,
   onNodeDoubleClick,
   onOpenProperties,
   onOpenAttachmentModal
@@ -83,8 +79,8 @@ function InnerCanvas({
   const { project } = useReactFlow();
   const { awareness } = usePresence();
   const { addNode } = useFlowStore();
-  const onConnectEndStore = useFlowStore(s => s.onConnectEnd);
-
+  
+  const connectingNodeId = useRef<OnConnectStartParams | null>(null);
   const [nodeSelector, setNodeSelector] = useState<NodeSelectorState>(null);
   const selectorRef = useRef<HTMLDivElement>(null);
 
@@ -144,31 +140,30 @@ function InnerCanvas({
     onNodeDoubleClick?.(node);
   }, [onNodeDoubleClick]);
 
-  const handleConnectEnd = useCallback((event: MouseEvent | TouchEvent) => {
-    onConnectEndStore(event as MouseEvent); 
-    
-    if (!rfRef.current) return;
-    
-    const { connection } = useFlowStore.getState();
-    const sourceNode = connection.sourceNode;
+  const onConnectStart = useCallback((_: any, params: OnConnectStartParams) => {
+    connectingNodeId.current = params;
+  }, []);
 
-    if (!sourceNode || (event.target as HTMLElement)?.closest('.react-flow__handle')) {
-        setNodeSelector(null);
-        return;
+  const onConnectEnd = useCallback((event: MouseEvent | TouchEvent) => {
+    const targetIsPane = (event.target as HTMLElement).classList.contains('react-flow__pane');
+
+    if (targetIsPane && connectingNodeId.current) {
+        const { nodeId, handleId } = connectingNodeId.current;
+        if (!nodeId) return;
+
+        const { top, left } = rfRef.current!.container.getBoundingClientRect();
+        const clientX = 'touches' in event ? event.touches[0].clientX : event.clientX;
+        const clientY = 'touches' in event ? event.touches[0].clientY : event.clientY;
+        
+        setNodeSelector({
+            x: clientX - left,
+            y: clientY - top,
+            sourceNode: nodeId,
+            sourceHandle: handleId
+        })
     }
-    
-    const { top, left } = rfRef.current.container.getBoundingClientRect();
-    const clientX = 'touches' in event ? event.touches[0].clientX : event.clientX;
-    const clientY = 'touches' in event ? event.touches[0].clientY : event.clientY;
-
-    setNodeSelector({
-        x: clientX - left,
-        y: clientY - top,
-        sourceNode: sourceNode,
-        sourceHandle: connection.sourceHandle
-    })
-
-  }, [rfRef, onConnectEndStore]);
+    connectingNodeId.current = null;
+  }, [project]);
 
   useClickAway(selectorRef, () => {
     setNodeSelector(null);
@@ -225,7 +220,7 @@ function InnerCanvas({
           onEdgesChange={onEdgesChange}
           onConnect={onConnect}
           onConnectStart={onConnectStart}
-          onConnectEnd={handleConnectEnd}
+          onConnectEnd={onConnectEnd}
           onInit={(inst) => (rfRef.current = inst)}
           onSelectionChange={onSelectionChange}
           onNodeDoubleClick={handleNodeDoubleClick}
