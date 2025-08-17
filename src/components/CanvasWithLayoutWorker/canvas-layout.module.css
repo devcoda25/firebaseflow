@@ -243,6 +243,29 @@
   font-size: 14px;
 }
 
+.mediaPreview {
+    width: 100%;
+    max-height: 160px;
+    object-fit: contain;
+    border-radius: 8px;
+    background-color: hsl(var(--muted));
+    cursor: pointer;
+    border: 1px solid hsl(var(--border));
+}
+
+.documentPreview {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px;
+    background-color: hsl(var(--muted));
+    border-radius: 8px;
+    cursor: pointer;
+    border: 1px solid hsl(var(--border));
+}
+.documentPreview:hover {
+    background-color: hsl(var(--border));
+}
 
 .deletePartButton {
   position: absolute;

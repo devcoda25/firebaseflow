@@ -44,7 +44,7 @@ export type BaseNodeData = {
   groups?: { type: 'and' | 'or', conditions: { variable: string, operator: string, value: string }[] }[];
   quickReplies?: { id: string; label: string }[];
   onOpenProperties?: (node: Node) => void;
-  onNodeDoubleClick?: (node: Node) => void;
+  onNodeDoubleClick?: (node: Node, options?: { partId?: string; type?: string }) => void;
   onOpenAttachmentModal?: (nodeId: string, partId: string, type: 'image' | 'video' | 'audio' | 'document') => void;
 }
 
@@ -123,7 +123,7 @@ export default function BaseNode({ id, data, selected }: { id: string; data: Bas
     const newPart: ContentPart = 
         type === 'text' 
         ? { id: nanoid(), type: 'text', content: '' }
-        : { id: nanoid(), type, url: '', name: ''};
+        : { id: nanoid(), type, url: undefined, name: undefined};
     const newParts = [...parts, newPart];
     updateNodeData(id, { parts: newParts });
   };
@@ -198,28 +198,48 @@ export default function BaseNode({ id, data, selected }: { id: string; data: Bas
                             </div>
                         )}
                         {part.type === 'image' && (
+                          part.url ? (
+                            // eslint-disable-next-line @next/next/no-img-element
+                            <img src={part.url} alt={part.name || 'Image'} className={styles.mediaPreview} onClick={() => handleDoubleClick(part.id)} />
+                          ) : (
                             <button className={styles.attachmentBox} onClick={() => handleDoubleClick(part.id)}>
                                 <ImageIcon size={24} className="text-muted-foreground" />
-                                <span>{part.url ? 'Change image' : 'Upload image'}</span>
+                                <span>Upload image</span>
                             </button>
+                          )
                         )}
                         {part.type === 'video' && (
+                          part.url ? (
+                            <video src={part.url} controls className={styles.mediaPreview} onClick={() => handleDoubleClick(part.id)} />
+                          ) : (
                             <button className={styles.attachmentBox} onClick={() => handleDoubleClick(part.id)}>
                                 <Film size={24} className="text-muted-foreground" />
-                                <span>{part.url ? 'Change video' : 'Upload video'}</span>
+                                <span>Upload video</span>
                             </button>
+                          )
                         )}
                          {part.type === 'document' && (
+                           part.url ? (
+                            <div className={styles.documentPreview} onClick={() => handleDoubleClick(part.id)}>
+                                <FileIcon size={24} className="text-muted-foreground" />
+                                <span className="truncate">{part.name || part.url}</span>
+                            </div>
+                           ) : (
                             <button className={styles.attachmentBox} onClick={() => handleDoubleClick(part.id)}>
                                 <FileIcon size={24} className="text-muted-foreground" />
-                                <span>{part.url ? 'Change document' : 'Upload document'}</span>
+                                <span>Upload document</span>
                             </button>
+                           )
                         )}
                         {part.type === 'audio' && (
+                          part.url ? (
+                            <audio src={part.url} controls className={styles.mediaPreview} onClick={() => handleDoubleClick(part.id)} />
+                          ) : (
                              <button className={styles.attachmentBox} onClick={() => handleDoubleClick(part.id)}>
                                 <AudioLines size={24} className="text-muted-foreground" />
-                                <span>{part.url ? 'Change audio' : 'Upload audio'}</span>
+                                <span>Upload audio</span>
                             </button>
+                          )
                         )}
                         <button className={styles.deletePartButton} onClick={() => removePart(part.id)} title={`Delete ${part.type}`}><Trash2 size={14} /></button>
                     </div>
