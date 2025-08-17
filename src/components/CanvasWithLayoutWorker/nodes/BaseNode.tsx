@@ -235,48 +235,56 @@ export default function BaseNode({ id, data, selected }: { id: string; data: Bas
                             </div>
                         )}
                         {part.type === 'image' && (
-                          part.url ? (
-                            // eslint-disable-next-line @next/next/no-img-element
-                            <img src={part.url} alt={part.name || 'Image'} className={styles.mediaPreview} onClick={() => handleDoubleClick(part.id)} />
-                          ) : (
-                            <button className={styles.attachmentBox} onClick={() => handleDoubleClick(part.id)}>
-                                <ImageIcon size={24} className="text-muted-foreground" />
-                                <span>Upload image</span>
-                            </button>
-                          )
+                          <div className={styles.messageContent}>
+                            {part.url ? (
+                              // eslint-disable-next-line @next/next/no-img-element
+                              <img src={part.url} alt={part.name || 'Image'} className={styles.mediaPreview} onClick={() => handleDoubleClick(part.id)} />
+                            ) : (
+                              <button className={styles.attachmentBox} onClick={() => handleDoubleClick(part.id)}>
+                                  <ImageIcon size={24} className="text-muted-foreground" />
+                                  <span>Upload image</span>
+                              </button>
+                            )}
+                          </div>
                         )}
                         {part.type === 'video' && (
-                          part.url ? (
-                            <video src={part.url} controls className={styles.mediaPreview} onClick={() => handleDoubleClick(part.id)} />
-                          ) : (
-                            <button className={styles.attachmentBox} onClick={() => handleDoubleClick(part.id)}>
-                                <Film size={24} className="text-muted-foreground" />
-                                <span>Upload video</span>
-                            </button>
-                          )
+                          <div className={styles.messageContent}>
+                            {part.url ? (
+                              <video src={part.url} controls className={styles.mediaPreview} onClick={() => handleDoubleClick(part.id)} />
+                            ) : (
+                              <button className={styles.attachmentBox} onClick={() => handleDoubleClick(part.id)}>
+                                  <Film size={24} className="text-muted-foreground" />
+                                  <span>Upload video</span>
+                              </button>
+                            )}
+                          </div>
                         )}
                          {part.type === 'document' && (
-                           part.url ? (
-                            <div className={styles.documentPreview} onClick={() => handleDoubleClick(part.id)}>
-                                <FileIcon size={24} className="text-muted-foreground" />
-                                <span className="truncate">{part.name || part.url}</span>
-                            </div>
-                           ) : (
-                            <button className={styles.attachmentBox} onClick={() => handleDoubleClick(part.id)}>
-                                <FileIcon size={24} className="text-muted-foreground" />
-                                <span>Upload document</span>
-                            </button>
-                           )
+                           <div className={styles.messageContent}>
+                            {part.url ? (
+                              <div className={styles.documentPreview} onClick={() => handleDoubleClick(part.id)}>
+                                  <FileIcon size={24} className="text-muted-foreground" />
+                                  <span className="truncate">{part.name || part.url}</span>
+                              </div>
+                             ) : (
+                              <button className={styles.attachmentBox} onClick={() => handleDoubleClick(part.id)}>
+                                  <FileIcon size={24} className="text-muted-foreground" />
+                                  <span>Upload document</span>
+                              </button>
+                             )}
+                           </div>
                         )}
                         {part.type === 'audio' && (
-                          part.url ? (
-                            <audio src={part.url} controls className={styles.mediaPreview} onClick={() => handleDoubleClick(part.id)} />
-                          ) : (
-                             <button className={styles.attachmentBox} onClick={() => handleDoubleClick(part.id)}>
-                                <AudioLines size={24} className="text-muted-foreground" />
-                                <span>Upload audio</span>
-                            </button>
-                          )
+                          <div className={styles.messageContent}>
+                            {part.url ? (
+                              <audio src={part.url} controls className={styles.mediaPreview} onClick={() => handleDoubleClick(part.id)} />
+                            ) : (
+                               <button className={styles.attachmentBox} onClick={() => handleDoubleClick(part.id)}>
+                                  <AudioLines size={24} className="text-muted-foreground" />
+                                  <span>Upload audio</span>
+                              </button>
+                            )}
+                          </div>
                         )}
                         <button className={styles.deletePartButton} onClick={() => removePart(part.id)} title={`Delete ${part.type}`}><Trash2 size={14} /></button>
                     </div>

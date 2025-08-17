@@ -100,7 +100,7 @@
 .react-flow__node-base:global(.selected),
 .react-flow__node-subflow:global(.selected),
 .react-flow__node-groupBox:global(.selected) {
-    border-color: hsl(var(--border));
+    border-color: transparent;
     box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
 }
 
@@ -277,19 +277,25 @@
 
 .deletePartButton {
   position: absolute;
-  top: 8px;
-  right: 8px;
+  top: -10px;
+  right: -10px;
   background: hsl(var(--background));
   border: 1px solid hsl(var(--border));
   color: hsl(var(--muted-foreground));
   border-radius: 999px;
-  width: 28px;
-  height: 28px;
+  width: 24px;
+  height: 24px;
   display: grid;
   place-items: center;
   cursor: pointer;
   z-index: 10;
+  opacity: 0;
+  transition: opacity 0.2s;
 }
+.messagePart:hover .deletePartButton {
+  opacity: 1;
+}
+
 .deletePartButton:hover {
   background: hsl(var(--destructive) / 0.1);
   color: hsl(var(--destructive));
