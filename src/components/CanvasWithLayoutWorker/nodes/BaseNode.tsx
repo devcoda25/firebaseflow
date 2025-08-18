@@ -213,6 +213,7 @@ export default function BaseNode({ id, data, selected }: { id: string; data: Bas
                 )}
                 {parts.map((part) => (
                     <div key={part.id} className={styles.messagePart}>
+                        <button className={styles.deletePartButton} onClick={() => removePart(part.id)} title={`Delete ${part.type}`}><Trash2 size={14} /></button>
                         {part.type === 'text' && (
                              <div className={styles.messageContent}>
                                 <textarea
@@ -286,7 +287,6 @@ export default function BaseNode({ id, data, selected }: { id: string; data: Bas
                             )}
                           </div>
                         )}
-                        <button className={styles.deletePartButton} onClick={() => removePart(part.id)} title={`Delete ${part.type}`}><Trash2 size={14} /></button>
                     </div>
                 ))}
               <div className={styles.addPartButtons}>
