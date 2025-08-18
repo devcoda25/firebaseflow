@@ -15,10 +15,8 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { useFlowStore } from '@/store/flow';
 import { Badge } from '@/components/ui/badge';
-import { ScrollArea } from '@/components/ui/scroll-area';
 import { nanoid } from 'nanoid';
 import VariableChipAutocomplete from '@/components/VariableChipAutocomplete/VariableChipAutocomplete';
-import { Textarea } from '@/components/ui/textarea';
 
 
 export type ContentPart = 
@@ -201,7 +199,7 @@ export default function BaseNode({ id, data, selected }: { id: string; data: Bas
             } else if (currentPart.type === 'text') {
                 renderedParts.push(
                     <div key={currentPart.id} className={styles.messagePart}>
-                        <button className={styles.deletePartButton} onClick={() => removePart(currentPart.id)} title={`Delete ${currentPart.type}`}><Trash2 size={14} /></button>
+                        <button className={styles.deletePartButton} onClick={() => removePart(currentPart.id)} title="Delete message"><Trash2 size={14} /></button>
                          <div className={styles.messageContent}>
                             <textarea
                                 ref={(el) => { if (el) textRefs.current[currentPart.id] = el; }}
@@ -280,12 +278,12 @@ export default function BaseNode({ id, data, selected }: { id: string; data: Bas
       <div className={styles.nodeBody}>
         {isMessageNode ? (
           <div className={styles.messageNodeBody}>
-              {parts.length === 0 && (
-                <div className="text-center text-sm text-muted-foreground p-4">
-                  Add content using the buttons below.
-                </div>
-              )}
-              {renderedParts}
+            {parts.length === 0 && (
+              <div className="text-center text-sm text-muted-foreground p-4">
+                Add content using the buttons below.
+              </div>
+            )}
+            {renderedParts}
             <div className={styles.addPartButtons}>
                 <Button variant="outline" size="sm" onClick={() => addPart('text')}><MessageSquareIcon size={16}/> Message</Button>
                 <Button variant="outline" size="sm" onClick={() => addPart('image')}><Image size={16}/> Image</Button>
@@ -322,21 +320,19 @@ export default function BaseNode({ id, data, selected }: { id: string; data: Bas
         ) : isButtonsNode ? (
           <div className={styles.buttonsNodeBody} onClick={() => handleDoubleClick()}>
             <p className={styles.buttonsQuestion}>{data.content || 'Ask a question here'}</p>
-            <ScrollArea className="max-h-48">
-              <div className={styles.buttonsList}>
-                {(data.quickReplies || []).map((branch: any) => (
-                    <div key={branch.id} className={styles.buttonItem}>
-                        <span>{branch.label}</span>
-                         <Handle
-                            type="source"
-                            position={Position.Right}
-                            id={branch.id}
-                            className={styles.buttonHandle}
-                         />
-                    </div>
-                ))}
-              </div>
-            </ScrollArea>
+            <div className={styles.buttonsList}>
+              {(data.quickReplies || []).map((branch: any) => (
+                  <div key={branch.id} className={styles.buttonItem}>
+                      <span>{branch.label}</span>
+                       <Handle
+                          type="source"
+                          position={Position.Right}
+                          id={branch.id}
+                          className={styles.buttonHandle}
+                       />
+                  </div>
+              ))}
+            </div>
           </div>
         ) : (
           <p onClick={() => handleDoubleClick()}>{data.description || 'Double-click to configure.'}</p>

@@ -17,7 +17,7 @@ export function messageSchema(waCtx: MessageContext) {
 
   return z.object({
     channelOverride: z.string().optional(), // per-node channel override
-    text: z.string().min(1, 'Message text required').max(4096),
+    content: z.string().min(1, 'Message text required').max(4096),
     quickReplies: z.array(
       z.object({
         id: z.string().min(1),

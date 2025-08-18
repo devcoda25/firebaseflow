@@ -35,8 +35,8 @@ export default function MessageTab({ waContext = 'template', channels }: { waCon
         <CardContent>
           <div className={styles.field}>
             <Label htmlFor="message-text">Message Text</Label>
-            <Textarea id="message-text" {...register('text')} rows={5} placeholder="Type the message…"/>
-            {errors.text && <span className={styles.err}>{String(errors.text.message)}</span>}
+            <Textarea id="message-text" {...register('content')} rows={5} placeholder="Type the message…"/>
+            {errors.content && <span className={styles.err}>{String(errors.content.message)}</span>}
           </div>
         </CardContent>
       </Card>
