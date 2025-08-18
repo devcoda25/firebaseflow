@@ -415,36 +415,13 @@
 
 .mediaGallery {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(4, 1fr);
     gap: 8px;
     background: hsl(var(--muted));
     border-radius: 8px;
     overflow: hidden;
     position: relative;
     padding: 8px;
-}
-
-.mediaGallery1 {
-    grid-template-columns: 1fr;
-}
-.mediaGallery2 {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-}
-.mediaGallery3 {
-    display: grid;
-    grid-template-columns: 2fr 1fr;
-    grid-template-rows: 1fr 1fr;
-    grid-template-areas: "one two" "one three";
-}
-.mediaGallery3 .item1 { grid-area: one; }
-.mediaGallery3 .item2 { grid-area: two; }
-.mediaGallery3 .item3 { grid-area: three; }
-
-.mediaGallery4 {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    grid-template-rows: 1fr 1fr;
 }
 
 .mediaGalleryItem {
