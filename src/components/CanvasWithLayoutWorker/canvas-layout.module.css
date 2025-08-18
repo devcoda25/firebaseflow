@@ -426,19 +426,16 @@
 
 .mediaGallery1 {
     grid-template-columns: 1fr;
-    aspect-ratio: 16 / 10;
 }
 .mediaGallery2 {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    aspect-ratio: 16 / 10;
 }
 .mediaGallery3 {
     display: grid;
     grid-template-columns: 2fr 1fr;
     grid-template-rows: 1fr 1fr;
     grid-template-areas: "one two" "one three";
-    aspect-ratio: 16 / 10;
 }
 .mediaGallery3 .item1 { grid-area: one; }
 .mediaGallery3 .item2 { grid-area: two; }
@@ -448,7 +445,6 @@
     display: grid;
     grid-template-columns: 1fr 1fr;
     grid-template-rows: 1fr 1fr;
-    aspect-ratio: 16 / 10;
 }
 
 .mediaGalleryItem {
