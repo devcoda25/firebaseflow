@@ -38,6 +38,7 @@ type ModalState = {
   partId?: string;
 } | null;
 
+type MediaPart = { url: string; name?: string; type: 'image' | 'video' | 'audio' | 'document' };
 
 function StudioPageContent() {
   const { nodes, edges, addNode, setNodes, onNodesChange, onEdgesChange, onConnectStart, onConnectEnd, onConnect, updateNodeData } = useFlowStore();
@@ -112,12 +113,29 @@ function StudioPageContent() {
     setModalState(null);
   };
   
-  const onSaveMedia = (media: any) => {
+  const onSaveMedia = (newMedia: MediaPart | MediaPart[]) => {
     if (!modalState || !modalState.partId) return;
     const node = nodes.find(n => n.id === modalState.nodeId);
     if (node) {
-        const newParts = (node.data.parts || []).map((p: ContentPart) => p.id === modalState.partId ? { ...p, ...media } : p);
-        updateNodeData(modalState.nodeId, { parts: newParts });
+        const newMediaArray = Array.isArray(newMedia) ? newMedia : [newMedia];
+        
+        let parts = [...(node.data.parts || [])];
+        const partIndex = parts.findIndex(p => p.id === modalState.partId);
+
+        if (partIndex !== -1) {
+            // Replace the placeholder part with the first new media item
+            parts[partIndex] = { ...parts[partIndex], ...newMediaArray[0] };
+
+            // Add any additional media items after the first one
+            if (newMediaArray.length > 1) {
+                const additionalParts = newMediaArray.slice(1).map(media => ({
+                    id: nanoid(),
+                    ...media,
+                }));
+                parts.splice(partIndex + 1, 0, ...additionalParts);
+            }
+        }
+        updateNodeData(modalState.nodeId, { parts });
     }
     setModalState(null);
   }
@@ -126,7 +144,7 @@ function StudioPageContent() {
     if (!modalState || !modalState.partId) return;
     const node = nodes.find(n => n.id === modalState.nodeId);
     if (node) {
-        const newParts = (node.data.parts || []).map((p: ContentPart) => p.id === modalState.partId ? { ...p, url: undefined, name: undefined } : p);
+        const newParts = (node.data.parts || []).filter((p: ContentPart) => p.id !== modalState!.partId);
         updateNodeData(modalState.nodeId, { parts: newParts });
     }
     setModalState(null);

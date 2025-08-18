@@ -130,6 +130,11 @@ export default function BaseNode({ id, data, selected }: { id: string; data: Bas
         : { id: nanoid(), type, url: undefined, name: undefined};
     const newParts = [...parts, newPart];
     updateNodeData(id, { parts: newParts });
+
+    // If it's a media part, open the modal immediately
+    if (type !== 'text') {
+      setTimeout(() => data.onOpenAttachmentModal?.(id, newPart.id, newPart.type as any), 50);
+    }
   };
   
   const removePart = (partId: string) => {

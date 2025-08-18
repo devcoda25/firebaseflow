@@ -6,13 +6,12 @@ import { Label } from '@/components/ui/label';
 import { ImageIcon, FileX } from 'lucide-react';
 import type { ContentPart } from '@/components/CanvasWithLayoutWorker/nodes/BaseNode';
 
-
-type Media = { type: 'image' | 'video' | 'audio' | 'document', url: string, name?: string };
+type MediaPart = { type: 'image' | 'video' | 'audio' | 'document', url: string, name?: string };
 
 type ImageAttachmentModalProps = {
   isOpen: boolean;
   onClose: () => void;
-  onSave: (media: Partial<Media>) => void;
+  onSave: (media: MediaPart | MediaPart[]) => void;
   onDelete: () => void;
   media?: ContentPart;
 };
@@ -55,13 +54,31 @@ export default function ImageAttachmentModal({
   };
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        setUrl(e.target?.result as string);
-      };
-      reader.readAsDataURL(file);
+    const files = event.target.files;
+    if (!files || files.length === 0) return;
+
+    if (files.length === 1) {
+        const file = files[0];
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            onSave({ type: 'image', url: e.target?.result as string, name: file.name });
+        };
+        reader.readAsDataURL(file);
+    } else {
+        const newParts: MediaPart[] = [];
+        let processedCount = 0;
+        
+        Array.from(files).forEach(file => {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                newParts.push({ type: 'image', url: e.target?.result as string, name: file.name });
+                processedCount++;
+                if (processedCount === files.length) {
+                    onSave(newParts);
+                }
+            };
+            reader.readAsDataURL(file);
+        });
     }
   };
 
@@ -71,7 +88,7 @@ export default function ImageAttachmentModal({
       <DialogContent>
         <DialogHeader>
           <DialogTitle>Attach Image</DialogTitle>
-          <DialogDescription>Add an image to your message. Provide a URL or upload a file.</DialogDescription>
+          <DialogDescription>Add an image to your message. Provide a URL or upload a file. You can select multiple files.</DialogDescription>
         </DialogHeader>
         <div className="grid gap-4 py-4">
             <div className="flex items-center justify-center h-48 bg-muted rounded-md overflow-hidden">
@@ -101,6 +118,7 @@ export default function ImageAttachmentModal({
                 onChange={handleFileChange}
                 className="hidden"
                 accept="image/*"
+                multiple
             />
             <Button variant="outline" type="button" onClick={handleUploadClick}>Upload from device</Button>
         </div>

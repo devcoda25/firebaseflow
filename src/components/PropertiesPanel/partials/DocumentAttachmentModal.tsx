@@ -6,12 +6,12 @@ import { Label } from '@/components/ui/label';
 import { File, FileText, FileSpreadsheet, FileJson, FileQuestion } from 'lucide-react';
 import type { ContentPart } from '@/components/CanvasWithLayoutWorker/nodes/BaseNode';
 
-type Media = { type: 'image' | 'video' | 'audio' | 'document', url: string, name?: string };
+type MediaPart = { type: 'image' | 'video' | 'audio' | 'document', url: string, name?: string };
 
 type DocumentAttachmentModalProps = {
   isOpen: boolean;
   onClose: () => void;
-  onSave: (media: Partial<Media>) => void;
+  onSave: (media: MediaPart | MediaPart[]) => void;
   onDelete: () => void;
   media?: ContentPart;
 };
@@ -62,14 +62,31 @@ export default function DocumentAttachmentModal({
   };
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        setUrl(e.target?.result as string);
-        setName(file.name);
-      };
-      reader.readAsDataURL(file);
+    const files = event.target.files;
+    if (!files || files.length === 0) return;
+
+    if (files.length === 1) {
+        const file = files[0];
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            onSave({ type: 'document', url: e.target?.result as string, name: file.name });
+        };
+        reader.readAsDataURL(file);
+    } else {
+        const newParts: MediaPart[] = [];
+        let processedCount = 0;
+        
+        Array.from(files).forEach(file => {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                newParts.push({ type: 'document', url: e.target?.result as string, name: file.name });
+                processedCount++;
+                if (processedCount === files.length) {
+                    onSave(newParts);
+                }
+            };
+            reader.readAsDataURL(file);
+        });
     }
   };
 
@@ -78,7 +95,7 @@ export default function DocumentAttachmentModal({
       <DialogContent>
         <DialogHeader>
           <DialogTitle>Attach Document</DialogTitle>
-          <DialogDescription>Add a document to your message. Provide a URL or upload a file.</DialogDescription>
+          <DialogDescription>Add a document to your message. Provide a URL or upload a file. You can select multiple files.</DialogDescription>
         </DialogHeader>
         <div className="grid gap-4 py-4">
           <div className="flex items-center justify-center h-40 bg-muted rounded-md">
@@ -99,6 +116,7 @@ export default function DocumentAttachmentModal({
             onChange={handleFileChange}
             className="hidden"
             accept=".pdf,.doc,.docx,.txt,.csv,.xlsx,.json"
+            multiple
           />
           <Button variant="outline" type="button" onClick={handleUploadClick}>Upload from device</Button>
         </div>
