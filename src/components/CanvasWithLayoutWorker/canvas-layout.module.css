@@ -93,7 +93,7 @@
   background: hsl(var(--card));
   border: 1px solid hsl(var(--border));
   color: hsl(var(--card-foreground));
-  box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+  box-shadow: 0 25px 50px -12px rgb(0 0 0 / 0.25);
   min-width: 320px;
   transition: box-shadow 0.2s ease-in-out;
 }
@@ -101,7 +101,7 @@
 .react-flow__node-subflow:global(.selected),
 .react-flow__node-groupBox:global(.selected) {
     border-color: transparent;
-    box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+    box-shadow: 0 25px 50px -12px rgb(0 0 0 / 0.25);
 }
 
 .baseNode:hover,
@@ -240,6 +240,7 @@
   color: hsl(var(--muted-foreground));
   font-weight: 500;
   width: 100%;
+  height: 100%;
   cursor: pointer;
 }
 .attachmentBox:hover {
@@ -292,7 +293,9 @@
   opacity: 0;
   transition: opacity 0.2s;
 }
-.messagePart:hover .deletePartButton {
+.messagePart:hover .deletePartButton,
+.mediaGallery:hover .deletePartButton,
+.mediaGalleryItem:hover .deletePartButton {
   opacity: 1;
 }
 
@@ -412,4 +415,35 @@
   right: -8px !important;
   top: auto !important;
   
+}
+
+
+.mediaGallery {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+    gap: 8px;
+    background: hsl(var(--muted));
+    border-radius: 8px;
+    padding: 10px;
+}
+
+.mediaGalleryItem {
+    position: relative;
+    aspect-ratio: 1 / 1;
+}
+.mediaGalleryItem > img,
+.mediaGalleryItem > video,
+.mediaGalleryItem > audio,
+.mediaGalleryItem > .documentPreview,
+.mediaGalleryItem > .attachmentBox {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 6px;
+    background-color: hsl(var(--background));
+}
+
+.mediaGalleryItem .deletePartButton {
+    top: -6px;
+    right: -6px;
 }

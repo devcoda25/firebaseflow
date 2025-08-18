@@ -69,6 +69,8 @@ function migrateData(data: BaseNodeData): ContentPart[] {
   return parts;
 }
 
+const MEDIA_TYPES: ContentPart['type'][] = ['image', 'video', 'audio', 'document'];
+
 
 export default function BaseNode({ id, data, selected }: { id: string; data: BaseNodeData; selected: boolean }) {
   const { deleteNode, duplicateNode, setStartNode, startNodeId, updateNodeData, nodes } = useFlowStore();
@@ -156,6 +158,74 @@ export default function BaseNode({ id, data, selected }: { id: string; data: Bas
     });
   }, [parts]);
   
+    const renderedParts: React.ReactNode[] = [];
+    if (isMessageNode) {
+        let i = 0;
+        while (i < parts.length) {
+            const currentPart = parts[i];
+
+            if (MEDIA_TYPES.includes(currentPart.type)) {
+                const mediaGroup: ContentPart[] = [];
+                // Collect all consecutive media parts
+                while (i < parts.length && MEDIA_TYPES.includes(parts[i].type)) {
+                    mediaGroup.push(parts[i]);
+                    i++;
+                }
+
+                renderedParts.push(
+                    <div key={`media-group-${mediaGroup[0].id}`} className={styles.mediaGallery}>
+                        {mediaGroup.map(part => (
+                            <div key={part.id} className={styles.mediaGalleryItem}>
+                                <button className={styles.deletePartButton} onClick={() => removePart(part.id)} title={`Delete ${part.type}`}><Trash2 size={14} /></button>
+                                {part.type === 'image' && (
+                                    part.url ? <img src={part.url} alt={part.name || 'Image'} onClick={() => handleDoubleClick(part.id)} /> : <button className={styles.attachmentBox} onClick={() => handleDoubleClick(part.id)}><ImageIcon size={24} /><span>Upload image</span></button>
+                                )}
+                                {part.type === 'video' && (
+                                    part.url ? <video src={part.url} controls onClick={() => handleDoubleClick(part.id)} /> : <button className={styles.attachmentBox} onClick={() => handleDoubleClick(part.id)}><Film size={24} /><span>Upload video</span></button>
+                                )}
+                                {part.type === 'document' && (
+                                    part.url ? <div className={styles.documentPreview} onClick={() => handleDoubleClick(part.id)}><FileIcon size={24} /><span className="truncate">{part.name || part.url}</span></div> : <button className={styles.attachmentBox} onClick={() => handleDoubleClick(part.id)}><FileIcon size={24} /><span>Upload document</span></button>
+                                )}
+                                {part.type === 'audio' && (
+                                    part.url ? <audio src={part.url} controls onClick={() => handleDoubleClick(part.id)} /> : <button className={styles.attachmentBox} onClick={() => handleDoubleClick(part.id)}><AudioLines size={24} /><span>Upload audio</span></button>
+                                )}
+                            </div>
+                        ))}
+                    </div>
+                );
+            } else if (currentPart.type === 'text') {
+                renderedParts.push(
+                    <div key={currentPart.id} className={styles.messagePart}>
+                        <button className={styles.deletePartButton} onClick={() => removePart(currentPart.id)} title={`Delete ${currentPart.type}`}><Trash2 size={14} /></button>
+                         <div className={styles.messageContent}>
+                            <textarea
+                                ref={(el) => { if (el) textRefs.current[currentPart.id] = el; }}
+                                className={styles.messageTextarea}
+                                placeholder="Click to edit message..."
+                                value={(currentPart as any).content}
+                                onChange={(e) => handleTextChange(e, currentPart.id)}
+                                rows={1}
+                            />
+                            <div className={styles.variableInserter}>
+                                <VariableChipAutocomplete
+                                    variables={['name', 'email', 'cart_item', 'order_id']}
+                                    onInsert={(variable) => {
+                                        const currentContent = (currentPart as any).content || '';
+                                        updatePartContent(currentPart.id, currentContent + `{{${variable}}}`);
+                                    }}
+                                />
+                            </div>
+                        </div>
+                    </div>
+                );
+                i++;
+            } else {
+                i++;
+            }
+        }
+    }
+
+
   return (
     <div className={styles.baseNode} style={customStyle} aria-selected={selected}>
        <NodeAvatars nodeId={id} />
@@ -210,84 +280,7 @@ export default function BaseNode({ id, data, selected }: { id: string; data: Bas
                   Add content using the buttons below.
                 </div>
               )}
-              {parts.map((part) => (
-                  <div key={part.id} className={styles.messagePart}>
-                      <button className={styles.deletePartButton} onClick={() => removePart(part.id)} title={`Delete ${part.type}`}><Trash2 size={14} /></button>
-                      {part.type === 'text' && (
-                           <div className={styles.messageContent}>
-                              <textarea
-                                  ref={(el) => { if (el) textRefs.current[part.id] = el; }}
-                                  className={styles.messageTextarea}
-                                  placeholder="Click to edit message..."
-                                  value={(part as any).content}
-                                  onChange={(e) => handleTextChange(e, part.id)}
-                                  rows={1}
-                              />
-                              <div className={styles.variableInserter}>
-                                  <VariableChipAutocomplete
-                                      variables={['name', 'email', 'cart_item', 'order_id']}
-                                      onInsert={(variable) => {
-                                          const currentContent = (part as any).content || '';
-                                          updatePartContent(part.id, currentContent + `{{${variable}}}`);
-                                      }}
-                                  />
-                              </div>
-                          </div>
-                      )}
-                      {part.type === 'image' && (
-                        <div className={styles.messageContent}>
-                          {part.url ? (
-                            // eslint-disable-next-line @next/next/no-img-element
-                            <img src={part.url} alt={part.name || 'Image'} className={styles.mediaPreview} onClick={() => handleDoubleClick(part.id)} />
-                          ) : (
-                            <button className={styles.attachmentBox} onClick={() => handleDoubleClick(part.id)}>
-                                <ImageIcon size={24} className="text-muted-foreground" />
-                                <span>Upload image</span>
-                            </button>
-                          )}
-                        </div>
-                      )}
-                      {part.type === 'video' && (
-                        <div className={styles.messageContent}>
-                          {part.url ? (
-                            <video src={part.url} controls className={styles.mediaPreview} onClick={() => handleDoubleClick(part.id)} />
-                          ) : (
-                            <button className={styles.attachmentBox} onClick={() => handleDoubleClick(part.id)}>
-                                <Film size={24} className="text-muted-foreground" />
-                                <span>Upload video</span>
-                            </button>
-                          )}
-                        </div>
-                      )}
-                       {part.type === 'document' && (
-                         <div className={styles.messageContent}>
-                          {part.url ? (
-                            <div className={styles.documentPreview} onClick={() => handleDoubleClick(part.id)}>
-                                <FileIcon size={24} className="text-muted-foreground" />
-                                <span className="truncate">{part.name || part.url}</span>
-                            </div>
-                           ) : (
-                            <button className={styles.attachmentBox} onClick={() => handleDoubleClick(part.id)}>
-                                <FileIcon size={24} className="text-muted-foreground" />
-                                <span>Upload document</span>
-                            </button>
-                           )}
-                         </div>
-                      )}
-                      {part.type === 'audio' && (
-                        <div className={styles.messageContent}>
-                          {part.url ? (
-                            <audio src={part.url} controls className={styles.mediaPreview} onClick={() => handleDoubleClick(part.id)} />
-                          ) : (
-                             <button className={styles.attachmentBox} onClick={() => handleDoubleClick(part.id)}>
-                                <AudioLines size={24} className="text-muted-foreground" />
-                                <span>Upload audio</span>
-                            </button>
-                          )}
-                        </div>
-                      )}
-                  </div>
-              ))}
+              {renderedParts}
             <div className={styles.addPartButtons}>
                 <Button variant="outline" size="sm" onClick={() => addPart('text')}><MessageSquareIcon size={16}/> Message</Button>
                 <Button variant="outline" size="sm" onClick={() => addPart('image')}><Image size={16}/> Image</Button>
