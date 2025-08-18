@@ -2,7 +2,7 @@ import React, {useCallback, useEffect, useRef} from 'react'
 import { Handle, Position, Node, useReactFlow } from 'reactflow'
 import styles from '../canvas-layout.module.css'
 import NodeAvatars from '@/components/Presence/NodeAvatars';
-import { MoreHorizontal, Trash2, Copy, PlayCircle, XCircle, Settings, Image, Video, AudioLines, FileText, MessageSquare as MessageSquareIcon, File as FileIcon, Film, Image as ImageIcon } from 'lucide-react';
+import { MoreHorizontal, Trash2, Copy, PlayCircle, XCircle, Settings, Image, Video, AudioLines, FileText, MessageSquare as MessageSquareIcon, File as FileIcon, Film, Image as ImageIcon, Plus } from 'lucide-react';
 import * as LucideIcons from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
@@ -60,9 +60,9 @@ function migrateData(data: BaseNodeData): ContentPart[] {
     parts.push({ id: nanoid(), type: data.media.type, url: data.media.url, name: data.media.name });
   }
 
-  // If no content or media, start with an empty array
+  // If no content or media, start with an empty text part
   if (parts.length === 0) {
-    return [];
+      return [];
   }
   return parts;
 }
@@ -174,12 +174,28 @@ export default function BaseNode({ id, data, selected }: { id: string; data: Bas
                     mediaGroup.push(parts[i]);
                     i++;
                 }
+                
+                const count = mediaGroup.length;
+                const galleryClass = 
+                    count === 1 ? styles.mediaGallery1 :
+                    count === 2 ? styles.mediaGallery2 :
+                    count === 3 ? styles.mediaGallery3 :
+                    styles.mediaGallery4;
+
+                const visibleItems = mediaGroup.slice(0, 4);
+                const hiddenCount = count - visibleItems.length;
 
                 renderedParts.push(
-                    <div key={`media-group-${mediaGroup[0].id}`} className={styles.mediaGallery}>
-                        {mediaGroup.map(part => (
-                            <div key={part.id} className={styles.mediaGalleryItem}>
+                    <div key={`media-group-${mediaGroup[0].id}`} className={`${styles.mediaGallery} ${galleryClass}`}>
+                        {visibleItems.map((part, index) => (
+                            <div key={part.id} className={`${styles.mediaGalleryItem} ${styles[`item${index + 1}`]}`}>
                                 <button className={styles.deletePartButton} onClick={() => removePart(part.id)} title={`Delete ${part.type}`}><Trash2 size={14} /></button>
+                                {index === 3 && hiddenCount > 0 && (
+                                    <div className={styles.plusOverlay}>
+                                        <Plus size={24} />
+                                        <span>{hiddenCount}</span>
+                                    </div>
+                                )}
                                 {part.type === 'image' && (
                                     part.url ? <img src={part.url} alt={part.name || 'Image'} onClick={() => handleDoubleClick(part.id)} /> : <button className={styles.attachmentBox} onClick={() => handleDoubleClick(part.id)}><ImageIcon size={24} /><span>Upload image</span></button>
                                 )}
@@ -199,8 +215,8 @@ export default function BaseNode({ id, data, selected }: { id: string; data: Bas
             } else if (currentPart.type === 'text') {
                 renderedParts.push(
                     <div key={currentPart.id} className={styles.messagePart}>
-                        <button className={styles.deletePartButton} onClick={() => removePart(currentPart.id)} title="Delete message"><Trash2 size={14} /></button>
                          <div className={styles.messageContent}>
+                             <button className={styles.deletePartButton} onClick={() => removePart(currentPart.id)} title="Delete message"><Trash2 size={14} /></button>
                             <textarea
                                 ref={(el) => { if (el) textRefs.current[currentPart.id] = el; }}
                                 className={styles.messageTextarea}

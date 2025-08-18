@@ -97,12 +97,6 @@
   min-width: 320px;
   transition: box-shadow 0.2s ease-in-out;
 }
-.react-flow__node-base:global(.selected),
-.react-flow__node-subflow:global(.selected),
-.react-flow__node-groupBox:global(.selected) {
-    border-color: transparent;
-    box-shadow: 0 25px 50px -12px rgb(0 0 0 / 0.25);
-}
 
 .baseNode:hover,
 .subflow:hover,
@@ -138,7 +132,11 @@
 .nodeMore { background: transparent; border: none; color: white; opacity: 0.7; cursor: pointer; margin-left: auto; padding: 4px; border-radius: 4px; }
 .nodeMore:hover { opacity: 1; background: hsla(0,0%,100%,0.15); }
 
-.nodeBody { padding: 12px 14px; color: hsl(var(--muted-foreground)); font-size: 14px; }
+.nodeBody { 
+  padding: 12px 14px; 
+  color: hsl(var(--muted-foreground)); 
+  font-size: 14px; 
+}
 .nodeBody p { margin: 0; }
 
 .handle {
@@ -248,9 +246,6 @@
   border-color: hsl(var(--accent));
   color: hsl(var(--accent));
 }
-.attachmentBox > span {
-  font-size: 14px;
-}
 
 .mediaPreview {
     width: 100%;
@@ -278,8 +273,8 @@
 
 .deletePartButton {
   position: absolute;
-  top: -10px;
-  right: -10px;
+  top: -8px;
+  right: -8px;
   background: hsl(var(--background));
   border: 1px solid hsl(var(--border));
   color: hsl(var(--muted-foreground));
@@ -294,7 +289,6 @@
   transition: opacity 0.2s;
 }
 .messagePart:hover .deletePartButton,
-.mediaGallery:hover .deletePartButton,
 .mediaGalleryItem:hover .deletePartButton {
   opacity: 1;
 }
@@ -420,16 +414,45 @@
 
 .mediaGallery {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
-    gap: 8px;
+    gap: 4px;
     background: hsl(var(--muted));
     border-radius: 8px;
-    padding: 10px;
+    overflow: hidden;
+    position: relative;
+}
+
+.mediaGallery1 {
+    grid-template-columns: 1fr;
+    aspect-ratio: 16 / 10;
+}
+.mediaGallery2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    aspect-ratio: 16 / 8;
+}
+.mediaGallery3 {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    grid-template-rows: 1fr 1fr;
+    grid-template-areas: "one two" "one three";
+    aspect-ratio: 16 / 12;
+}
+.mediaGallery3 .item1 { grid-area: one; }
+.mediaGallery3 .item2 { grid-area: two; }
+.mediaGallery3 .item3 { grid-area: three; }
+
+.mediaGallery4 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: 1fr 1fr;
+    aspect-ratio: 1 / 1;
 }
 
 .mediaGalleryItem {
     position: relative;
-    aspect-ratio: 1 / 1;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
 }
 .mediaGalleryItem > img,
 .mediaGalleryItem > video,
@@ -439,11 +462,25 @@
     width: 100%;
     height: 100%;
     object-fit: cover;
-    border-radius: 6px;
     background-color: hsl(var(--background));
+    cursor: pointer;
+}
+
+.plusOverlay {
+    position: absolute;
+    inset: 0;
+    background-color: rgba(0,0,0,0.5);
+    color: white;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    font-weight: bold;
+    cursor: pointer;
 }
 
 .mediaGalleryItem .deletePartButton {
-    top: -6px;
-    right: -6px;
+    top: 4px;
+    right: 4px;
 }
