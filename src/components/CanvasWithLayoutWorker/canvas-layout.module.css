@@ -1,4 +1,5 @@
 
+
 .root { 
   position: relative; 
   height: 100%; 
@@ -93,7 +94,7 @@
   background: hsl(var(--card));
   border: 1px solid hsl(var(--border));
   color: hsl(var(--card-foreground));
-  box-shadow: 0 25px 50px -12px rgb(0 0 0 / 0.25);
+  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
   min-width: 280px;
   transition: box-shadow 0.2s ease-in-out;
 }
@@ -101,7 +102,7 @@
 .baseNode:hover,
 .subflow:hover,
 .groupBox:hover {
-  box-shadow: none;
+  box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
 }
 
 
@@ -486,3 +487,5 @@
     top: 4px;
     right: 4px;
 }
+
+    
