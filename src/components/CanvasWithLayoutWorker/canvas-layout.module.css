@@ -419,6 +419,7 @@
     border-radius: 8px;
     overflow: hidden;
     position: relative;
+    padding: 4px;
 }
 
 .mediaGallery1 {
@@ -428,7 +429,7 @@
 .mediaGallery2 {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    aspect-ratio: 16 / 9;
+    aspect-ratio: 16 / 10;
 }
 .mediaGallery3 {
     display: grid;
@@ -453,6 +454,7 @@
     width: 100%;
     height: 100%;
     overflow: hidden;
+    border-radius: 4px;
 }
 .mediaGalleryItem > img,
 .mediaGalleryItem > video,
@@ -484,5 +486,3 @@
     top: 4px;
     right: 4px;
 }
-
-    
