@@ -415,7 +415,7 @@
 
 .mediaGallery {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(40px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(60px, 1fr));
     gap: 8px;
     background: hsl(var(--muted));
     border-radius: 8px;
