@@ -202,150 +202,148 @@ export default function BaseNode({ id, data, selected }: { id: string; data: Bas
             </DropdownMenuContent>
         </DropdownMenu>
       </div>
-      <ScrollArea className="max-h-96">
-        <div className={styles.nodeBody}>
-          {isMessageNode ? (
-            <div className={styles.messageNodeBody}>
-                {parts.length === 0 && (
-                  <div className="text-center text-sm text-muted-foreground p-4">
-                    Add content using the buttons below.
-                  </div>
-                )}
-                {parts.map((part) => (
-                    <div key={part.id} className={styles.messagePart}>
-                        <button className={styles.deletePartButton} onClick={() => removePart(part.id)} title={`Delete ${part.type}`}><Trash2 size={14} /></button>
-                        {part.type === 'text' && (
-                             <div className={styles.messageContent}>
-                                <textarea
-                                    ref={(el) => { if (el) textRefs.current[part.id] = el; }}
-                                    className={styles.messageTextarea}
-                                    placeholder="Click to edit message..."
-                                    value={(part as any).content}
-                                    onChange={(e) => handleTextChange(e, part.id)}
-                                    rows={1}
-                                />
-                                <div className={styles.variableInserter}>
-                                    <VariableChipAutocomplete
-                                        variables={['name', 'email', 'cart_item', 'order_id']}
-                                        onInsert={(variable) => {
-                                            const currentContent = (part as any).content || '';
-                                            updatePartContent(part.id, currentContent + `{{${variable}}}`);
-                                        }}
-                                    />
-                                </div>
-                            </div>
-                        )}
-                        {part.type === 'image' && (
-                          <div className={styles.messageContent}>
-                            {part.url ? (
-                              // eslint-disable-next-line @next/next/no-img-element
-                              <img src={part.url} alt={part.name || 'Image'} className={styles.mediaPreview} onClick={() => handleDoubleClick(part.id)} />
-                            ) : (
-                              <button className={styles.attachmentBox} onClick={() => handleDoubleClick(part.id)}>
-                                  <ImageIcon size={24} className="text-muted-foreground" />
-                                  <span>Upload image</span>
-                              </button>
-                            )}
-                          </div>
-                        )}
-                        {part.type === 'video' && (
-                          <div className={styles.messageContent}>
-                            {part.url ? (
-                              <video src={part.url} controls className={styles.mediaPreview} onClick={() => handleDoubleClick(part.id)} />
-                            ) : (
-                              <button className={styles.attachmentBox} onClick={() => handleDoubleClick(part.id)}>
-                                  <Film size={24} className="text-muted-foreground" />
-                                  <span>Upload video</span>
-                              </button>
-                            )}
-                          </div>
-                        )}
-                         {part.type === 'document' && (
+      <div className={styles.nodeBody}>
+        {isMessageNode ? (
+          <div className={styles.messageNodeBody}>
+              {parts.length === 0 && (
+                <div className="text-center text-sm text-muted-foreground p-4">
+                  Add content using the buttons below.
+                </div>
+              )}
+              {parts.map((part) => (
+                  <div key={part.id} className={styles.messagePart}>
+                      <button className={styles.deletePartButton} onClick={() => removePart(part.id)} title={`Delete ${part.type}`}><Trash2 size={14} /></button>
+                      {part.type === 'text' && (
                            <div className={styles.messageContent}>
-                            {part.url ? (
-                              <div className={styles.documentPreview} onClick={() => handleDoubleClick(part.id)}>
-                                  <FileIcon size={24} className="text-muted-foreground" />
-                                  <span className="truncate">{part.name || part.url}</span>
+                              <textarea
+                                  ref={(el) => { if (el) textRefs.current[part.id] = el; }}
+                                  className={styles.messageTextarea}
+                                  placeholder="Click to edit message..."
+                                  value={(part as any).content}
+                                  onChange={(e) => handleTextChange(e, part.id)}
+                                  rows={1}
+                              />
+                              <div className={styles.variableInserter}>
+                                  <VariableChipAutocomplete
+                                      variables={['name', 'email', 'cart_item', 'order_id']}
+                                      onInsert={(variable) => {
+                                          const currentContent = (part as any).content || '';
+                                          updatePartContent(part.id, currentContent + `{{${variable}}}`);
+                                      }}
+                                  />
                               </div>
-                             ) : (
-                              <button className={styles.attachmentBox} onClick={() => handleDoubleClick(part.id)}>
-                                  <FileIcon size={24} className="text-muted-foreground" />
-                                  <span>Upload document</span>
-                              </button>
-                             )}
-                           </div>
-                        )}
-                        {part.type === 'audio' && (
-                          <div className={styles.messageContent}>
-                            {part.url ? (
-                              <audio src={part.url} controls className={styles.mediaPreview} onClick={() => handleDoubleClick(part.id)} />
-                            ) : (
-                               <button className={styles.attachmentBox} onClick={() => handleDoubleClick(part.id)}>
-                                  <AudioLines size={24} className="text-muted-foreground" />
-                                  <span>Upload audio</span>
-                              </button>
-                            )}
                           </div>
-                        )}
+                      )}
+                      {part.type === 'image' && (
+                        <div className={styles.messageContent}>
+                          {part.url ? (
+                            // eslint-disable-next-line @next/next/no-img-element
+                            <img src={part.url} alt={part.name || 'Image'} className={styles.mediaPreview} onClick={() => handleDoubleClick(part.id)} />
+                          ) : (
+                            <button className={styles.attachmentBox} onClick={() => handleDoubleClick(part.id)}>
+                                <ImageIcon size={24} className="text-muted-foreground" />
+                                <span>Upload image</span>
+                            </button>
+                          )}
+                        </div>
+                      )}
+                      {part.type === 'video' && (
+                        <div className={styles.messageContent}>
+                          {part.url ? (
+                            <video src={part.url} controls className={styles.mediaPreview} onClick={() => handleDoubleClick(part.id)} />
+                          ) : (
+                            <button className={styles.attachmentBox} onClick={() => handleDoubleClick(part.id)}>
+                                <Film size={24} className="text-muted-foreground" />
+                                <span>Upload video</span>
+                            </button>
+                          )}
+                        </div>
+                      )}
+                       {part.type === 'document' && (
+                         <div className={styles.messageContent}>
+                          {part.url ? (
+                            <div className={styles.documentPreview} onClick={() => handleDoubleClick(part.id)}>
+                                <FileIcon size={24} className="text-muted-foreground" />
+                                <span className="truncate">{part.name || part.url}</span>
+                            </div>
+                           ) : (
+                            <button className={styles.attachmentBox} onClick={() => handleDoubleClick(part.id)}>
+                                <FileIcon size={24} className="text-muted-foreground" />
+                                <span>Upload document</span>
+                            </button>
+                           )}
+                         </div>
+                      )}
+                      {part.type === 'audio' && (
+                        <div className={styles.messageContent}>
+                          {part.url ? (
+                            <audio src={part.url} controls className={styles.mediaPreview} onClick={() => handleDoubleClick(part.id)} />
+                          ) : (
+                             <button className={styles.attachmentBox} onClick={() => handleDoubleClick(part.id)}>
+                                <AudioLines size={24} className="text-muted-foreground" />
+                                <span>Upload audio</span>
+                            </button>
+                          )}
+                        </div>
+                      )}
+                  </div>
+              ))}
+            <div className={styles.addPartButtons}>
+                <Button variant="outline" size="sm" onClick={() => addPart('text')}><MessageSquareIcon size={16}/> Message</Button>
+                <Button variant="outline" size="sm" onClick={() => addPart('image')}><Image size={16}/> Image</Button>
+                <Button variant="outline" size="sm" onClick={() => addPart('video')}><Video size={16}/> Video</Button>
+                <Button variant="outline" size="sm" onClick={() => addPart('audio')}><AudioLines size={16}/> Audio</Button>
+                <Button variant="outline" size="sm" onClick={() => addPart('document')}><FileText size={16}/> Document</Button>
+            </div>
+          </div>
+        ) : isAskQuestionNode ? (
+          <div className={styles.buttonsNodeBody} onClick={() => handleDoubleClick()}>
+            <p className={styles.buttonsQuestion}>{data.content || 'Ask a question here'}</p>
+          </div>
+        ) : isConditionNode ? (
+          <div className={styles.conditionBody} onClick={() => handleDoubleClick()}>
+            {hasConditions ? (
+              data.groups?.map((group, groupIndex) => (
+                <React.Fragment key={groupIndex}>
+                  {groupIndex > 0 && <div className={styles.orDivider}>OR</div>}
+                  <div className={styles.conditionGroup}>
+                    {group.conditions.map((cond, condIndex) => (
+                      <div key={condIndex} className={styles.branchRow}>
+                        <code className={styles.branchCondition} title={getConditionString(cond)}>
+                          {getConditionString(cond)}
+                        </code>
+                      </div>
+                    ))}
+                  </div>
+                </React.Fragment>
+              ))
+            ) : (
+               <p>{data.description || 'Double-click to set conditions.'}</p>
+            )}
+          </div>
+        ) : isButtonsNode ? (
+          <div className={styles.buttonsNodeBody} onClick={() => handleDoubleClick()}>
+            <p className={styles.buttonsQuestion}>{data.content || 'Ask a question here'}</p>
+            <ScrollArea className="max-h-48">
+              <div className={styles.buttonsList}>
+                {(data.quickReplies || []).map((branch: any) => (
+                    <div key={branch.id} className={styles.buttonItem}>
+                        <span>{branch.label}</span>
+                         <Handle
+                            type="source"
+                            position={Position.Right}
+                            id={branch.id}
+                            className={styles.buttonHandle}
+                         />
                     </div>
                 ))}
-              <div className={styles.addPartButtons}>
-                  <Button variant="outline" size="sm" onClick={() => addPart('text')}><MessageSquareIcon size={16}/> Message</Button>
-                  <Button variant="outline" size="sm" onClick={() => addPart('image')}><Image size={16}/> Image</Button>
-                  <Button variant="outline" size="sm" onClick={() => addPart('video')}><Video size={16}/> Video</Button>
-                  <Button variant="outline" size="sm" onClick={() => addPart('audio')}><AudioLines size={16}/> Audio</Button>
-                  <Button variant="outline" size="sm" onClick={() => addPart('document')}><FileText size={16}/> Document</Button>
               </div>
-            </div>
-          ) : isAskQuestionNode ? (
-            <div className={styles.buttonsNodeBody} onClick={() => handleDoubleClick()}>
-              <p className={styles.buttonsQuestion}>{data.content || 'Ask a question here'}</p>
-            </div>
-          ) : isConditionNode ? (
-            <div className={styles.conditionBody} onClick={() => handleDoubleClick()}>
-              {hasConditions ? (
-                data.groups?.map((group, groupIndex) => (
-                  <React.Fragment key={groupIndex}>
-                    {groupIndex > 0 && <div className={styles.orDivider}>OR</div>}
-                    <div className={styles.conditionGroup}>
-                      {group.conditions.map((cond, condIndex) => (
-                        <div key={condIndex} className={styles.branchRow}>
-                          <code className={styles.branchCondition} title={getConditionString(cond)}>
-                            {getConditionString(cond)}
-                          </code>
-                        </div>
-                      ))}
-                    </div>
-                  </React.Fragment>
-                ))
-              ) : (
-                 <p>{data.description || 'Double-click to set conditions.'}</p>
-              )}
-            </div>
-          ) : isButtonsNode ? (
-            <div className={styles.buttonsNodeBody} onClick={() => handleDoubleClick()}>
-              <p className={styles.buttonsQuestion}>{data.content || 'Ask a question here'}</p>
-              <ScrollArea className="max-h-48">
-                <div className={styles.buttonsList}>
-                  {(data.quickReplies || []).map((branch: any) => (
-                      <div key={branch.id} className={styles.buttonItem}>
-                          <span>{branch.label}</span>
-                           <Handle
-                              type="source"
-                              position={Position.Right}
-                              id={branch.id}
-                              className={styles.buttonHandle}
-                           />
-                      </div>
-                  ))}
-                </div>
-              </ScrollArea>
-            </div>
-          ) : (
-            <p onClick={() => handleDoubleClick()}>{data.description || 'Double-click to configure.'}</p>
-          )}
-        </div>
-      </ScrollArea>
+            </ScrollArea>
+          </div>
+        ) : (
+          <p onClick={() => handleDoubleClick()}>{data.description || 'Double-click to configure.'}</p>
+        )}
+      </div>
 
       <Handle type="target" position={Position.Left} className={styles.handle} />
       
