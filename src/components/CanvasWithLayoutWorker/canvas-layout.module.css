@@ -225,95 +225,42 @@
     right: 6px;
 }
 
-
-.attachmentBox {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  padding: 16px;
-  border: 2px dashed hsl(var(--border));
-  border-radius: 8px;
-  background-color: hsl(var(--muted));
-  color: hsl(var(--muted-foreground));
-  font-weight: 500;
-  width: 100%;
-  min-height: 120px;
-  cursor: pointer;
-}
-.attachmentBox:hover {
-  background-color: hsl(var(--accent) / 0.1);
-  border-color: hsl(var(--accent));
-  color: hsl(var(--accent));
-}
-
-.mediaGallery {
-    position: relative;
-    border-radius: 8px;
-    overflow: hidden;
+.mediaGrid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
     background-color: hsl(var(--muted));
-    border: 1px solid hsl(var(--border));
-    display: flex;
-    justify-content: center;
-    padding: 8px;
-}
-
-.mediaPreviewImage {
-    width: 100%;
-    max-width: 150px;
-    aspect-ratio: 16 / 9;
-    object-fit: cover;
-    background-color: hsl(var(--background));
-    cursor: pointer;
-    border-radius: 4px;
-}
-
-.documentPreview, .audioPreview {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    padding: 16px;
-    background-color: hsl(var(--background));
     border-radius: 8px;
-    cursor: pointer;
+    padding: 8px;
     border: 1px solid hsl(var(--border));
-    color: hsl(var(--foreground));
-    width: 100%;
-}
-.documentPreview:hover, .audioPreview:hover {
-    background-color: hsl(var(--border));
 }
 
-.mediaThumbnails {
-    position: absolute;
-    bottom: 8px;
-    left: 8px;
-    display: flex;
-    gap: 6px;
-    align-items: center;
-}
-
-.mediaThumbnail, .mediaThumbnailMore {
-    width: 28px;
-    height: 28px;
-    border-radius: 999px;
-    background: hsla(0, 0%, 100%, 0.7);
-    border: 2px solid hsl(var(--border));
-    backdrop-filter: blur(4px);
+.mediaGridItem {
+    position: relative;
+    aspect-ratio: 1 / 1;
+    background-color: hsl(var(--background));
+    border-radius: 6px;
+    overflow: hidden;
     display: grid;
     place-items: center;
-    color: hsl(var(--foreground));
+    color: hsl(var(--muted-foreground));
+    border: 1px solid hsl(var(--border));
     cursor: pointer;
-    transition: all 0.2s;
 }
-.mediaThumbnail:hover {
-    transform: scale(1.1);
-    background: white;
+.mediaGridItem:hover {
+    border-color: hsl(var(--accent));
 }
-.mediaThumbnailMore {
-    font-size: 12px;
+
+.mediaGridImage {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.mediaGridMore {
+    font-size: 18px;
     font-weight: 600;
+    background-color: hsl(var(--muted));
 }
 
 

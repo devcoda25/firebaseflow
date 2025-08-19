@@ -69,20 +69,17 @@ function migrateData(data: BaseNodeData): ContentPart[] {
 
 const MEDIA_TYPES: ContentPart['type'][] = ['image', 'video', 'audio', 'document'];
 
-function MediaPreview({ part, onDoubleClick }: { part: ContentPart, onDoubleClick: () => void }) {
-    if (part.type === 'image') {
-        return part.url ? <img src={part.url} alt={part.name || 'Image'} onClick={onDoubleClick} className={styles.mediaPreviewImage} /> : <button className={styles.attachmentBox} onClick={onDoubleClick}><ImageIcon size={24} /><span>Upload image</span></button>
+function MediaGridItem({ part, onDoubleClick }: { part: ContentPart, onDoubleClick: () => void }) {
+    const getIcon = () => {
+        switch (part.type) {
+            case 'image': return part.url ? <img src={part.url} alt={part.name || 'Image'} className={styles.mediaGridImage} /> : <ImageIcon size={24} />;
+            case 'video': return <Film size={24} />;
+            case 'document': return <FileIcon size={24} />;
+            case 'audio': return <AudioLines size={24} />;
+            default: return null;
+        }
     }
-    if (part.type === 'video') {
-        return part.url ? <video src={part.url} controls onClick={onDoubleClick} className={styles.mediaPreviewImage}/> : <button className={styles.attachmentBox} onClick={onDoubleClick}><Film size={24} /><span>Upload video</span></button>
-    }
-    if (part.type === 'document') {
-        return part.url ? <div className={styles.documentPreview} onClick={onDoubleClick}><FileIcon size={24} /><span className="truncate">{part.name || part.url}</span></div> : <button className={styles.attachmentBox} onClick={onDoubleClick}><FileIcon size={24} /><span>Upload document</span></button>
-    }
-    if (part.type === 'audio') {
-        return part.url ? <div className={styles.audioPreview} onClick={onDoubleClick}><AudioLines size={24} /><span className="truncate">{part.name || 'Audio'}</span></div> : <button className={styles.attachmentBox} onClick={onDoubleClick}><AudioLines size={24} /><span>Upload audio</span></button>
-    }
-    return null;
+    return <button className={styles.mediaGridItem} onClick={onDoubleClick}>{getIcon()}</button>;
 }
 
 export default function BaseNode({ id, data, selected }: { id: string; data: BaseNodeData; selected: boolean }) {
@@ -176,52 +173,50 @@ export default function BaseNode({ id, data, selected }: { id: string; data: Bas
     });
   }, [parts]);
   
-    const renderedParts: React.ReactNode[] = [];
-    if (isMessageNode) {
-        let i = 0;
-        while (i < parts.length) {
-            const currentPart = parts[i];
+    const mediaParts = parts.filter(p => MEDIA_TYPES.includes(p.type));
+    const textParts = parts.filter(p => p.type === 'text');
+    const MAX_GRID_ITEMS = 4;
+    const mediaToShow = mediaParts.slice(0, MAX_GRID_ITEMS -1);
+    const moreCount = mediaParts.length - mediaToShow.length;
 
-            if (MEDIA_TYPES.includes(currentPart.type)) {
-                
-                renderedParts.push(
-                    <div key={currentPart.id} className={styles.messagePart}>
-                         <button className={styles.deletePartButton} onClick={() => removePart(currentPart.id)} title={`Delete ${currentPart.type}`}><Trash2 size={14} /></button>
-                         <MediaPreview part={currentPart} onDoubleClick={() => handleDoubleClick(currentPart.id, currentPart.type)} />
-                    </div>
-                );
-                i++;
+    const renderedParts = textParts.map(part => (
+        <div key={part.id} className={styles.messagePart}>
+            <div className={styles.messageContent}>
+                <button className={styles.deletePartButton} onClick={() => removePart(part.id)} title="Delete message"><Trash2 size={14} /></button>
+                <textarea
+                    ref={(el) => { if (el) textRefs.current[part.id] = el; }}
+                    className={styles.messageTextarea}
+                    placeholder="Click to edit message..."
+                    value={(part as any).content}
+                    onChange={(e) => handleTextChange(e, part.id)}
+                    rows={1}
+                />
+                <div className={styles.variableInserter}>
+                    <VariableChipAutocomplete
+                        variables={['name', 'email', 'cart_item', 'order_id']}
+                        onInsert={(variable) => {
+                            const currentContent = (part as any).content || '';
+                            updatePartContent(part.id, currentContent + `{{${variable}}}`);
+                        }}
+                    />
+                </div>
+            </div>
+        </div>
+    ));
 
-            } else if (currentPart.type === 'text') {
-                renderedParts.push(
-                    <div key={currentPart.id} className={styles.messagePart}>
-                         <div className={styles.messageContent}>
-                             <button className={styles.deletePartButton} onClick={() => removePart(currentPart.id)} title="Delete message"><Trash2 size={14} /></button>
-                            <textarea
-                                ref={(el) => { if (el) textRefs.current[currentPart.id] = el; }}
-                                className={styles.messageTextarea}
-                                placeholder="Click to edit message..."
-                                value={(currentPart as any).content}
-                                onChange={(e) => handleTextChange(e, currentPart.id)}
-                                rows={1}
-                            />
-                            <div className={styles.variableInserter}>
-                                <VariableChipAutocomplete
-                                    variables={['name', 'email', 'cart_item', 'order_id']}
-                                    onInsert={(variable) => {
-                                        const currentContent = (currentPart as any).content || '';
-                                        updatePartContent(currentPart.id, currentContent + `{{${variable}}}`);
-                                    }}
-                                />
-                            </div>
-                        </div>
+    if (mediaParts.length > 0) {
+        renderedParts.push(
+            <div key="media-grid" className={styles.mediaGrid}>
+                {mediaToShow.map(part => (
+                    <MediaGridItem key={part.id} part={part} onDoubleClick={() => handleDoubleClick(part.id, part.type)} />
+                ))}
+                {moreCount > 0 && (
+                     <div className={`${styles.mediaGridItem} ${styles.mediaGridMore}`}>
+                        +{moreCount}
                     </div>
-                );
-                i++;
-            } else {
-                i++;
-            }
-        }
+                )}
+            </div>
+        )
     }
 
 
