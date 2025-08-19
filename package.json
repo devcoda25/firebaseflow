@@ -46,6 +46,7 @@
     "elkjs": "^0.9.0",
     "lucide-react": "^0.417.0",
     "nanoid": "^5.0.7",
+    "react-day-picker": "^8.10.1",
     "react-hook-form": "^7.52.1",
     "react-use": "^17.5.0",
     "reactflow": "^11.11.4",
