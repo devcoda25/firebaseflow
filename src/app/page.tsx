@@ -1,4 +1,4 @@
-import StudioClientPage from './studio-client-page';
+import StudioClientPage from './StudioClientPage';
 
 export default function Home() {
   return <StudioClientPage />;
