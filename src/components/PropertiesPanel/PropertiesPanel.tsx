@@ -18,6 +18,7 @@ import SubflowTab from './tabs/SubflowTab'
 import GoogleSheetsTab from './tabs/GoogleSheetsTab'
 import { useDebouncedCallback } from './utils/useDebouncedCallback'
 import { useKeybind } from './utils/useKeybind'
+import type { NodeCategory } from '@/components/SidebarPalette'
 
 /** Simple class combiner */
 function cn(...parts: Array<string | false | undefined>) { return parts.filter(Boolean).join(' ') }
@@ -27,6 +28,17 @@ const TAB_LABEL: Record<TabKey, string> = {
   schedule: 'Schedule', campaign: 'Campaign', ai: 'AI Assist', handoff: 'Handoff',
   analytics: 'Analytics', subflow: 'Sub‑flow', googleSheets: 'Google Sheets'
 }
+
+const TABS_BY_TYPE: Record<NodeCategory, TabKey[]> = {
+    triggers: ['general', 'schedule'],
+    messaging: ['general', 'message', 'schedule'],
+    inputs: ['general', 'message', 'schedule'],
+    logic: ['general', 'logic', 'schedule'],
+    integrations: ['general', 'api', 'googleSheets', 'schedule'],
+    handoff: ['general', 'handoff', 'schedule'],
+    end: ['general', 'analytics'],
+};
+
 
 export default function PropertiesPanel({
   node,
@@ -84,18 +96,12 @@ export default function PropertiesPanel({
   }, [methods, debouncedSave])
 
   const availableTabs = useMemo(() => {
-    if (!node?.data?.type) {
+    const nodeType = node?.data?.type as NodeCategory | undefined;
+    if (!nodeType) {
       return TAB_KEYS;
     }
-    const nodeTypeTabs = {
-      triggers: ['general', 'schedule'],
-      messaging: ['general', 'message', 'schedule'],
-      inputs: ['general', 'message', 'schedule'],
-      logic: ['general', 'logic', 'schedule'],
-      integrations: ['general', 'api', 'googleSheets', 'schedule'],
-      handoff: ['general', 'handoff', 'schedule'],
-      end: ['general', 'analytics'],
-    }[node.data.type];
+    
+    const nodeTypeTabs = TABS_BY_TYPE[nodeType];
 
     if (node.data.label === 'Google Sheets') {
       return ['general', 'googleSheets', 'schedule'];
