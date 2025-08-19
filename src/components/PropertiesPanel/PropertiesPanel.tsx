@@ -96,7 +96,11 @@ export default function PropertiesPanel({
   }, [methods, debouncedSave])
 
   const availableTabs = useMemo(() => {
-    const nodeType = node?.data?.type as NodeCategory | undefined;
+    if (!node) {
+        return [];
+    }
+    const nodeType = node.data?.type as NodeCategory | undefined;
+    
     if (!nodeType) {
       return TAB_KEYS;
     }
@@ -104,15 +108,15 @@ export default function PropertiesPanel({
     const nodeTypeTabs = TABS_BY_TYPE[nodeType];
 
     if (node.data.label === 'Google Sheets') {
-      return ['general', 'googleSheets', 'schedule'];
+      return ['general', 'googleSheets', 'schedule'] as TabKey[];
     }
     
     if (node.data.label === 'Set a Condition') {
-      return ['general', 'logic', 'schedule'];
+      return ['general', 'logic', 'schedule'] as TabKey[];
     }
 
     if (node.data.type === 'integrations' && node.data.label !== 'Google Sheets') {
-      return ['general', 'api', 'schedule'];
+      return ['general', 'api', 'schedule'] as TabKey[];
     }
 
     return nodeTypeTabs || TAB_KEYS;
