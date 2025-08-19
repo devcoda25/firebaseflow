@@ -229,10 +229,7 @@
     display: grid;
     grid-template-columns: repeat(2, 1fr);
     gap: 8px;
-    background-color: hsl(var(--muted));
-    border-radius: 8px;
-    padding: 8px;
-    border: 1px solid hsl(var(--border));
+    max-width: 160px;
 }
 
 .mediaGridItem {
