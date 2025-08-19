@@ -250,19 +250,23 @@
 
 .mediaGallery {
     position: relative;
-    width: 50%;
     border-radius: 8px;
     overflow: hidden;
     background-color: hsl(var(--muted));
     border: 1px solid hsl(var(--border));
+    display: flex;
+    justify-content: center;
+    padding: 8px;
 }
 
 .mediaPreviewImage {
     width: 100%;
+    max-width: 150px;
     aspect-ratio: 16 / 9;
     object-fit: cover;
     background-color: hsl(var(--background));
     cursor: pointer;
+    border-radius: 4px;
 }
 
 .documentPreview, .audioPreview {
@@ -275,6 +279,7 @@
     cursor: pointer;
     border: 1px solid hsl(var(--border));
     color: hsl(var(--foreground));
+    width: 100%;
 }
 .documentPreview:hover, .audioPreview:hover {
     background-color: hsl(var(--border));

@@ -183,43 +183,14 @@ export default function BaseNode({ id, data, selected }: { id: string; data: Bas
             const currentPart = parts[i];
 
             if (MEDIA_TYPES.includes(currentPart.type)) {
-                const mediaGroup: ContentPart[] = [];
-                // Collect all consecutive media parts
-                while (i < parts.length && MEDIA_TYPES.includes(parts[i].type)) {
-                    mediaGroup.push(parts[i]);
-                    i++;
-                }
-
-                if (mediaGroup.length > 0) {
-                    const firstMedia = mediaGroup[0];
-                    const otherMedia = mediaGroup.slice(1);
-
-                    renderedParts.push(
-                        <div key={firstMedia.id} className={styles.messagePart}>
-                             <button className={styles.deletePartButton} onClick={() => removePart(firstMedia.id)} title={`Delete ${firstMedia.type}`}><Trash2 size={14} /></button>
-                            <div className={styles.mediaGallery}>
-                                <MediaPreview part={firstMedia} onDoubleClick={() => handleDoubleClick(firstMedia.id, firstMedia.type)} />
-                                {otherMedia.length > 0 && (
-                                    <div className={styles.mediaThumbnails}>
-                                        {otherMedia.slice(0, 3).map(part => (
-                                             <button key={part.id} className={styles.mediaThumbnail} onClick={() => handleDoubleClick(part.id, part.type)}>
-                                                {part.type === 'image' && <ImageIcon size={14} />}
-                                                {part.type === 'video' && <Film size={14} />}
-                                                {part.type === 'audio' && <AudioLines size={14} />}
-                                                {part.type === 'document' && <FileIcon size={14} />}
-                                             </button>
-                                        ))}
-                                        {otherMedia.length > 3 && (
-                                            <div className={styles.mediaThumbnailMore}>
-                                                +{otherMedia.length - 3}
-                                            </div>
-                                        )}
-                                    </div>
-                                )}
-                            </div>
-                        </div>
-                    );
-                }
+                
+                renderedParts.push(
+                    <div key={currentPart.id} className={styles.messagePart}>
+                         <button className={styles.deletePartButton} onClick={() => removePart(currentPart.id)} title={`Delete ${currentPart.type}`}><Trash2 size={14} /></button>
+                         <MediaPreview part={currentPart} onDoubleClick={() => handleDoubleClick(currentPart.id, currentPart.type)} />
+                    </div>
+                );
+                i++;
 
             } else if (currentPart.type === 'text') {
                 renderedParts.push(
