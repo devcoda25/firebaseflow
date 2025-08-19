@@ -239,7 +239,7 @@
   color: hsl(var(--muted-foreground));
   font-weight: 500;
   width: 100%;
-  height: 100%;
+  min-height: 120px;
   cursor: pointer;
 }
 .attachmentBox:hover {
@@ -248,34 +248,74 @@
   color: hsl(var(--accent));
 }
 
-.mediaPreview {
+.mediaGallery {
+    position: relative;
     width: 100%;
-    max-height: 160px;
-    object-fit: contain;
     border-radius: 8px;
+    overflow: hidden;
     background-color: hsl(var(--muted));
-    cursor: pointer;
     border: 1px solid hsl(var(--border));
 }
 
-.documentPreview {
+.mediaPreviewImage {
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    object-fit: cover;
+    background-color: hsl(var(--background));
+    cursor: pointer;
+}
+
+.documentPreview, .audioPreview {
     display: flex;
     align-items: center;
-    gap: 8px;
-    padding: 12px;
-    background-color: hsl(var(--muted));
+    gap: 12px;
+    padding: 16px;
+    background-color: hsl(var(--background));
     border-radius: 8px;
     cursor: pointer;
     border: 1px solid hsl(var(--border));
+    color: hsl(var(--foreground));
 }
-.documentPreview:hover {
+.documentPreview:hover, .audioPreview:hover {
     background-color: hsl(var(--border));
 }
 
+.mediaThumbnails {
+    position: absolute;
+    bottom: 8px;
+    left: 8px;
+    display: flex;
+    gap: 6px;
+    align-items: center;
+}
+
+.mediaThumbnail, .mediaThumbnailMore {
+    width: 28px;
+    height: 28px;
+    border-radius: 999px;
+    background: hsla(0, 0%, 100%, 0.7);
+    border: 2px solid hsl(var(--border));
+    backdrop-filter: blur(4px);
+    display: grid;
+    place-items: center;
+    color: hsl(var(--foreground));
+    cursor: pointer;
+    transition: all 0.2s;
+}
+.mediaThumbnail:hover {
+    transform: scale(1.1);
+    background: white;
+}
+.mediaThumbnailMore {
+    font-size: 12px;
+    font-weight: 600;
+}
+
+
 .deletePartButton {
   position: absolute;
-  top: -8px;
-  right: -8px;
+  top: 8px;
+  right: 8px;
   background: hsl(var(--background));
   border: 1px solid hsl(var(--border));
   color: hsl(var(--muted-foreground));
@@ -289,8 +329,7 @@
   opacity: 0;
   transition: opacity 0.2s;
 }
-.messagePart:hover .deletePartButton,
-.mediaGalleryItem:hover .deletePartButton {
+.messagePart:hover .deletePartButton {
   opacity: 1;
 }
 
@@ -410,55 +449,4 @@
   right: -8px !important;
   top: auto !important;
   
-}
-
-
-.mediaGallery {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(60px, 1fr));
-    gap: 8px;
-    background: hsl(var(--muted));
-    border-radius: 8px;
-    overflow: hidden;
-    position: relative;
-    padding: 8px;
-}
-
-.mediaGalleryItem {
-    position: relative;
-    width: 100%;
-    height: 100%;
-    overflow: hidden;
-    border-radius: 4px;
-    aspect-ratio: 1 / 1;
-}
-.mediaGalleryItem > img,
-.mediaGalleryItem > video,
-.mediaGalleryItem > audio,
-.mediaGalleryItem > .documentPreview,
-.mediaGalleryItem > .attachmentBox {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    background-color: hsl(var(--background));
-    cursor: pointer;
-}
-
-.plusOverlay {
-    position: absolute;
-    inset: 0;
-    background-color: rgba(0,0,0,0.5);
-    color: white;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    font-size: 24px;
-    font-weight: bold;
-    cursor: pointer;
-}
-
-.mediaGalleryItem .deletePartButton {
-    top: 4px;
-    right: 4px;
 }

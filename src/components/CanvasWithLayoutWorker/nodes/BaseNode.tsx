@@ -23,7 +23,7 @@ export type ContentPart =
   | { id: string; type: 'text'; content: string }
   | { id: string; type: 'image'; url?: string; name?: string }
   | { id: string; type: 'video'; url?: string; name?: string }
-  | { id: string; type: 'audio'; url?: string; name?: string }
+  | { id:string; type: 'audio'; url?: string; name?: string }
   | { id: string; type: 'document'; url?: string; name?: string };
 
 export type BaseNodeData = {
@@ -69,6 +69,21 @@ function migrateData(data: BaseNodeData): ContentPart[] {
 
 const MEDIA_TYPES: ContentPart['type'][] = ['image', 'video', 'audio', 'document'];
 
+function MediaPreview({ part, onDoubleClick }: { part: ContentPart, onDoubleClick: () => void }) {
+    if (part.type === 'image') {
+        return part.url ? <img src={part.url} alt={part.name || 'Image'} onClick={onDoubleClick} className={styles.mediaPreviewImage} /> : <button className={styles.attachmentBox} onClick={onDoubleClick}><ImageIcon size={24} /><span>Upload image</span></button>
+    }
+    if (part.type === 'video') {
+        return part.url ? <video src={part.url} controls onClick={onDoubleClick} className={styles.mediaPreviewImage}/> : <button className={styles.attachmentBox} onClick={onDoubleClick}><Film size={24} /><span>Upload video</span></button>
+    }
+    if (part.type === 'document') {
+        return part.url ? <div className={styles.documentPreview} onClick={onDoubleClick}><FileIcon size={24} /><span className="truncate">{part.name || part.url}</span></div> : <button className={styles.attachmentBox} onClick={onDoubleClick}><FileIcon size={24} /><span>Upload document</span></button>
+    }
+    if (part.type === 'audio') {
+        return part.url ? <div className={styles.audioPreview} onClick={onDoubleClick}><AudioLines size={24} /><span className="truncate">{part.name || 'Audio'}</span></div> : <button className={styles.attachmentBox} onClick={onDoubleClick}><AudioLines size={24} /><span>Upload audio</span></button>
+    }
+    return null;
+}
 
 export default function BaseNode({ id, data, selected }: { id: string; data: BaseNodeData; selected: boolean }) {
   const { deleteNode, duplicateNode, setStartNode, startNodeId, updateNodeData, nodes } = useFlowStore();
@@ -98,13 +113,13 @@ export default function BaseNode({ id, data, selected }: { id: string; data: Bas
 
   const thisNode = nodes.find(n => n.id === id);
 
-  const handleDoubleClick = (partId?: string) => {
+  const handleDoubleClick = (partId?: string, type?: string) => {
     if (!thisNode) return;
-
+    const partType = type || parts.find(p => p.id === partId)?.type;
+    
     if (isMessageNode) {
-        const part = parts.find(p => p.id === partId);
-        if (part) {
-            switch(part.type) {
+        if (partType) {
+            switch(partType) {
                 case 'text':
                     // Inline editing, no modal needed
                     return;
@@ -112,7 +127,7 @@ export default function BaseNode({ id, data, selected }: { id: string; data: Bas
                 case 'video':
                 case 'audio':
                 case 'document':
-                    data.onOpenAttachmentModal?.(id, partId, part.type);
+                    data.onOpenAttachmentModal?.(id, partId!, partType);
                     break;
             }
         }
@@ -174,44 +189,38 @@ export default function BaseNode({ id, data, selected }: { id: string; data: Bas
                     mediaGroup.push(parts[i]);
                     i++;
                 }
-                
-                const count = mediaGroup.length;
-                const galleryClass = 
-                    count === 1 ? styles.mediaGallery1 :
-                    count === 2 ? styles.mediaGallery2 :
-                    count === 3 ? styles.mediaGallery3 :
-                    styles.mediaGallery4;
 
-                const visibleItems = mediaGroup.slice(0, 4);
-                const hiddenCount = count - visibleItems.length;
+                if (mediaGroup.length > 0) {
+                    const firstMedia = mediaGroup[0];
+                    const otherMedia = mediaGroup.slice(1);
 
-                renderedParts.push(
-                    <div key={`media-group-${mediaGroup[0].id}`} className={`${styles.mediaGallery} ${galleryClass}`}>
-                        {visibleItems.map((part, index) => (
-                            <div key={part.id} className={`${styles.mediaGalleryItem} ${styles[`item${index + 1}`]}`}>
-                                <button className={styles.deletePartButton} onClick={() => removePart(part.id)} title={`Delete ${part.type}`}><Trash2 size={14} /></button>
-                                {index === 3 && hiddenCount > 0 && (
-                                    <div className={styles.plusOverlay}>
-                                        <Plus size={24} />
-                                        <span>{hiddenCount}</span>
+                    renderedParts.push(
+                        <div key={firstMedia.id} className={styles.messagePart}>
+                             <button className={styles.deletePartButton} onClick={() => removePart(firstMedia.id)} title={`Delete ${firstMedia.type}`}><Trash2 size={14} /></button>
+                            <div className={styles.mediaGallery}>
+                                <MediaPreview part={firstMedia} onDoubleClick={() => handleDoubleClick(firstMedia.id, firstMedia.type)} />
+                                {otherMedia.length > 0 && (
+                                    <div className={styles.mediaThumbnails}>
+                                        {otherMedia.slice(0, 3).map(part => (
+                                             <button key={part.id} className={styles.mediaThumbnail} onClick={() => handleDoubleClick(part.id, part.type)}>
+                                                {part.type === 'image' && <ImageIcon size={14} />}
+                                                {part.type === 'video' && <Film size={14} />}
+                                                {part.type === 'audio' && <AudioLines size={14} />}
+                                                {part.type === 'document' && <FileIcon size={14} />}
+                                             </button>
+                                        ))}
+                                        {otherMedia.length > 3 && (
+                                            <div className={styles.mediaThumbnailMore}>
+                                                +{otherMedia.length - 3}
+                                            </div>
+                                        )}
                                     </div>
                                 )}
-                                {part.type === 'image' && (
-                                    part.url ? <img src={part.url} alt={part.name || 'Image'} onClick={() => handleDoubleClick(part.id)} /> : <button className={styles.attachmentBox} onClick={() => handleDoubleClick(part.id)}><ImageIcon size={24} /><span>Upload image</span></button>
-                                )}
-                                {part.type === 'video' && (
-                                    part.url ? <video src={part.url} controls onClick={() => handleDoubleClick(part.id)} /> : <button className={styles.attachmentBox} onClick={() => handleDoubleClick(part.id)}><Film size={24} /><span>Upload video</span></button>
-                                )}
-                                {part.type === 'document' && (
-                                    part.url ? <div className={styles.documentPreview} onClick={() => handleDoubleClick(part.id)}><FileIcon size={24} /><span className="truncate">{part.name || part.url}</span></div> : <button className={styles.attachmentBox} onClick={() => handleDoubleClick(part.id)}><FileIcon size={24} /><span>Upload document</span></button>
-                                )}
-                                {part.type === 'audio' && (
-                                    part.url ? <audio src={part.url} controls onClick={() => handleDoubleClick(part.id)} /> : <button className={styles.attachmentBox} onClick={() => handleDoubleClick(part.id)}><AudioLines size={24} /><span>Upload audio</span></button>
-                                )}
                             </div>
-                        ))}
-                    </div>
-                );
+                        </div>
+                    );
+                }
+
             } else if (currentPart.type === 'text') {
                 renderedParts.push(
                     <div key={currentPart.id} className={styles.messagePart}>
