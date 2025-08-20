@@ -241,9 +241,8 @@ function InnerCanvas({
           snapGrid={[GRID_SIZE, GRID_SIZE]}
           fitView
           proOptions={{ hideAttribution: true }}
-          backgroundVariant={BackgroundVariant.Dots}
-          bg-pattern-size={20}
         >
+          <Background variant={BackgroundVariant.Dots} gap={20} size={1} />
           <Controls className={styles.controls} />
           <MiniMap pannable zoomable />
           <div style={{ position: 'absolute', inset: 0, pointerEvents: 'none', zIndex: 10 }}>
