@@ -86,7 +86,7 @@ function InnerCanvas({
   const { addNode } = useFlowStore();
   
   const [connectingNodeId, setConnectingNodeId] = useState<OnConnectStartParams | null>(null);
-  const [nodeSelector, setNodeSelector] = useState<NodeSelectorState>(null);
+  const [nodeSelector, setNodeSelector] = useState<NodeSelectorState | null>(null);
   const selectorRef = useRef<HTMLDivElement>(null);
 
   const onDragOver = useCallback((event: React.DragEvent) => {
@@ -241,6 +241,8 @@ function InnerCanvas({
           snapGrid={[GRID_SIZE, GRID_SIZE]}
           fitView
           proOptions={{ hideAttribution: true }}
+          backgroundVariant={BackgroundVariant.Dots}
+          bg-pattern-size={20}
         >
           <Controls className={styles.controls} />
           <MiniMap pannable zoomable />
