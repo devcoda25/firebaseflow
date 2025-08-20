@@ -89,6 +89,10 @@ function InnerCanvas({
   const [nodeSelector, setNodeSelector] = useState<NodeSelectorState | null>(null);
   const selectorRef = useRef<HTMLDivElement>(null);
 
+  useClickAway(selectorRef, () => {
+    setNodeSelector(null);
+  });
+
   const onDragOver = useCallback((event: React.DragEvent) => {
     event.preventDefault();
     event.dataTransfer.dropEffect = 'copy';
@@ -177,7 +181,7 @@ function InnerCanvas({
   }, [project, connectingNodeId, onConnectEnd]);
 
   const handlePaneClick = useCallback(() => {
-    setNodeSelector(null);
+    // This is now handled by useClickAway
   }, []);
 
   const handleSelectNode = (item: PaletteItemPayload) => {
