@@ -42,7 +42,7 @@ type MediaPart = { url: string; name?: string; type: 'image' | 'video' | 'audio'
 
 function StudioPageContent() {
   const { nodes, edges, addNode, setNodes, onNodesChange, onEdgesChange, onConnect, updateNodeData, onConnectStart, onConnectEnd } = useFlowStore();
-  const { meta, setTitle, setChannels, setPublished, setWaContext } = useFlowMetaStore();
+  const { meta, setTitle, setChannels, setWaContext } = useFlowMetaStore();
 
   const [selectedNodeId, setSelectedNodeId] = useState<string | null>(null);
   const [modalState, setModalState] = useState<ModalState | null>(null);
