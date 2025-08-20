@@ -61,28 +61,21 @@ export default function HeaderBar({
   onSaveClick,
   className,
 }: HeaderBarProps) {
-  const controlled = typeof title === 'string';
-  const [localTitle, setLocalTitle] = useState<string>(title ?? initialTitle);
-  const currentTitle = controlled ? (title as string) : localTitle;
+  const [currentTitle, setCurrentTitle] = useState(title ?? initialTitle);
   const [editing, setEditing] = useState(false);
   const inputRef = useRef<HTMLInputElement | null>(null);
-  const originalRef = useRef(currentTitle);
 
   useEffect(() => {
-    if (controlled) return;
-    setLocalTitle((t) => (t !== currentTitle ? currentTitle : t));
-  }, [title, controlled, currentTitle]);
-
-  const debouncedSave = useDebouncedCallback((val: string) => {
-    if (val.trim().length === 0) val = 'Untitled Flow';
-    if (val !== originalRef.current) {
-      onSave?.(val);
-      originalRef.current = val;
+    if (title) {
+        setCurrentTitle(title);
     }
-  }, 500);
+  }, [title]);
 
   useEffect(() => {
-    if (editing) inputRef.current?.focus();
+    if (editing) {
+      inputRef.current?.focus();
+      inputRef.current?.select();
+    }
   }, [editing]);
 
   const allChannels = useMemo(
@@ -118,16 +111,17 @@ export default function HeaderBar({
   const showBadges = selectedMeta.slice(0, MAX_BADGES);
 
   function commitTitle(val: string) {
-    const trimmed = val.trim().length ? val : 'Untitled Flow';
-    if (!controlled) setLocalTitle(trimmed);
-    debouncedSave(trimmed);
+    const trimmed = val.trim().length ? val.trim() : 'Untitled Flow';
+    setCurrentTitle(trimmed);
+    onSave?.(trimmed);
+    setEditing(false);
   }
 
   function onTitleKeyDown(e: React.KeyboardEvent<HTMLInputElement>) {
     if (e.key === 'Enter') {
-      e.currentTarget.blur();
+      commitTitle(e.currentTarget.value);
     } else if (e.key === 'Escape') {
-      if (!controlled) setLocalTitle(originalRef.current);
+      setCurrentTitle(title ?? initialTitle);
       setEditing(false);
     }
   }
@@ -215,11 +209,8 @@ export default function HeaderBar({
             <Input
               ref={inputRef}
               value={currentTitle}
-              onChange={(e) => (controlled ? debouncedSave(e.target.value) : setLocalTitle(e.target.value))}
-              onBlur={() => {
-                setEditing(false);
-                commitTitle(currentTitle);
-              }}
+              onChange={(e) => setCurrentTitle(e.target.value)}
+              onBlur={(e) => commitTitle(e.target.value)}
               onKeyDown={onTitleKeyDown}
               className={styles.titleInput}
               aria-label="Flow title"
