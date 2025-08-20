@@ -89,9 +89,6 @@ function InnerCanvas({
   const [nodeSelector, setNodeSelector] = useState<NodeSelectorState | null>(null);
   const selectorRef = useRef<HTMLDivElement>(null);
 
-  useClickAway(selectorRef, () => {
-    setNodeSelector(null);
-  });
 
   const onDragOver = useCallback((event: React.DragEvent) => {
     event.preventDefault();
