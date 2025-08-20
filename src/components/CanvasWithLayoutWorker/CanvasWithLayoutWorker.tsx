@@ -176,9 +176,9 @@ function InnerCanvas({
     onConnectEnd(event);
   }, [project, connectingNodeId, onConnectEnd]);
 
-  useClickAway(selectorRef, () => {
+  const handlePaneClick = useCallback(() => {
     setNodeSelector(null);
-  });
+  }, []);
 
   const handleSelectNode = (item: PaletteItemPayload) => {
     if (!nodeSelector) return;
@@ -234,6 +234,7 @@ function InnerCanvas({
           onInit={(inst) => (rfRef.current = inst)}
           onSelectionChange={onSelectionChange}
           onNodeDoubleClick={handleNodeDoubleClick}
+          onPaneClick={handlePaneClick}
           nodeTypes={defaultNodeTypes}
           connectionLineType={ConnectionLineType.Bezier}
           connectionMode={ConnectionMode.Loose}
