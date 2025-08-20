@@ -169,19 +169,21 @@ function InnerCanvas({
         const clientX = 'touches' in event ? event.touches[0].clientX : event.clientX;
         const clientY = 'touches' in event ? event.touches[0].clientY : event.clientY;
         
-        setNodeSelector({
-            x: clientX - left,
-            y: clientY - top,
-            sourceNode: nodeId,
-            sourceHandle: handleId
-        })
+        setTimeout(() => {
+          setNodeSelector({
+              x: clientX - left,
+              y: clientY - top,
+              sourceNode: nodeId,
+              sourceHandle: handleId
+          });
+        }, 10);
     }
     setConnectingNodeId(null);
     onConnectEnd(event);
   }, [project, connectingNodeId, onConnectEnd]);
 
   const handlePaneClick = useCallback(() => {
-    // This is now handled by useClickAway
+    setNodeSelector(null);
   }, []);
 
   const handleSelectNode = (item: PaletteItemPayload) => {
