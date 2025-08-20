@@ -51,7 +51,7 @@ function StudioPageContent() {
 
   const [selectedNodeId, setSelectedNodeId] = useState<string | null>(null);
   const [modalState, setModalState] = useState<ModalState | null>(null);
-  const { saveFlow, createNewFlow, deleteFlow, flows } = useFlowsStore();
+  const { saveFlow, createNewFlow, deleteFlow, flows, setActiveFlow } = useFlowsStore();
   const { toast } = useToast();
 
   const { isTestConsoleOpen, toggleTestConsole } = useUIStore();
@@ -285,6 +285,7 @@ function StudioPageContent() {
       <FlowsModal
         isOpen={modalState?.type === 'flows'}
         onClose={() => setModalState(null)}
+        setActiveFlow={setActiveFlow}
       />
       <ButtonsModal
         isOpen={modalState?.type === 'buttons'}
