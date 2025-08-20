@@ -123,6 +123,8 @@ function InnerCanvas({
             description: item.description,
             type: item.type,
             onOpenProperties: onOpenProperties,
+            content: item.content,
+            quickReplies: item.quickReplies,
         },
       };
 
@@ -199,6 +201,8 @@ function InnerCanvas({
             color: item.color || getRandomColor(),
             description: item.description,
             type: item.type,
+            content: item.content,
+            quickReplies: item.quickReplies,
         },
     };
     addNode(newNode);
