@@ -254,7 +254,7 @@ function InnerCanvas({
                 ref={selectorRef}
                 style={{ position: 'absolute', left: nodeSelector.x + 10, top: nodeSelector.y, zIndex: 1000 }}
             >
-                <NodeSelector onSelect={handleSelectNode} />
+                <NodeSelector onSelect={handleSelectNode} onClose={() => setNodeSelector(null)} />
             </div>
         )}
       </div>
